@@ -1,0 +1,182 @@
+
+----------------------------------------------------
+Program running: 12-03-2021, 14:14:15
+----------------------------------------------------
+Focal_X, Focal_Y, Principle_X, Principle_Y
+364.5867004394531 364.5867004394531 255.33090209960938 209.32730102539062
+None
+A Point Was Placed at X: 279 Y: 279
+A Point Was Placed at X: 279 Y: 353
+A Point Was Placed at X: 279 Y: 419
+A Point Was Placed at X: 273 Y: 278
+A Point Was Placed at X: 273 Y: 352
+A Point Was Placed at X: 273 Y: 419
+Beginning Data Collection...
+Points Selected: 
+(273, 278)
+(273, 352)
+(273, 419)
+Beginning Calculations...
+Point 1 with x,y coordinate (273, 278) has average distance of: 1138.0
+Point 2 with x,y coordinate (273, 352) has average distance of: 1064.0
+Point 3 with x,y coordinate (273, 419) has average distance of: 1066.5
+X,Y Coordinate: (273,279) Depth: 1132
+X,Y Coordinate: (273,280) Depth: 1131
+X,Y Coordinate: (273,281) Depth: 1127
+X,Y Coordinate: (273,282) Depth: 1124
+X,Y Coordinate: (273,283) Depth: 1121
+X,Y Coordinate: (273,284) Depth: 1122
+X,Y Coordinate: (273,285) Depth: 1121
+X,Y Coordinate: (273,286) Depth: 1120
+X,Y Coordinate: (273,287) Depth: 1118
+X,Y Coordinate: (273,288) Depth: 1116
+X,Y Coordinate: (273,289) Depth: 1117
+X,Y Coordinate: (273,290) Depth: 1115
+X,Y Coordinate: (273,291) Depth: 1113
+X,Y Coordinate: (273,292) Depth: 1111
+X,Y Coordinate: (273,293) Depth: 1110
+X,Y Coordinate: (273,294) Depth: 1108
+X,Y Coordinate: (273,295) Depth: 1108
+X,Y Coordinate: (273,296) Depth: 1107
+X,Y Coordinate: (273,297) Depth: 1108
+X,Y Coordinate: (273,298) Depth: 1105
+X,Y Coordinate: (273,299) Depth: 1102
+X,Y Coordinate: (273,300) Depth: 1100
+X,Y Coordinate: (273,301) Depth: 1098
+X,Y Coordinate: (273,302) Depth: 1098
+X,Y Coordinate: (273,303) Depth: 1095
+X,Y Coordinate: (273,304) Depth: 1094
+X,Y Coordinate: (273,305) Depth: 1092
+X,Y Coordinate: (273,306) Depth: 1092
+X,Y Coordinate: (273,307) Depth: 1089
+X,Y Coordinate: (273,308) Depth: 1088
+X,Y Coordinate: (273,309) Depth: 1087
+X,Y Coordinate: (273,310) Depth: 1087
+X,Y Coordinate: (273,311) Depth: 1085
+X,Y Coordinate: (273,312) Depth: 1084
+X,Y Coordinate: (273,313) Depth: 1082
+X,Y Coordinate: (273,314) Depth: 1083
+X,Y Coordinate: (273,315) Depth: 1081
+X,Y Coordinate: (273,316) Depth: 1083
+X,Y Coordinate: (273,317) Depth: 1082
+X,Y Coordinate: (273,318) Depth: 1080
+X,Y Coordinate: (273,319) Depth: 1078
+X,Y Coordinate: (273,320) Depth: 1076
+X,Y Coordinate: (273,321) Depth: 1076
+X,Y Coordinate: (273,322) Depth: 1075
+X,Y Coordinate: (273,323) Depth: 1074
+X,Y Coordinate: (273,324) Depth: 1073
+X,Y Coordinate: (273,325) Depth: 1071
+X,Y Coordinate: (273,326) Depth: 1070
+X,Y Coordinate: (273,327) Depth: 1069
+X,Y Coordinate: (273,328) Depth: 1069
+X,Y Coordinate: (273,329) Depth: 1070
+X,Y Coordinate: (273,330) Depth: 1071
+X,Y Coordinate: (273,331) Depth: 1069
+X,Y Coordinate: (273,332) Depth: 1066
+X,Y Coordinate: (273,333) Depth: 1064
+X,Y Coordinate: (273,334) Depth: 1065
+X,Y Coordinate: (273,335) Depth: 1065
+X,Y Coordinate: (273,336) Depth: 1065
+X,Y Coordinate: (273,337) Depth: 1064
+X,Y Coordinate: (273,338) Depth: 1062
+X,Y Coordinate: (273,339) Depth: 1062
+X,Y Coordinate: (273,340) Depth: 1062
+X,Y Coordinate: (273,341) Depth: 1064
+X,Y Coordinate: (273,342) Depth: 1064
+X,Y Coordinate: (273,343) Depth: 1062
+X,Y Coordinate: (273,344) Depth: 1063
+X,Y Coordinate: (273,345) Depth: 1062
+X,Y Coordinate: (273,346) Depth: 1063
+X,Y Coordinate: (273,347) Depth: 1063
+X,Y Coordinate: (273,348) Depth: 1064
+X,Y Coordinate: (273,349) Depth: 1064
+X,Y Coordinate: (273,350) Depth: 1063
+Largest Depth Point Difference: 338
+
+Kyphosis Index Is: 37.619825625216414
+The Length of the Spine is: 398.98987496795166
+
+
+
+X,Y Coordinate: (273,279) Depth: 1132
+X,Y Coordinate: (273,280) Depth: 1131
+X,Y Coordinate: (273,281) Depth: 1127
+X,Y Coordinate: (273,282) Depth: 1124
+X,Y Coordinate: (273,283) Depth: 1121
+X,Y Coordinate: (273,284) Depth: 1122
+X,Y Coordinate: (273,285) Depth: 1121
+X,Y Coordinate: (273,286) Depth: 1120
+X,Y Coordinate: (273,287) Depth: 1118
+X,Y Coordinate: (273,288) Depth: 1116
+X,Y Coordinate: (273,289) Depth: 1117
+X,Y Coordinate: (273,290) Depth: 1115
+X,Y Coordinate: (273,291) Depth: 1113
+X,Y Coordinate: (273,292) Depth: 1111
+X,Y Coordinate: (273,293) Depth: 1110
+X,Y Coordinate: (273,294) Depth: 1108
+X,Y Coordinate: (273,295) Depth: 1108
+X,Y Coordinate: (273,296) Depth: 1107
+X,Y Coordinate: (273,297) Depth: 1108
+X,Y Coordinate: (273,298) Depth: 1105
+X,Y Coordinate: (273,299) Depth: 1102
+X,Y Coordinate: (273,300) Depth: 1100
+X,Y Coordinate: (273,301) Depth: 1098
+X,Y Coordinate: (273,302) Depth: 1098
+X,Y Coordinate: (273,303) Depth: 1095
+X,Y Coordinate: (273,304) Depth: 1094
+X,Y Coordinate: (273,305) Depth: 1092
+X,Y Coordinate: (273,306) Depth: 1092
+X,Y Coordinate: (273,307) Depth: 1089
+X,Y Coordinate: (273,308) Depth: 1088
+X,Y Coordinate: (273,309) Depth: 1087
+X,Y Coordinate: (273,310) Depth: 1087
+X,Y Coordinate: (273,311) Depth: 1085
+X,Y Coordinate: (273,312) Depth: 1084
+X,Y Coordinate: (273,313) Depth: 1082
+X,Y Coordinate: (273,314) Depth: 1083
+X,Y Coordinate: (273,315) Depth: 1081
+X,Y Coordinate: (273,316) Depth: 1083
+X,Y Coordinate: (273,317) Depth: 1082
+X,Y Coordinate: (273,318) Depth: 1080
+X,Y Coordinate: (273,319) Depth: 1078
+X,Y Coordinate: (273,320) Depth: 1076
+X,Y Coordinate: (273,321) Depth: 1076
+X,Y Coordinate: (273,322) Depth: 1075
+X,Y Coordinate: (273,323) Depth: 1074
+X,Y Coordinate: (273,324) Depth: 1073
+X,Y Coordinate: (273,325) Depth: 1071
+X,Y Coordinate: (273,326) Depth: 1070
+X,Y Coordinate: (273,327) Depth: 1069
+X,Y Coordinate: (273,328) Depth: 1069
+X,Y Coordinate: (273,329) Depth: 1070
+X,Y Coordinate: (273,330) Depth: 1071
+X,Y Coordinate: (273,331) Depth: 1069
+X,Y Coordinate: (273,332) Depth: 1066
+X,Y Coordinate: (273,333) Depth: 1064
+X,Y Coordinate: (273,334) Depth: 1065
+X,Y Coordinate: (273,335) Depth: 1065
+X,Y Coordinate: (273,336) Depth: 1065
+X,Y Coordinate: (273,337) Depth: 1064
+X,Y Coordinate: (273,338) Depth: 1062
+X,Y Coordinate: (273,339) Depth: 1062
+X,Y Coordinate: (273,340) Depth: 1062
+X,Y Coordinate: (273,341) Depth: 1064
+X,Y Coordinate: (273,342) Depth: 1064
+X,Y Coordinate: (273,343) Depth: 1062
+X,Y Coordinate: (273,344) Depth: 1063
+X,Y Coordinate: (273,345) Depth: 1062
+X,Y Coordinate: (273,346) Depth: 1063
+X,Y Coordinate: (273,347) Depth: 1063
+X,Y Coordinate: (273,348) Depth: 1064
+X,Y Coordinate: (273,349) Depth: 1064
+X,Y Coordinate: (273,350) Depth: 1063
+Largest Depth Point Difference: 338
+Saving Image...
+Window Closed
+
+Average Kyphosis Index: 37.619825625216414
+
+----------------------------------------------------
+Program finished: 12-03-2021, 14:16:44
+----------------------------------------------------
