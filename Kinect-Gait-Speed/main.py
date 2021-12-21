@@ -1,4 +1,5 @@
 # Pykinect Library imports
+from posixpath import abspath
 from pykinect2 import PyKinectV2
 from pykinect2 import PyKinectRuntime
 
@@ -176,21 +177,27 @@ class GAIT():
     def handleInitImg(self): 
         print("Calibrating Now, please ensure the area is cleared!")
         self.createAnInitFrame()
-        imgName = "Kinect_Img-" + time.strftime("%Y%m%d-%H%M%S") + ".png"
-        cv2.namedWindow(imgName)
-        cv2.imshow(imgName, self._InitFrame)
+        OrigimgName = "Kinect_Img-" + time.strftime("%Y%m%d-%H%M%S") + ".png"
+        cv2.namedWindow(OrigimgName)
+        cv2.imshow(OrigimgName, self._InitFrame)
         self._ConfirmationBoxForSaving.handleButtonPress()
         if self._ConfirmationBoxForSaving.getResponse() is True:
             # Clear Error Flags
             self._InitFrameConvted = True
             self._DisplayAMessage = False
             self._PAUSE = False
+            # Generate the init image folder if it does not already exist
+            if not os.path.isdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), "init_images")):
+                os.mkdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), "init_images")) 
+            imgName = os.path.join(os.path.dirname(os.path.abspath(__file__)),"init_images")
+            imgName= os.path.join(imgName, OrigimgName) 
+            # Write and display the image 
             cv2.imwrite(imgName, self._InitFrame)
-            cv2.destroyWindow(imgName)
+            cv2.destroyWindow(OrigimgName)
             print("Calibration Complete!\n")
         else:
             self._InitFrame = None
-            cv2.destroyWindow(imgName)
+            cv2.destroyWindow(OrigimgName)
 
 
     def handleNoInitFrame(self):
@@ -209,7 +216,7 @@ class GAIT():
 
 
     def handleStartDistance(self, currFrameCnt) -> int:
-
+        
         if self._CalibrateStartDist is False and self._PAUSE is True:
             return currFrameCnt
         # Declare some local variables
