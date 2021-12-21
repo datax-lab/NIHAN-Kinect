@@ -83,6 +83,9 @@ class CVEDITOR_DEPTH(CVEditor):
 
     # Grab the Depth Value from the FrameDataReader
     def getDepth(self, frameData, x, y):
+        if frameData is None: 
+            print("Error")
+            return 0
         return frameData[(y * self._Width) + x]
 
 

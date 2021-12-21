@@ -150,7 +150,7 @@ class GAIT():
 
     # Converts the image selected from the file explorer to a grayscale img
     # Then sets the self._InitFrame to it 
-    def __convt_init_img(self, anInitFrame = None):
+    def _Convt_init_img(self, anInitFrame = None):
 
         if self._InitImageFileName is not None:
             self._InitFrame = cv2.imread(self._InitImageFileName)
@@ -311,9 +311,8 @@ class GAIT():
         # Before we do anything for the program we want to see if an initial image was loaded, and converted
         # if it was not already converted, convert the image, otherwise if there is no initial image, then
         # continue to the main program
-        print(self._Height, self._Width)
         if self._InitImageFileName is not None:
-            self.__convt_init_img()
+            self._Convt_init_img()
 
 
         # Actual Program Loop
@@ -354,6 +353,9 @@ class GAIT():
             # Display The Frame
             if self.frame is not None:
                 self._OpenCVDepthHandler.displayFrame(self.displayFrame)
+        
+        
+        
         # Display Stats 
         if self._EndReached is True and self._CalculationsAllowed == False: 
             self._CalculationsAllowed = True 
@@ -385,7 +387,7 @@ if __name__ == "__main__":
     gait2 = GAIT()
     gait2.runtime()
 
-
+    _Logger.closeFile()
 
 
 

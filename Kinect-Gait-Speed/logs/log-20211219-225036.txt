@@ -1,7 +1,0 @@
-
-----------------------------------------------------
-Program running: 12-19-2021, 22:50:36
-----------------------------------------------------
-Starting Distance: 1058.8
-Elapsed Time: None
-Calculated Gait Speed: None m/s
