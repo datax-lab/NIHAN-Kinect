@@ -96,7 +96,7 @@ class ConfirmationDialogBox:
         self._Window = None
         self._promptLabel = promptText
         self.button_Yes, self.button_No = None, None
-        self._Width, self._Height = width, height
+        self._Width, self._Height = 200, 200
         self.response = None
 
     def getResponse(self):
@@ -116,10 +116,10 @@ class ConfirmationDialogBox:
         self._Window.config(background="white")
 
         # Create Buttons
-        self._PromptText = tk.Label(self._Window, anchor="center", text=self._promptLabel, width=len(self._promptLabel),
-                                    height=3, fg="black").grid(row=0, column=3)
-        self.button_Yes = tk.Button(self._Window, text="Yes", command=self.setResponseToYes).grid(row=1,column=0)
-        self.button_No = tk.Button(self._Window, text="No", command=self.setResponseToNo).grid(row=1, column=1)
+        self._PromptText = tk.Label(self._Window, anchor="center", text=self._promptLabel, width=50,
+                                    height=4, fg="black").pack()
+        self.button_Yes = tk.Button(self._Window, text="Yes", command=self.setResponseToYes).pack()
+        self.button_No = tk.Button(self._Window, text="No", command=self.setResponseToNo).pack()
 
 
         # Main Loop

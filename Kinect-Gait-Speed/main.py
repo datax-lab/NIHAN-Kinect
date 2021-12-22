@@ -18,7 +18,7 @@ from Resources import timer as Timer
 from Resources import Logging as lg
 
 # Logging 
-_Logger = lg.LOGGING(os.path.join("logs", str("log-" + time.strftime("%Y%m%d-%H%M%S") + ".txt")))
+
 
 
 
@@ -47,7 +47,7 @@ class GAIT():
         self._PauseFrame, self.frame, self.frameDataReader = None, None, None
         self._InitFrame = None # To Hold the Initial Frame, will be used to find what's a foreground object and what's not
         self._MaxFrameCalibrationCnt = 5
-        print("Debug Print:",self._InitImageFileName)
+        #print("Debug Print:",self._InitImageFileName)
         # Instantiate Image Processing Custom Library
         self._OpenCVDepthHandler = IMPROC.CVEDITOR_DEPTH(self._Height, self._Width, "Kinect V2 Gait Analyzer",
                                                          self._InitFrame)
@@ -60,7 +60,11 @@ class GAIT():
         self._InitFrameConvted = False # This is to ensure that we conver the image first
         self._AllowDataCollection, self._CalculationsAllowed = False, False
         self._PictureTaken, self._PictureWindowName = False, "Saved Image"
+        self._startDistanceCaptured = False 
 
+        # Error Handling
+        self._LastPosition = []
+        self._programLog = lg.LOGGING(os.path.join("sysLogs", str("runtimeLog-" + time.strftime("%Y%m%d-%H%M%S") + ".txt")))
         # Message Formats
         self._BgStart, self._BgEnd, self._TextStart = (0, 0), (self._Width, 50), (40, 25)
 
@@ -74,6 +78,9 @@ class GAIT():
         self._TimeTakenToWalk = None
         self._UnitConversionFactor = 1000
         self._Gait_Speed = None # rep as m/s
+
+        # Save the Stats 
+        self._ptLog = lg.LOGGING(os.path.join("logs", str("Ptlog-" + time.strftime("%Y%m%d-%H%M%S") + ".txt")))
 
 
 
@@ -108,33 +115,46 @@ class GAIT():
                     cv2.destroyWindow(self._PictureWindowName)
                     self._PictureTaken = False
             elif keypress == ord("s"):
-                print("Timer and Gait Tracking Started, program will auto-pause when patient has reached endpoint...\n")
-                self._Timer.starTtimer(True)
-                self._AllowDataCollection = True 
+                if self._startDistanceCaptured: 
+                    print("Timer and Gait Tracking Started, program will auto-pause when patient has reached endpoint...\n")
+                    self._Timer.starTtimer(True)
+                    self._AllowDataCollection = True 
             elif keypress == ord("i"):
                 # Get the starting distance of the person here
                 self._AllowStartDistanceInit = True
             elif keypress == ord("c"): 
-                if self._Timer.isTimerStopped is False: 
-                    self._Timer.endTimer()   
-                self._CalculationsAllowed = True  
+                if self._startDistanceCaptured: 
+                    if self._Timer.isTimerStopped is False: 
+                        self._Timer.endTimer()   
+                    self._CalculationsAllowed = True  
 
 
     def handleNewDepthFrames(self) -> np.ndarray:
         if self._KinectDev.has_new_depth_frame():
             self.frame, self.frameDataReader = self._KinectDev.get_last_depth_frame(), self._KinectDev._depth_frame_data
             self.displayFrame, self.frame = self._OpenCVDepthHandler.convtImg(self.frame)
+        else: 
+            self.frame = None 
+
         return self.frame # We do a return here, cause we will alsol use this function to find the person's starting
-                          # from the camera, along with capturing an init frame
+                       # from the camera, along with capturing an init frame
+        
     
 
 
 
 
-    # Private Functions
-    def __find_min(self, x_Start, width, y_Start, height):
+    # Functions to be called in functions
+    def _find_min(self, x_Start, width, y_Start, height):
         distanceArr = []
         # Go Through Distances Around the Object Midpoint searching for ones larger than or equal to the endzone distance
+        if width is None or height is None: 
+            x_Start, width, y_Start, height = self._LastPosition[0], self._LastPosition[1], self._LastPosition[2], self._LastPosition[3]
+            self._programLog.output(2, "Fall Back Point was Used at x_Start: " + str(x_Start) + "y_Start: " + str(y_Start))
+        
+        # Since the kinect may lose the person at random points, this is a fallback point
+        self._LastPosition=[x_Start, width, y_Start, height]
+
         for x in range(x_Start, x_Start+width):
             for y in range(y_Start, y_Start+height):
                 distance = self._OpenCVDepthHandler.getDepth(self.frameDataReader, x, y)
@@ -150,7 +170,7 @@ class GAIT():
 
     # Converts the image selected from the file explorer to a grayscale img
     # Then sets the self._InitFrame to it 
-    def _Convt_init_img(self, anInitFrame = None):
+    def _convt_init_img(self, anInitFrame = None):
 
         if self._InitImageFileName is not None:
             self._InitFrame = cv2.imread(self._InitImageFileName)
@@ -201,18 +221,16 @@ class GAIT():
 
 
     def handleNoInitFrame(self):
+        if self.displayFrame is None: 
+            return 
         #message, beginRect, endRect, startText = None, None, None, None
         # If we have no init image display a message asking to capture one
         if self._InitFrame is None and self._InitFrameConvted is False:
-            # Print The Error, and pause the program
-            if self._PAUSE is False:
-                print("Critical Error, No Initial Image Loaded or Captured,\nplease clear the area first " \
-                      "and then \npress \'c\', to capture the background area!")
-                self._PAUSE = True
-
+            # Print The Error, and display message to capture an init frame 
             message = "No Initilization Frame, press \"c\" to capture one"
             self._OpenCVDepthHandler.displayAMessageToCV(self.displayFrame, message, self._BgStart, self._BgEnd,
                                                          self._TextStart)
+        
 
 
     def handleStartDistance(self, currFrameCnt) -> int:
@@ -229,15 +247,24 @@ class GAIT():
                 if (x_Cent is not None and y_Cent is not None) and self._AllowStartDistanceInit:
                     self._StartDistance += self._OpenCVDepthHandler.getDepth(self.frameDataReader, x_Cent, y_Cent)
                     currFrameCnt += 1
-                else:
+                else: 
                     message = "No Person Detected!"
                     self._OpenCVDepthHandler.displayAMessageToCV(self.displayFrame, message, self._BgStart,
-                                                                 self._BgEnd, self._TextStart)
+                                                                    self._BgEnd, self._TextStart)
+                    self._AllowStartDistanceInit = False
+            
+            if not self._AllowStartDistanceInit:
+                message = "Press \'i\' to get Start Distance"
+                self._OpenCVDepthHandler.displayAMessageToCV(self.displayFrame, message, self._BgStart,
+                                                            self._BgEnd, self._TextStart)
+                                                        
+            
         elif currFrameCnt >= self._MaxFrameCalibrationCnt:
             # Finish Up
             self._AllowStartDistanceInit = False
             self._CalibrateStartDist = False
             self._StartDistance = self._StartDistance / self._MaxFrameCalibrationCnt
+            self._startDistanceCaptured = True 
 
         return currFrameCnt
 
@@ -259,7 +286,7 @@ class GAIT():
                 if (x_Cent is not None and y_Cent is not None):
                     self.currentDistance = (self._OpenCVDepthHandler.getDepth(self.frameDataReader, x_Cent, y_Cent) - self._StartDistance)
                 if self.currentDistance >= self._BeginMeasurementZone and self.currentDistance <= self._EndMeasurementZone:
-                    if self.__find_min(x_Cent, width, y_Cent, height) >= self._BeginMeasurementZone:
+                    if self._find_min(x_Cent, width, y_Cent, height) >= self._BeginMeasurementZone:
                         self._OpenCVDepthHandler.displayAMessageToCV(self.displayFrame, "Measurement Zone Entered!",
                                                                  self._BgStart, self._BgEnd, self._TextStart)
                         # Debug Print 
@@ -270,7 +297,7 @@ class GAIT():
                 # Pause the program
                 elif self.currentDistance >= self._EndMeasurementZone:
                     # Lets check to see if this rlly is the true end point
-                    distance = self.__find_min(x_Cent,width, y_Cent, height)
+                    distance = self._find_min(x_Cent,width, y_Cent, height)
                     #print(distance)
                     if distance >= self._EndMeasurementZone:
                         self._OpenCVDepthHandler.displayAMessageToCV(self.displayFrame, "Patient Has Reached Enpoint! Press \"c\" to get gait speed",
@@ -312,13 +339,13 @@ class GAIT():
         # if it was not already converted, convert the image, otherwise if there is no initial image, then
         # continue to the main program
         if self._InitImageFileName is not None:
-            self._Convt_init_img()
+            self._convt_init_img()
 
 
         # Actual Program Loop
         while not self._IsDone:
             # Get and handle new depth frames
-            if self._EndReached is False: 
+            if self._PAUSE is False: 
                 self.handleNewDepthFrames()
             # Let's First Check and see if we have an initial image, we can't allow any cv window events
             # until an initial image is
@@ -336,13 +363,13 @@ class GAIT():
                     if self._StartDistance == 0 or self._CalibrateStartDist is True:
                         self._CalibrateStartDist = True
                         calibrationFrameCntr = self.handleStartDistance(calibrationFrameCntr)
-                        message = "Press \'i\' to get Start Distance"
-                        self._OpenCVDepthHandler.displayAMessageToCV(self.displayFrame, message, self._BgStart,
-                                                                     self._BgEnd, self._TextStart)
+                        #message = "Press \'i\' to get Start Distance"
+                        #self._OpenCVDepthHandler.displayAMessageToCV(self.displayFrame, message, self._BgStart,
+                        #                                             self._BgEnd, self._TextStart)
                     else:
                         self.handleGeneralDistance()
                 
-                # Check if the program was paused amd the end was reached
+                # Check if the program was paused and the end was reached
                 # If so, end the timer and then do the gait speed calculations 
                 if self._PAUSE and self._EndReached: 
                     if self._Timer.isTimerStarted(): 
@@ -361,11 +388,13 @@ class GAIT():
             self._CalculationsAllowed = True 
             self.doGaitSpeedCalc()
         if self._EndReached is True: 
-            _Logger.output(1, "\n\n")
-            _Logger.output(3,"Starting Distance: " + str(self._StartDistance))
-            _Logger.output(3,"Elapsed Time: " + str(self._TimeTakenToWalk))
-            _Logger.output(3,"Calculated Gait Speed: " + str(self._Gait_Speed) + " m/s")
+            self._ptLog.output(1, "\n\n")
+            self._ptLog.output(3,"Starting Distance: " + str(self._StartDistance))
+            self._ptLog.output(3,"Elapsed Time: " + str(self._TimeTakenToWalk))
+            self._ptLog.output(3,"Calculated Gait Speed: " + str(self._Gait_Speed) + " m/s")
             
+        self._programLog.closeFile()
+        self._ptLog.closeFile()
 
 
 
@@ -386,8 +415,6 @@ if __name__ == "__main__":
     # Run the actual program now
     gait2 = GAIT()
     gait2.runtime()
-
-    _Logger.closeFile()
 
 
 

@@ -51,7 +51,7 @@ class CVEditor:
         except Exception as err:
             print("There was an error saving the image: " + str(err))
 
-    def displayAMessageToCV(self, img, message, beginRectangleCoord, endrectangleCoord, startTextCoord):
+    def displayAMessageToCV(self, img, message, beginRectangleCoord, endrectangleCoord, startTextCoord): 
         cv2.rectangle(img, beginRectangleCoord, endrectangleCoord, (0,0,255), -1)
         cv2.putText(img, message,startTextCoord, cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,255,0), 2)
 
