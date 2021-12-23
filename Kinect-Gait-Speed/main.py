@@ -70,7 +70,8 @@ class GAIT():
         self._BgStart, self._BgEnd, self._TextStart = (0, 0), (self._Width, 50), (40, 25)
 
         # Gait Speed Setup Vars
-        self._Timer = Timer.Timer("Kinect V2 Gait Speed Timer")
+        self._Timer = Timer.Timer("Kinect V2 Acceleration Zone Speed Timer")
+        self._TimerMeasure = Timer.Timer("Measurement Zone Timer")
         self._BeginMeasurementZone, self._EndMeasurementZone = 1000, 4000 # Begin Measurement Zone at 1m and end at 4m
         self._StartDistance, self._CalibrateStartDist, self._AllowStartDistanceInit = 0, False, False
         self._CalculationsFlag = False 
@@ -125,8 +126,9 @@ class GAIT():
                 self._AllowStartDistanceInit = True
             elif keypress == ord("c"): 
                 if self._startDistanceCaptured: 
-                    if self._Timer.isTimerStopped is False: 
+                    if self._Timer.isTimerStopped is False or self._TimerMeasure.isTimerStopped() is False: 
                         self._Timer.endTimer()   
+                        self._TimerMeasure.endTimer()
                     self._CalculationsAllowed = True  
 
 
@@ -327,8 +329,10 @@ class GAIT():
         # Change applicable flags 
         if self._Timer.isTimerStopped() is False: 
             self._Timer.endTimer()
+        if self._TimerMeasure.isTimerStopped() is False: 
+            self._TimerMeasure.endTimer()
         self._EndReached, self._AllowDataCollection, self._CalculationsAllowed = True, False, False   
-        self._TimeTakenToWalk = self._Timer.getTimeDiff()
+        self._TimeTakenToWalk = self._TimerMeasure.getTimeDiff()
 
         # Now Perform Calculations 
         if self._TimeTakenToWalk > 0: 
@@ -360,6 +364,10 @@ class GAIT():
             # Let's First Check and see if we have an initial image, we can't allow any cv window events
             # until an initial image is
             # either captured or loaded, otherwise the program doesn't work properly
+
+            if self._BegZoneReached and self._TimerMeasure.isTimerStarted() is False: 
+                self._TimerMeasure.starTtimer(True)
+
             if self._InitFrame is None and self._InitFrameConvted is False:
                self.handleNoInitFrame()
                self.openCVEvents(limitKeybind=True)
@@ -383,6 +391,7 @@ class GAIT():
                 # If so, end the timer and then do the gait speed calculations 
                 if self._PAUSE and self._EndReached: 
                     if self._Timer.isTimerStarted(): 
+                        self._TimerMeasure.endTimer()
                         self._Timer.endTimer()
                         self.doGaitSpeedCalc()
 

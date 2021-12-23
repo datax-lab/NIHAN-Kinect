@@ -52,7 +52,10 @@ class GAITFRAME(GAIT):
         self._TimeIntervals = 2 # report every 2 seconds 
         self._recordedVelocityArr = [] 
         self._DoVelocityCalc = False 
-        self._TimerMeasurementZone = timer.Timer("Measurement Zone Timer")
+
+        # Timers 
+        self._TimerMeasurementZone = self._TimerMeasure # Measurement Zone Timer, Program Timer is still in parent class
+
 
         
         # Debug 
@@ -164,10 +167,10 @@ class GAITFRAME(GAIT):
                 self.handleNewDepthFrames()
                 self.currFrame = self.frame
                 self.currFrameData = self.frameDataReader
-            '''
+            
+            # For Accurate Measurment within the measuremenmt zone, set a timer to start once the pt reaches the begin measurement zone 
             if self._TimerMeasurementZone.isTimerStarted() is False and self._BegZoneReached is True: 
                 self._TimerMeasurementZone.starTtimer(verbose=True)
-            '''
 
             if self._InitFrame is None and self._InitFrameConvted is False:
                self.handleNoInitFrame()
@@ -221,6 +224,7 @@ class GAITFRAME(GAIT):
                         self.calculateDistanceDiff()
                     if self._Timer.isTimerStarted(): 
                         self._Timer.endTimer()
+                        self._TimerMeasurementZone.endTimer()
                         #self._TimerMeasurementZone.endTimer()
                         self.doGaitSpeedCalc()
 
@@ -256,6 +260,7 @@ class GAITFRAME(GAIT):
         if self._EndReached is True: 
             self._DataSave.output(1, "\n\n")
             self._DataSave.output(3,"Starting Distance: " + str(self._StartDistance))
+            self._DataSave.output(3,"Program Time Elapsed: " + str(self._Timer.getTimeDiff()))
             self._DataSave.output(3,"Elapsed Time: " + str(self._TimeTakenToWalk))
             self._DataSave.output(3,"Calculated Gait Speed: " + str(self._Gait_Speed) + " m/s")
         
