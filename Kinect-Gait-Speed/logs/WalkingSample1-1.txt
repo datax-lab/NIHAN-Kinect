@@ -1,0 +1,51 @@
+
+----------------------------------------------------
+Program running: 12-22-2021, 18:13:50
+----------------------------------------------------
+1. Current Distance: 991 Previous Distance: 991 Calculate Difference:  0.0 m/s
+
+2. Current Distance: 1018 Previous Distance: 1014 Calculate Difference:  0.002 m/s
+
+3. Current Distance: 1115 Previous Distance: 1107 Calculate Difference:  0.004 m/s
+
+4. Current Distance: 1326 Previous Distance: 1323 Calculate Difference:  0.0015 m/s
+
+5. Current Distance: 1538 Previous Distance: 1535 Calculate Difference:  0.0015 m/s
+
+6. Current Distance: 1789 Previous Distance: 1788 Calculate Difference:  0.0005 m/s
+
+---------------------------------------------------------------------------------
+Patient Entered Measrument Zone at Frame: 102 and time: 3.439631700515747
+---------------------------------------------------------------------------------
+
+7. Current Distance: 2002 Previous Distance: 1999 Calculate Difference:  0.0015 m/s
+
+8. Current Distance: 2260 Previous Distance: 2257 Calculate Difference:  0.0015 m/s
+
+9. Current Distance: 2579 Previous Distance: 2578 Calculate Difference:  0.0005 m/s
+
+10. Current Distance: 3056 Previous Distance: 3043 Calculate Difference:  0.0065 m/s
+
+11. Current Distance: 3881 Previous Distance: 3782 Calculate Difference:  0.0495 m/s
+
+12. Current Distance: 4469 Previous Distance: 4468 Calculate Difference:  0.0005 m/s
+
+13. Current Distance: 4846 Previous Distance: 4845 Calculate Difference:  0.0005 m/s
+
+14. Current Distance: 5108 Previous Distance: 5097 Calculate Difference:  0.0055 m/s
+
+15. Current Distance: 5468 Previous Distance: 5463 Calculate Difference:  0.0025 m/s
+
+16. Current Distance: 5576 Previous Distance: 5562 Calculate Difference:  0.007 m/s
+
+17. Current Distance: 6049 Previous Distance: 6048 Calculate Difference:  0.0005 m/s
+
+18. Current Distance: 5995 Previous Distance: 5993 Calculate Difference:  0.001 m/s
+
+Starting Distance: 963.6
+Elapsed Time: 9.382772445678711
+Calculated Gait Speed: 0.4263132270507341 m/s
+
+----------------------------------------------------
+Program finished: 12-22-2021, 18:14:16
+----------------------------------------------------

@@ -2,7 +2,8 @@
 from tkinter.constants import X
 from cv2 import DIST_USER
 from numpy.lib.function_base import average
-from pykinect2 import PyKinectRuntime 
+
+from pykinect2 import PyKinectRuntime
 from pykinect2 import PyKinectV2
 
 # Regular Librarires 
@@ -10,9 +11,12 @@ import time
 import os 
 import traceback
 import numpy as np 
+import math
+import Resources 
 # Import the class to inherit
 from main import GAIT
 from Resources import Logging as Log
+from Resources import timer
 
 
 class GAITFRAME(GAIT): 
@@ -29,15 +33,48 @@ class GAITFRAME(GAIT):
         # Allow saving of a previous frame
         self._FrameTracker, self._SaveAFrame = 0, True 
         self._FindDiffNeeded = True 
+        # Create an array that can be read from anywhere in the program that contains all the distance differences among the frames
+        self.distanceDiffArr = [] 
         
+        # A Fail Safe Array, to prevent program crash 
         self._LastPosition2 = []
         # Program Logging
-        self._DataSave = Log.LOGGING(os.path.join("logs", str("PtLog-" + time.strftime("%Y%m%d-%H%M%S") + "Inherit.txt")))
+        self._DataSave = self._ptLog
         #self._PtLog2 = Log.LOGGING(os.path.join("logs", str("PtLog-" + time.strftime("%Y%m%d-%H%M%S") + "Inherit.txt")))
+        
+        # For now this is an experimental section of the program, this may be implemented late
+        # Fun Physics :(
+        # Lets Handle Velocity at the acceleration zone first
+        self._VelocityInitial, self._VelocityFinalAtEndOfAcce = 0, None 
+        # Now Lets Use The Vars Above to get instantaneous velocity at given time intervals 
+        self._VelocityMeasurementZoneInitial = self._VelocityFinalAtEndOfAcce # We can assume that the velocity at the end of the acceleration zone 
+                                                                              # as our initial velocity 
+        self._TimeIntervals = 2 # report every 2 seconds 
+        self._recordedVelocityArr = [] 
+        self._DoVelocityCalc = False 
+        self._TimerMeasurementZone = timer.Timer("Measurement Zone Timer")
+
+        
         # Debug 
         self.diffCntr = 0 
+    '''
+    def _instantVelocity(self, displacement, currTime) -> float:
+        currVelocity = ((displacement * 2) / currTime) - self._VelocityInitial
+        return float(currVelocity) 
 
-    
+    # Using equation of vf = [(displacement * 2) / givenTime] - Vi
+    # vi is the == to the vf at the end of the acceleration zone 
+    def calculateGaitSpeedAtGivenTime(self):
+        if self._VelocityFinalAtEndOfAcce == None: 
+            self._VelocityFinalAtEndOfAcce = self._instantVelocity(self._BeginMeasurementZone, self._Timer.getCurrentTimeDiff())
+        else: 
+            self._recordedVelocityArr.append(self._instantVelocity(self.distanceDiffArr[len(self.distanceDiffArr) - 1], 
+                                            self._TimerMeasurementZone.getCurrentTimeDiff())
+                                            )
+        self._DoVelocityCalc = False 
+    '''
+
+
     # Functions to be called in functions
     def _find_min_from_max(self, x_Start, width, y_Start, height, min):
         distanceArr = []
@@ -99,16 +136,20 @@ class GAITFRAME(GAIT):
         sentence = str(self.diffCntr) +  ". Current Distance: " + str(distance_Curr) + " Previous Distance: " + str(distance_Prev) + " Calculate Difference:  "
         self._DataSave.output(3,(sentence + str(np.round(((self.distanceDifference/self._lenConvFactor) * self._FrameConst),4)) + " m/s\n"))
         # Return the difference if we want it
-        return np.round(float((self.distanceDifference/self._lenConvFactor) * (self._FrameConst)),4)
+        #return float(self.distanceDifference/self._lenConvFactor)
+        return np.round(float((self.distanceDifference/self._lenConvFactor) * (self._FrameConst)),6)
 
-
+ 
 
 
 
     def runtime(self): 
+        # Just some local variables to make things easier down the road
         calibrationFrameCntr = 0 
+        # Used just for an output statement to only be printed once
         measurementZoneReached = False 
-        distanceDiffs = []
+      
+
         # If supplied an initial image, convert from RGB to Gray, removing the third element of the tuple 
         if self._InitImageFileName is not None:
             self._convt_init_img()
@@ -123,7 +164,11 @@ class GAITFRAME(GAIT):
                 self.handleNewDepthFrames()
                 self.currFrame = self.frame
                 self.currFrameData = self.frameDataReader
-            
+            '''
+            if self._TimerMeasurementZone.isTimerStarted() is False and self._BegZoneReached is True: 
+                self._TimerMeasurementZone.starTtimer(verbose=True)
+            '''
+
             if self._InitFrame is None and self._InitFrameConvted is False:
                self.handleNoInitFrame()
                self.openCVEvents(limitKeybind=True)
@@ -139,41 +184,71 @@ class GAITFRAME(GAIT):
                         else:
                             self.handleGeneralDistance()
                             if self._BegZoneReached is True and measurementZoneReached is False:
-                                self._DataSave.output(2, "Patient Entered Measrument Zone at Frame: " + str(self._FrameTracker) + " and time: " + str(self._Timer.getCurrentTimeDiff()) +"\n") 
+                                self._DataSave.output(2,"---------------------------------------------------------------------------------")
+                                self._DataSave.output(2, "Patient Entered Measrument Zone at Frame: " + str(self._FrameTracker) + " and time: " + str(self._Timer.getCurrentTimeDiff())) 
+                                self._DataSave.output(2,"---------------------------------------------------------------------------------\n")
                                 measurementZoneReached = True
 
-                if self._AllowDataCollection is True and self.frame is not None: 
+                # Track and Record Frames 
+                if (self._AllowDataCollection is True and self.frame is not None): 
                     self._FrameTracker += 1 
 
-                # Here is where I will find the difference between to frames
+                # Here is where I will find the dustabce difference between two frames
                 if (self._AllowDataCollection and self._PAUSE is False) and self.prevFrame is not None: 
-                    if (self._FrameTracker % self._FramesToRead == 0) or self._FindDiffNeeded:
-                        if self.currFrame is not None: 
-                            distanceDiffs.append(self.calculateDistanceDiff())
-                        else: 
-                            # In the Case that the current frame is none, we will need to find the difference once we get a valid frame
-                            self._FindDiffNeeded = True
-                
-              
+                    if (self._FrameTracker % self._FramesToRead == 0):# or self._FindDiffNeeded:
+                        if self.currFrame is not None:
+                            distanceDiffTemp = self.calculateDistanceDiff()
+                            if distanceDiffTemp is not None:
+                                self.distanceDiffArr.append(distanceDiffTemp)
+                                #print("Do Calcs")
+                                
+                       
+                '''
+                # May be added in later, but for now this if statement does nothing
+                # Handle Instantaneous Gait Speed Calculations 
+                if self._DoVelocityCalc: 
+                    if self._VelocityFinalAtEndOfAcce is None: 
+                        self.calculateGaitSpeedAtGivenTime()
+                    elif self._TimerMeasurementZone.isTimerStarted() and self._VelocityFinalAtEndOfAcce is not None:
+                        #if ((math.round(self._Timer.getCurrentTimeDiff()) % self._TimeIntervals) == 0):
+                        self.calculateGaitSpeedAtGivenTime()
+                '''
+
                 # Check if the program was paused amd the end was reached
                 # If so, end the timer and then do the gait speed calculations 
-                if self._PAUSE and self._EndReached: 
+                if self._AllowDataCollection is False and self._EndReached: 
                     if self._FindDiffNeeded: 
                         self.calculateDistanceDiff()
                     if self._Timer.isTimerStarted(): 
                         self._Timer.endTimer()
+                        #self._TimerMeasurementZone.endTimer()
                         self.doGaitSpeedCalc()
-                #if self._FrameTracker == 121 : 
-                    #print(self._Timer.getCurrentTimeDiff())
-                    #exit(0)
+
+                
 
 
             # Display The Frame
             if self.frame is not None:
                 self._OpenCVDepthHandler.displayFrame(self.displayFrame)
 
-        # Calculate the distance 
-        self._DataSave.output(3, "Sum of Distance: " + str(sum(distanceDiffs)))
+
+
+
+        ############### Calculations Before Program Closes ###############
+
+        
+        '''
+        self._DataSave.output(3, "Sum of Distance: " + str(sum(self.distanceDiffArr)))
+        self._DataSave.output(3, self._recordedVelocityArr)
+        
+        try: 
+            self._DataSave.output(3,"Length of Velocity Array: " + str(len(self._recordedVelocityArr)) +  "\nSum of velocities: " + str(sum(self._recordedVelocityArr)) + "\n")
+        except Exception: 
+            print("Length of Velocity Array: " + str(len(self._recordedVelocityArr)) +  "\nSum of velocities: " + str(sum(self._recordedVelocityArr)) + "\n")
+            self._DataSave.output(2, str(traceback.traceback.format_exc()))
+        
+        self._DataSave.output(3, "\nVelocity Initial: " + str(self._VelocityFinalAtEndOfAcce))
+        '''
         # Display Stats 
         if self._EndReached is True and self._CalculationsAllowed == False: 
             self._CalculationsAllowed = True 

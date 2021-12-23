@@ -1,0 +1,49 @@
+
+----------------------------------------------------
+Program running: 12-22-2021, 18:18:46
+----------------------------------------------------
+1. Current Distance: 999 Previous Distance: 997 Calculate Difference:  0.001 m/s
+
+2. Current Distance: 1066 Previous Distance: 1054 Calculate Difference:  0.006 m/s
+
+3. Current Distance: 1341 Previous Distance: 1340 Calculate Difference:  0.0005 m/s
+
+4. Current Distance: 1609 Previous Distance: 1608 Calculate Difference:  0.0005 m/s
+
+5. Current Distance: 1967 Previous Distance: 1939 Calculate Difference:  0.014 m/s
+
+---------------------------------------------------------------------------------
+Patient Entered Measrument Zone at Frame: 76 and time: 2.5459187030792236
+---------------------------------------------------------------------------------
+
+6. Current Distance: 2254 Previous Distance: 2254 Calculate Difference:  0.0 m/s
+
+7. Current Distance: 2607 Previous Distance: 2511 Calculate Difference:  0.048 m/s
+
+8. Current Distance: 2860 Previous Distance: 2838 Calculate Difference:  0.011 m/s
+
+9. Current Distance: 3275 Previous Distance: 3274 Calculate Difference:  0.0005 m/s
+
+10. Current Distance: 0 Previous Distance: 0 Calculate Difference:  0.0 m/s
+
+11. Current Distance: 3920 Previous Distance: 3748 Calculate Difference:  0.086 m/s
+
+12. Current Distance: 4127 Previous Distance: 4103 Calculate Difference:  0.012 m/s
+
+13. Current Distance: 4583 Previous Distance: 4582 Calculate Difference:  0.0005 m/s
+
+14. Current Distance: 4786 Previous Distance: 4786 Calculate Difference:  0.0 m/s
+
+15. Current Distance: 5083 Previous Distance: 5083 Calculate Difference:  0.0 m/s
+
+16. Current Distance: 5461 Previous Distance: 5460 Calculate Difference:  0.0005 m/s
+
+17. Current Distance: 5650 Previous Distance: 5633 Calculate Difference:  0.0085 m/s
+
+Starting Distance: 969.6
+Elapsed Time: 8.897541761398315
+Calculated Gait Speed: 0.4495623743351074 m/s
+
+----------------------------------------------------
+Program finished: 12-22-2021, 18:19:11
+----------------------------------------------------

@@ -8,6 +8,7 @@ import os
 import time
 import cv2
 import numpy as np
+import traceback
 
 
 
@@ -166,7 +167,13 @@ class GAIT():
         # Sort the array so that the smallest distance is at the front
         distanceArr = sorted(distanceArr)
         # Return this smallest distance to see if we really are at the endpoint
-        return np.floor(distanceArr[0])
+        try: 
+            return np.floor(distanceArr[0])
+        except Exception as err: 
+            self._programLog.output(2, str(traceback.format_exc()))
+            print("Critical Error, please view syslogs for more info")
+            print("There was a critical error, try adjusting the camera to point up more.")
+            exit(-1)
 
     # Converts the image selected from the file explorer to a grayscale img
     # Then sets the self._InitFrame to it 
@@ -291,7 +298,9 @@ class GAIT():
                                                                  self._BgStart, self._BgEnd, self._TextStart)
                         # Debug Print 
                         if self._BegZoneReached is False: 
+                            print("----------------------------------------")
                             print("Patient Entered Measruement Zone")
+                            print("----------------------------------------\n")
                             self._BegZoneReached = True
                 # Here's a Tricky part, we need to make sure that this is rlly the endpoint, or at least very close to it, before we
                 # Pause the program
@@ -303,6 +312,7 @@ class GAIT():
                         self._OpenCVDepthHandler.displayAMessageToCV(self.displayFrame, "Patient Has Reached Enpoint! Press \"c\" to get gait speed",
                                                                      self._BgStart, self._BgEnd, self._TextStart)
                         self._PAUSE, self._EndReached = True, True
+                        self._AllowDataCollection = False 
                         self._PauseFrame = self.displayFrame
             else: 
                 self._OpenCVDepthHandler.displayAMessageToCV(self.displayFrame, "Press \"s\" to Start Gait Tracking", 
