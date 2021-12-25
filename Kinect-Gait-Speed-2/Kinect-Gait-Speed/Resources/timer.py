@@ -49,7 +49,7 @@ class Timer:
     def starTtimer(self, verbose = False):
         if self._StartTime is None:
             if verbose == True:
-                print("Timer \"", self.timerID,"\" Started\n")
+                print("Timer \"", self.timerID,"\" Started")
             self._StartTime = time.time()
             self._TimerStarted = True
             self._TimerStopped = False
