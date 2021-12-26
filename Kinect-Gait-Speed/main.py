@@ -151,7 +151,7 @@ class GAIT():
                 if self.plot.getSize() > 0: 
                     self.plotFlag = True 
                     fileName = "GAIT Speed Graph-" + time.strftime("%Y%m%d-%H%M%S") + ".png"
-                    self.plot.plotPts(fileName, "Time (sec)", "Distances")
+                    self.plot.plotPts(fileName, "Time (sec)", "Distances (m/s)")
                 
 
 
@@ -337,7 +337,7 @@ class GAIT():
                         self._OpenCVDepthHandler.displayAMessageToCV(self.displayFrame, "Patient Has Reached Enpoint! Press \"c\" to get gait speed",
                                                                      self._BgStart, self._BgEnd, self._TextStart)
                         self._PAUSE, self._EndReached = True, True
-                        #self._AllowDataCollection = False 
+                        self._AllowDataCollection = False 
                         self._PauseFrame = self.displayFrame
             else: 
                 self._OpenCVDepthHandler.displayAMessageToCV(self.displayFrame, "Press \"s\" to Start Gait Tracking", 

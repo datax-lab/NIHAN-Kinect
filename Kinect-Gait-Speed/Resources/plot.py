@@ -10,7 +10,7 @@ class PLOTTER:
     def insertXY(self, xy_tuple): 
         if len(xy_tuple) < 2: 
            raise("Error, please provide a tuple of xy points, x being at index 0 and y at index 1")
-        if xy_tuple[0] is not None and xy_tuple[1] is not None:
+        if xy_tuple[0] is not None or xy_tuple[1] is not None: 
             self.x_Points.append(xy_tuple[0])
             self.y_Points.append(xy_tuple[1])
     

@@ -137,7 +137,7 @@ class GAITFRAME(GAIT):
                 return None
 
         # Info needed to plot, make sure to get the immediate time, otherwise it may be inaccurate
-        saveTime = self._TimerMeasurementZone.getCurrentTimeDiff()
+        saveTime = self._Timer.getCurrentTimeDiff()
         
         
         # Now Calculate the Distance Difference 
@@ -150,7 +150,7 @@ class GAITFRAME(GAIT):
         self._DataSave.output(3,(sentence + str(np.round(saveSpd,4)) + " m/s\n"))
         
         # PLotting info
-        xySave = [saveTime, np.round(float(saveSpd), 6)]
+        xySave = [saveTime, np.round(float(saveSpd), 4)]
         self.plot.insertXY(xySave)
 
         # Return the difference if we want it
@@ -182,7 +182,11 @@ class GAITFRAME(GAIT):
                 self.prevFrameData = self.currFrameData
                 self._SaveAFrame = False 
             
-            self.currFrame = None 
+            # Always clear the current frame
+            # This allows the program to calculate the frame difference once the pt reaches the end of the measurement zone
+            self.currFrame = None
+
+
             if self._PAUSE is False: 
                 self.handleNewDepthFrames()
                 self.currFrame = self.frame
@@ -213,11 +217,11 @@ class GAITFRAME(GAIT):
                                 measurementZoneReached = True
 
                 # Track and Record Frames 
-                if (self._AllowDataCollection is True and self.frame is not None): 
+                if (self._AllowDataCollection is True and self.frame is not None) and self._PAUSE is False: 
                     self._FrameTracker += 1 
 
-                # Here is where I will find the dustabce difference between two frames
-                if (self._AllowDataCollection is True and self._PAUSE is False) and (self.prevFrame is not None): 
+                # Here is where I will find the distance difference between two frames
+                if (self._AllowDataCollection is True and self._PAUSE is False) or (self.prevFrame is not None and self._EndReached is True): 
                     if (self._FrameTracker % self._FramesToRead == 0):# or self._FindDiffNeeded:
                         if self.currFrame is not None:
                             distanceDiffTemp = self.calculateDistanceDiff()
@@ -242,8 +246,6 @@ class GAITFRAME(GAIT):
                 # Check if the program was paused amd the end was reached
                 # If so, end the timer and then do the gait speed calculations 
                 if self._PAUSE and self._EndReached: 
-                    if self._FindDiffNeeded: 
-                        self.calculateDistanceDiff()
                     if self._Timer.isTimerStarted(): 
                         self._Timer.endTimer()
                         self._TimerMeasurementZone.endTimer()
@@ -276,13 +278,20 @@ class GAITFRAME(GAIT):
         '''
         
         
-        
+        self._DataSave.output(3,"\n\n------------------------------------")
+        self._DataSave.output(3, "          Statistics:              ") 
+        self._DataSave.output(3,"------------------------------------")
         # Display Stats 
         if self._EndReached is True and self._CalculationsAllowed == False: 
+            
             if self.plotFlag is False: 
-                print(self.plot.x_Points)
-                print(self.plot.y_Points)
-                self.plot.plotPts("test.png", "Time", "Distance")
+                self._programLog.output(2,"------------------------------------")
+                self._programLog.output(2, "          Statistics:              ") 
+                self._programLog.output(2,"------------------------------------")
+                self._programLog.output(3, "\n")
+                self._programLog.output(3, "X-Plot Points (Times)" + str(self.plot.x_Points))
+                self._programLog.output(3, "Y-Plot Points (Speed)" + str(self.plot.y_Points))
+                self.plot.plotPts("test.png", "Time (sec)", "Distance (m/s)")
 
             self._CalculationsAllowed = True 
             self.doGaitSpeedCalc()
