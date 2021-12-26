@@ -1,0 +1,65 @@
+
+----------------------------------------------------
+Program running: 12-26-2021, 00:26:53
+----------------------------------------------------
+1. Current Distance: 47.40000000000009 Previous Distance: 39.40000000000009 Calculate Difference:  0.004 m/s
+
+2. Current Distance: 94.40000000000009 Previous Distance: 93.40000000000009 Calculate Difference:  0.0005 m/s
+
+3. Current Distance: 252.4000000000001 Previous Distance: 243.4000000000001 Calculate Difference:  0.0045 m/s
+
+4. Current Distance: 443.4000000000001 Previous Distance: 429.4000000000001 Calculate Difference:  0.007 m/s
+
+5. Current Distance: 636.4000000000001 Previous Distance: 629.4000000000001 Calculate Difference:  0.0035 m/s
+
+6. Current Distance: 820.4000000000001 Previous Distance: 811.4000000000001 Calculate Difference:  0.0045 m/s
+
+---------------------------------------------------------------------------------
+Patient Entered Measrument Zone at Frame: 103 and time: 3.4888226985931396
+---------------------------------------------------------------------------------
+
+7. Current Distance: 1053.4 Previous Distance: 1048.4 Calculate Difference:  0.0025 m/s
+
+8. Current Distance: 1208.4 Previous Distance: 1207.4 Calculate Difference:  0.0005 m/s
+
+9. Current Distance: 1442.4 Previous Distance: 1441.4 Calculate Difference:  0.0005 m/s
+
+10. Current Distance: 1635.4 Previous Distance: 1634.4 Calculate Difference:  0.0005 m/s
+
+11. Current Distance: 1889.4 Previous Distance: 1888.4 Calculate Difference:  0.0005 m/s
+
+12. Current Distance: 2051.4 Previous Distance: 2051.4 Calculate Difference:  0.0 m/s
+
+13. Current Distance: 2368.4 Previous Distance: 2318.4 Calculate Difference:  0.025 m/s
+
+14. Current Distance: 2667.4 Previous Distance: 2666.4 Calculate Difference:  0.0005 m/s
+
+15. Current Distance: 2957.4 Previous Distance: 2956.4 Calculate Difference:  0.0005 m/s
+
+16. Current Distance: 3150.4 Previous Distance: 3149.4 Calculate Difference:  0.0005 m/s
+
+17. Current Distance: 3384.4 Previous Distance: 3383.4 Calculate Difference:  0.0005 m/s
+
+18. Current Distance: 3747.4 Previous Distance: 3746.4 Calculate Difference:  0.0005 m/s
+
+19. Current Distance: 3967.4 Previous Distance: 3946.4 Calculate Difference:  0.0105 m/s
+
+20. Current Distance: 4252.4 Previous Distance: 4236.4 Calculate Difference:  0.008 m/s
+
+21. Current Distance: 4664.4 Previous Distance: 4659.4 Calculate Difference:  0.0025 m/s
+
+22. Current Distance: 4907.4 Previous Distance: 4875.4 Calculate Difference:  0.016 m/s
+
+
+
+------------------------------------
+          Statistics:              
+------------------------------------
+Starting Distance: 1025.6
+Program Time Elapsed: 11.418830394744873
+Elapsed Time: 7.929053783416748
+Calculated Gait Speed: 0.5044738135546282 m/s
+
+----------------------------------------------------
+Program finished: 12-26-2021, 00:27:26
+----------------------------------------------------
