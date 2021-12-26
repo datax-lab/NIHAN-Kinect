@@ -11,6 +11,7 @@ import time
 import os 
 import traceback
 import numpy as np 
+import matplotlib as plt 
 import math
 import Resources 
 # Import the class to inherit
@@ -18,6 +19,10 @@ from main import GAIT
 from Resources import Logging as Log
 from Resources import timer
 
+
+
+
+    
 
 class GAITFRAME(GAIT): 
     def __init__(self): 
@@ -56,7 +61,6 @@ class GAITFRAME(GAIT):
         # Timers 
         self._TimerMeasurementZone = self._TimerMeasure # Measurement Zone Timer, Program Timer is still in parent class
 
-
         
         # Debug 
         self.diffCntr = 0 
@@ -91,7 +95,7 @@ class GAITFRAME(GAIT):
 
         for x in range(x_Start, x_Start+width):
             for y in range(y_Start, y_Start+height):
-                distance = self._OpenCVDepthHandler.getDepth(self.frameDataReader, x, y)
+                distance = self._OpenCVDepthHandler.getDepth(self.frameDataReader, x, y) - self._StartDistance
                 # Save the Distances that are not 0 and
                 # when subtracted by the start distance are still larger than or equal to
                 # the endMeasurement zone
@@ -123,8 +127,8 @@ class GAITFRAME(GAIT):
         # Get the Depth of the Prev blob and the Current Blob 
         if self.prevFrameData is not None and self.currFrameData is not None: 
             if (x_Prev_Cent is not None and y_Prev_Cent is not None) and (x_Curr_Cent is not None and y_Curr_Cent is not None):
-                distance_Prev = self._OpenCVDepthHandler.getDepth(self.prevFrameData, x_Prev_Cent, y_Prev_Cent)
-                distance_Curr = self._OpenCVDepthHandler.getDepth(self.currFrameData, x_Curr_Cent, y_Curr_Cent)
+                distance_Prev = self._OpenCVDepthHandler.getDepth(self.prevFrameData, x_Prev_Cent, y_Prev_Cent) - self._StartDistance
+                distance_Curr = self._OpenCVDepthHandler.getDepth(self.currFrameData, x_Curr_Cent, y_Curr_Cent) - self._StartDistance
                 # Since we can assume the person is always moving forward, we want to find a vlaue larger than the previous distance
                 if distance_Curr < distance_Prev: 
                     distance_Curr = self._find_min_from_max(x_Curr_Cent, w_Curr, y_Curr_Cent, h_Curr, distance_Prev)     
@@ -132,15 +136,27 @@ class GAITFRAME(GAIT):
             else: 
                 return None
 
+        # Info needed to plot, make sure to get the immediate time, otherwise it may be inaccurate
+        saveTime = self._Timer.getCurrentTimeDiff()
+        
+        
         # Now Calculate the Distance Difference 
         self.distanceDifference = float(distance_Curr - distance_Prev)
         self._SaveAFrame, self._FindDiffNeeded = True, False
+        saveSpd = float((self.distanceDifference/self._lenConvFactor) * self._FrameConst)
+        
         # For Now Just Temporarily Save the info
         sentence = str(self.diffCntr) +  ". Current Distance: " + str(distance_Curr) + " Previous Distance: " + str(distance_Prev) + " Calculate Difference:  "
-        self._DataSave.output(3,(sentence + str(np.round(((self.distanceDifference/self._lenConvFactor) * self._FrameConst),4)) + " m/s\n"))
+        self._DataSave.output(3,(sentence + str(np.round(saveSpd,4)) + " m/s\n"))
+        
+        # PLotting info
+        xySave = [saveTime, np.round(float(saveSpd), 4)]
+        self.plot.insertXY(xySave)
+
         # Return the difference if we want it
         #return float(self.distanceDifference/self._lenConvFactor)
-        return np.round(float((self.distanceDifference/self._lenConvFactor) * (self._FrameConst)),6)
+        self.prevFrame, self.prevFrameData = None, None
+        return np.round(float(saveSpd),6)
 
  
 
@@ -151,6 +167,7 @@ class GAITFRAME(GAIT):
         calibrationFrameCntr = 0 
         # Used just for an output statement to only be printed once
         measurementZoneReached = False 
+
       
 
         # If supplied an initial image, convert from RGB to Gray, removing the third element of the tuple 
@@ -159,10 +176,17 @@ class GAITFRAME(GAIT):
 
         while not self._IsDone:
             
+            
             if (self.frame is not None and self._EndReached is False) and (self._AllowDataCollection and self._SaveAFrame) and self._PAUSE is False: 
                 self.prevFrame = self.currFrame
                 self.prevFrameData = self.currFrameData
                 self._SaveAFrame = False 
+            
+            # Always clear the current frame
+            # This allows the program to calculate the frame difference once the pt reaches the end of the measurement zone
+            self.currFrame = None
+
+
             if self._PAUSE is False: 
                 self.handleNewDepthFrames()
                 self.currFrame = self.frame
@@ -193,17 +217,19 @@ class GAITFRAME(GAIT):
                                 measurementZoneReached = True
 
                 # Track and Record Frames 
-                if (self._AllowDataCollection is True and self.frame is not None): 
+                if (self._AllowDataCollection is True and self.frame is not None) and self._PAUSE is False: 
                     self._FrameTracker += 1 
 
-                # Here is where I will find the dustabce difference between two frames
-                if (self._AllowDataCollection and self._PAUSE is False) and self.prevFrame is not None: 
+                # Here is where I will find the distance difference between two frames
+                if (self._AllowDataCollection is True and self._PAUSE is False) or (self.prevFrame is not None and self._EndReached is True): 
                     if (self._FrameTracker % self._FramesToRead == 0):# or self._FindDiffNeeded:
                         if self.currFrame is not None:
                             distanceDiffTemp = self.calculateDistanceDiff()
                             if distanceDiffTemp is not None:
                                 self.distanceDiffArr.append(distanceDiffTemp)
-                                #print("Do Calcs")
+                    
+                    
+                        
                                 
                        
                 '''
@@ -219,16 +245,13 @@ class GAITFRAME(GAIT):
 
                 # Check if the program was paused amd the end was reached
                 # If so, end the timer and then do the gait speed calculations 
-                if self._AllowDataCollection is False and self._EndReached: 
-                    if self._FindDiffNeeded: 
-                        self.calculateDistanceDiff()
+                if self._PAUSE and self._EndReached: 
                     if self._Timer.isTimerStarted(): 
                         self._Timer.endTimer()
                         self._TimerMeasurementZone.endTimer()
                         #self._TimerMeasurementZone.endTimer()
                         self.doGaitSpeedCalc()
-
-                
+                        
 
 
             # Display The Frame
@@ -253,8 +276,23 @@ class GAITFRAME(GAIT):
         
         self._DataSave.output(3, "\nVelocity Initial: " + str(self._VelocityFinalAtEndOfAcce))
         '''
+        
+        
+        self._DataSave.output(3,"\n\n------------------------------------")
+        self._DataSave.output(3, "          Statistics:              ") 
+        self._DataSave.output(3,"------------------------------------")
         # Display Stats 
         if self._EndReached is True and self._CalculationsAllowed == False: 
+            
+            if self.plotFlag is False: 
+                self._programLog.output(2,"------------------------------------")
+                self._programLog.output(2, "          Statistics:              ") 
+                self._programLog.output(2,"------------------------------------")
+                self._programLog.output(3, "\n")
+                self._programLog.output(3, "X-Plot Points (Times)" + str(self.plot.x_Points))
+                self._programLog.output(3, "Y-Plot Points (Speed)" + str(self.plot.y_Points))
+                self.plot.plotPts("test.png", "Time (sec)", "Distance (m/s)")
+
             self._CalculationsAllowed = True 
             self.doGaitSpeedCalc()
         if self._EndReached is True: 

@@ -17,6 +17,7 @@ from Resources import windowManagers as WM
 from Resources import imageEditor as IMPROC
 from Resources import timer as Timer
 from Resources import Logging as lg
+from Resources import plot 
 
 # Logging 
 
@@ -52,9 +53,10 @@ class GAIT():
         # Instantiate Image Processing Custom Library
         self._OpenCVDepthHandler = IMPROC.CVEDITOR_DEPTH(self._Height, self._Width, "Kinect V2 Gait Analyzer",
                                                          self._InitFrame)
-        # Frame By Frame Analysis Vars
-        self.frameCount = 0 # 30 FPS, so every 30 Frames should have a distance traveled estimate
-        # Or for Every second that passes we then calculate the average of the distance and the gait speed
+        
+        # Data Plotting
+        self.plot, self.plotFlag = plot.PLOTTER() , False 
+        
 
         # Program Flags
         self._PAUSE, self._IsDone, self._BegZoneReached, self._EndReached = False, False, False, False
@@ -65,7 +67,23 @@ class GAIT():
 
         # Error Handling
         self._LastPosition = []
+
+        
+        
+        # Program Logging and Data Collection 
+        # Create Necessary Directories if Needed
+        if not os.path.isdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), "syslogs")):
+                os.mkdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), "syslogs"))
+         
         self._programLog = lg.LOGGING(os.path.join("sysLogs", str("runtimeLog-" + time.strftime("%Y%m%d-%H%M%S") + ".txt")))
+        
+        if not os.path.isdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), "logs")):
+                os.mkdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), "logs"))
+        # Save the Stats 
+        self._ptLog = lg.LOGGING(os.path.join("logs", str("Ptlog-" + time.strftime("%Y%m%d-%H%M%S") + ".txt")))
+
+        
+        
         # Message Formats
         self._BgStart, self._BgEnd, self._TextStart = (0, 0), (self._Width, 50), (40, 25)
 
@@ -81,8 +99,7 @@ class GAIT():
         self._UnitConversionFactor = 1000
         self._Gait_Speed = None # rep as m/s
 
-        # Save the Stats 
-        self._ptLog = lg.LOGGING(os.path.join("logs", str("Ptlog-" + time.strftime("%Y%m%d-%H%M%S") + ".txt")))
+        
 
 
 
@@ -130,6 +147,12 @@ class GAIT():
                         self._Timer.endTimer()   
                         self._TimerMeasure.endTimer()
                     self._CalculationsAllowed = True  
+            elif keypress == ord("v"): 
+                if self.plot.getSize() > 0: 
+                    self.plotFlag = True 
+                    fileName = "GAIT Speed Graph-" + time.strftime("%Y%m%d-%H%M%S") + ".png"
+                    self.plot.plotPts(fileName, "Time (sec)", "Distances (m/s)")
+                
 
 
     def handleNewDepthFrames(self) -> np.ndarray:
@@ -170,7 +193,7 @@ class GAIT():
         distanceArr = sorted(distanceArr)
         # Return this smallest distance to see if we really are at the endpoint
         try: 
-            return np.floor(distanceArr[0])
+            return distanceArr[0]
         except Exception as err: 
             self._programLog.output(2, str(traceback.format_exc()))
             print("Critical Error, please view syslogs for more info")
@@ -331,7 +354,9 @@ class GAIT():
             self._Timer.endTimer()
         if self._TimerMeasure.isTimerStopped() is False: 
             self._TimerMeasure.endTimer()
-        self._EndReached, self._AllowDataCollection, self._CalculationsAllowed = True, False, False   
+        
+        self._EndReached, self._CalculationsAllowed = True, False 
+        self._AllowDataCollection = False
         self._TimeTakenToWalk = self._TimerMeasure.getTimeDiff()
 
         # Now Perform Calculations 

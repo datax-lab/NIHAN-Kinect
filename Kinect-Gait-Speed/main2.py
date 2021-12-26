@@ -3,34 +3,39 @@ from tkinter.constants import X
 from cv2 import DIST_USER
 from numpy.lib.function_base import average
 
-from pykinect2 import PyKinectRuntime
-from pykinect2 import PyKinectV2
-
 # Regular Librarires 
-import time 
-import os 
+import os, time
 import traceback
 import numpy as np 
-import matplotlib as plt 
-import math
-import Resources 
 # Import the class to inherit
-from main import GAIT
+from Resources import gait
 from Resources import Logging as Log
-from Resources import timer
+from Resources import Logging as lg 
 
 
+from PyQt5 import QtCore, QtWidgets, QtGui
+from PyQt5 import uic 
 
 
+class GAITUI(QtWidgets.QMainWindow, gait.GAIT):
+    def __init__(self): 
+        QtWidgets.QMainWindow.__init__(self)
+        os.path.join(os.path.dir(os.path.abspath(__file__)))
+        
     
 
-class GAITFRAME(GAIT): 
+class GAITFRAME(gait.GAIT): 
     def __init__(self): 
-        GAIT.__init__(self)
+        gait.GAIT.__init__(self)
         self.prevFrame, self.currFrame = None, None 
         self.prevFrameData, self.currFrameData = None, None 
         self.distanceDifference = None 
         
+        self._ProgramPath = os.path.dirname(os.path.abspath(__file__))
+
+        # Save the Stats 
+        self._ptLog = lg.LOGGING(os.path.join("logs", str("Ptlog-" + time.strftime("%Y%m%d-%H%M%S") + ".txt")))
+
         # Frame by Frame Analysis Vars
         self._FramesToRead = 15
         self._FrameConst = (self._FramesToRead/30)
@@ -64,6 +69,7 @@ class GAITFRAME(GAIT):
         
         # Debug 
         self.diffCntr = 0 
+
     '''
     def _instantVelocity(self, displacement, currTime) -> float:
         currVelocity = ((displacement * 2) / currTime) - self._VelocityInitial

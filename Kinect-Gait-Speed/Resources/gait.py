@@ -72,15 +72,20 @@ class GAIT():
         
         # Program Logging and Data Collection 
         # Create Necessary Directories if Needed
-        if not os.path.isdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), "syslogs")):
-                os.mkdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), "syslogs"))
-         
-        self._programLog = lg.LOGGING(os.path.join("sysLogs", str("runtimeLog-" + time.strftime("%Y%m%d-%H%M%S") + ".txt")))
+        self._ProgramPath = os.path.dirname(os.path.abspath(__file__))
+        if __name__ != "__main__": 
+            self._ProgramPath = os.path.dirname(self._ProgramPath)
+
+        if not os.path.isdir(os.path.join(self._ProgramPath, "syslogs")):
+                os.mkdir(os.path.join(self._ProgramPath, "syslogs"))
+        sysLogsDir = os.path.join(self._ProgramPath, "sysLogs")
+        self._programLog = lg.LOGGING(os.path.join(sysLogsDir, str("runtimeLog-" + time.strftime("%Y%m%d-%H%M%S") + ".txt")))
         
-        if not os.path.isdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), "logs")):
-                os.mkdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), "logs"))
+        if not os.path.isdir(os.path.join(self._ProgramPath, "logs")):
+                os.mkdir(os.path.join(self._ProgramPath, "logs"))
         # Save the Stats 
-        self._ptLog = lg.LOGGING(os.path.join("logs", str("Ptlog-" + time.strftime("%Y%m%d-%H%M%S") + ".txt")))
+        ptLogDirectory = os.path.join(self._ProgramPath, "logs")
+        self._ptLog = lg.LOGGING(os.path.join(ptLogDirectory, str("Ptlog-" + time.strftime("%Y%m%d-%H%M%S") + ".txt")))
 
         
         
