@@ -10,7 +10,7 @@ class LOGGING:
             self.PROGRAM_FILE = "Program-LogFile.txt"
         else: 
             if os.path.exists(logFileName): 
-                print("Error, creating logfile, it already exists, opening in append mode...")
+                #print("Error, creating logfile, it already exists, opening in append mode...")
                 writeType = "a"
             self.PROGRAM_FILE = logFileName 
 

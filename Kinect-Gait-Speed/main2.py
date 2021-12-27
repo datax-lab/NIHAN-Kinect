@@ -28,7 +28,7 @@ class GAITFRAME(gait.GAIT):
     def __init__(self): 
         gait.GAIT.__init__(self)
         self.prevFrame, self.currFrame = None, None 
-        self.prevFrameData, self.currFrameData = None, None 
+        #self.prevFrameData, self.currFrameData = None, None 
         self.distanceDifference = None 
         
         self._ProgramPath = os.path.dirname(os.path.abspath(__file__))
@@ -71,22 +71,6 @@ class GAITFRAME(gait.GAIT):
         self.diffCntr = 0 
         self._PrevDistance = None
 
-    '''
-    def _instantVelocity(self, displacement, currTime) -> float:
-        currVelocity = ((displacement * 2) / currTime) - self._VelocityInitial
-        return float(currVelocity) 
-
-    # Using equation of vf = [(displacement * 2) / givenTime] - Vi
-    # vi is the == to the vf at the end of the acceleration zone 
-    def calculateGaitSpeedAtGivenTime(self):
-        if self._VelocityFinalAtEndOfAcce == None: 
-            self._VelocityFinalAtEndOfAcce = self._instantVelocity(self._BeginMeasurementZone, self._Timer.getCurrentTimeDiff())
-        else: 
-            self._recordedVelocityArr.append(self._instantVelocity(self.distanceDiffArr[len(self.distanceDiffArr) - 1], 
-                                            self._TimerMeasurementZone.getCurrentTimeDiff())
-                                            )
-        self._DoVelocityCalc = False 
-    '''
 
 
     # Functions to be called in functions
@@ -98,7 +82,7 @@ class GAITFRAME(gait.GAIT):
             self._programLog.output(2, "Fall Back Point was Used at x_Start: " + str(x_Start) + "y_Start: " + str(y_Start))
         
         # Since the kinect may lose the person at random points, this is a fallback point
-        self._LastPosition2=[x_Start, width, y_Start, height]
+        #self._LastPosition2=[x_Start, width, y_Start, height]
 
         for x in range(x_Start, x_Start+width):
             for y in range(y_Start, y_Start+height):
@@ -117,29 +101,25 @@ class GAITFRAME(gait.GAIT):
 
 
     def calculateDistanceDiff(self) -> float : 
-        if self.prevFrame is None: 
+        if self.currFrame is None: 
             return 
         
-        distance_Prev = None
         distance_Curr = None
         x_Curr_Cent, y_Curr_Cent = None, None
-        x_Prev_Cent, y_Curr_Cent = None, None 
-        # Get the midpoints of the previous frame blob and the current frame blob
         try: 
-            x_Prev_Cent, y_Prev_Cent, _, _ =  self._OpenCVDepthHandler.getObjectMidPoint(self._InitFrame, self.prevFrame)
             x_Curr_Cent, y_Curr_Cent, w_Curr, h_Curr = self._OpenCVDepthHandler.getObjectMidPoint(self._InitFrame, self.currFrame)
         except Exception: 
             self._programLog.output(3,str(traceback.format_exc()))
             exit(-1)
 
         # Get the Depth of the Prev blob and the Current Blob 
-        if self.prevFrameData is not None and self.currFrameData is not None: 
-            if (x_Prev_Cent is not None and y_Prev_Cent is not None) and (x_Curr_Cent is not None and y_Curr_Cent is not None):
-                distance_Prev = self._OpenCVDepthHandler.getDepth(self.prevFrameData, x_Prev_Cent, y_Prev_Cent) - self._StartDistance
-                distance_Curr = self._OpenCVDepthHandler.getDepth(self.currFrameData, x_Curr_Cent, y_Curr_Cent) - self._StartDistance
+        if self.frameDataReader is not None: 
+           
+            if (x_Curr_Cent is not None and y_Curr_Cent is not None):
+                distance_Curr = self._OpenCVDepthHandler.getDepth(self.frameDataReader, x_Curr_Cent, y_Curr_Cent) - self._StartDistance
                 # Since we can assume the person is always moving forward, we want to find a vlaue larger than the previous distance
-                if distance_Curr < distance_Prev: 
-                    distance_Curr = self._find_min_from_max(x_Curr_Cent, w_Curr, y_Curr_Cent, h_Curr, distance_Prev)     
+                if distance_Curr < self._PrevDistance: 
+                    distance_Curr = self._find_min_from_max(x_Curr_Cent, w_Curr, y_Curr_Cent, h_Curr, self._PrevDistance)     
                 self.diffCntr += 1
             else: 
                 return None
@@ -148,14 +128,14 @@ class GAITFRAME(gait.GAIT):
         saveTime = self._Timer.getCurrentTimeDiff()
         
         
-        # Now Calculate the Distance Difference 
-        self.distanceDifference = float(distance_Curr - distance_Prev)
-        self._SaveAFrame, self._FindDiffNeeded = True, False
+        # Now Calculate The Difference
+        self.distanceDifference = float(distance_Curr - self._PrevDistance)
         saveSpd = float((self.distanceDifference/self._lenConvFactor) * self._FrameConst)
         
         # For Now Just Temporarily Save the info
-        sentence = str(self.diffCntr) +  ". Current Distance: " + str(distance_Curr) + " Previous Distance: " + str(distance_Prev) + " Calculate Difference:  "
-        self._DataSave.output(3,(sentence + str(np.round(saveSpd,4)) + " m/s\n"))
+        self._DataSave.output(3, f"\nCurrent Time: {self._Timer.getCurrentTimeDiff()}")
+        sentence = f"{self.diffCntr}. Current Distance {distance_Curr} Previous Distance {self._PrevDistance} Calculated Speed:"
+        self._DataSave.output(3,f"{sentence} {np.round(saveSpd, decimals=4)}")
         #self._PrevDistance = distance_Curr
         # PLotting info
         xySave = [saveTime, np.round(float(saveSpd), 4)]
@@ -163,7 +143,9 @@ class GAITFRAME(gait.GAIT):
 
         # Return the difference if we want it
         #return float(self.distanceDifference/self._lenConvFactor)
-        self.prevFrame, self.prevFrameData = None, None
+        self._PrevDistance = distance_Curr
+        
+        
         return np.round(float(saveSpd),6)
 
  
@@ -184,21 +166,10 @@ class GAITFRAME(gait.GAIT):
 
         while not self._IsDone:
             
-            
-            if (self.frame is not None and self._EndReached is False) and (self._AllowDataCollection and self._SaveAFrame) and self._PAUSE is False: 
-                self.prevFrame = self.currFrame
-                self.prevFrameData = self.currFrameData
-                self._SaveAFrame = False 
-            
-            # Always clear the current frame
-            # This allows the program to calculate the frame difference once the pt reaches the end of the measurement zone
-            self.currFrame = None
-
-
-            if self._PAUSE is False: 
+            if self._PAUSE is False and self._EndReached is False: 
                 self.handleNewDepthFrames()
                 self.currFrame = self.frame
-                self.currFrameData = self.frameDataReader
+                #self.currFrameData = self.frameDataReader
             
             # For Accurate Measurment within the measuremenmt zone, set a timer to start once the pt reaches the begin measurement zone 
             if self._TimerMeasurementZone.isTimerStarted() is False and self._BegZoneReached is True: 
@@ -228,6 +199,8 @@ class GAITFRAME(gait.GAIT):
                 # Track and Record Frames 
                 if (self._AllowDataCollection is True and self.frame is not None) and self._PAUSE is False: 
                     self._FrameTracker += 1 
+                    if self.prevFrame is None and self._EndReached is False: 
+                        self.prevFrame, self.prevFrameData = self.currFrame, self.frameDataReader
 
                 # Here is where I will find the distance difference between two frames
                 if (self._AllowDataCollection is True and self._PAUSE is False) or (self.prevFrame is not None and self._EndReached is True): 
@@ -236,21 +209,10 @@ class GAITFRAME(gait.GAIT):
                             distanceDiffTemp = self.calculateDistanceDiff()
                             if distanceDiffTemp is not None:
                                 self.distanceDiffArr.append(distanceDiffTemp)
+                    if self._EndReached: 
+                        self.prevFrame = None 
                     
-                    
-                
-                                
-                       
-                '''
-                # May be added in later, but for now this if statement does nothing
-                # Handle Instantaneous Gait Speed Calculations 
-                if self._DoVelocityCalc: 
-                    if self._VelocityFinalAtEndOfAcce is None: 
-                        self.calculateGaitSpeedAtGivenTime()
-                    elif self._TimerMeasurementZone.isTimerStarted() and self._VelocityFinalAtEndOfAcce is not None:
-                        #if ((math.round(self._Timer.getCurrentTimeDiff()) % self._TimeIntervals) == 0):
-                        self.calculateGaitSpeedAtGivenTime()
-                '''
+                                 
 
                 # Check if the program was paused amd the end was reached
                 # If so, end the timer and then do the gait speed calculations 
@@ -264,8 +226,11 @@ class GAITFRAME(gait.GAIT):
 
 
             # Display The Frame
-            if self.frame is not None:
+            if self.displayFrame is not None:
                 self._OpenCVDepthHandler.displayFrame(self.displayFrame)
+            
+            # Since we should be done with the current frame we toss it away
+            #self.currFrame = None 
 
 
 
