@@ -17,10 +17,14 @@ class PLOTTER:
     def getSize(self):
         return len(self.x_Points) # It doesnt necessarily matter whether we use the x or y, since their len should be equal all the time
         
+    def isListEmpty(self) -> bool: 
+        if len(self.x_Points) <= 0 or len(self.y_Points) <= 0: 
+            return False 
+        return True
 
     def plotPts(self, fileName, xLabel, yLabel): 
-        if len(self.x_Points) < 0  or len(self.y_Points) < 0:
-            print("No Data")
+        if len(self.x_Points) <= 0  or len(self.y_Points) <= 0:
+            #print("No Data")
             return 
         # Handle Plotting if there is data to plot
         plt.plot(self.x_Points, self.y_Points, marker='o')

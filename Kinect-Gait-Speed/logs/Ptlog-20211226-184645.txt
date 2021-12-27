@@ -1,0 +1,51 @@
+
+----------------------------------------------------
+Program running: 12-26-2021, 18:46:45
+----------------------------------------------------
+
+----------------------------------------------------
+Program running: 12-26-2021, 18:46:45
+----------------------------------------------------
+1. Current Distance: 89.0 Previous Distance: 85.0 Calculate Difference:  0.002 m/s
+
+2. Current Distance: 325.0 Previous Distance: 304.0 Calculate Difference:  0.0105 m/s
+
+3. Current Distance: 664.0 Previous Distance: 661.0 Calculate Difference:  0.0015 m/s
+
+---------------------------------------------------------------------------------
+Patient Entered Measrument Zone at Frame: 59 and time: 1.9990735054016113
+---------------------------------------------------------------------------------
+
+4. Current Distance: 1055.0 Previous Distance: 1054.0 Calculate Difference:  0.0005 m/s
+
+5. Current Distance: 1434.0 Previous Distance: 1433.0 Calculate Difference:  0.0005 m/s
+
+6. Current Distance: 1822.0 Previous Distance: 1821.0 Calculate Difference:  0.0005 m/s
+
+7. Current Distance: 2253.0 Previous Distance: 2252.0 Calculate Difference:  0.0005 m/s
+
+8. Current Distance: 2724.0 Previous Distance: 2704.0 Calculate Difference:  0.01 m/s
+
+9. Current Distance: 3228.0 Previous Distance: 3227.0 Calculate Difference:  0.0005 m/s
+
+10. Current Distance: 3719.0 Previous Distance: 3718.0 Calculate Difference:  0.0005 m/s
+
+11. Current Distance: 3990.0 Previous Distance: 3990.0 Calculate Difference:  0.0 m/s
+
+12. Current Distance: 4341.0 Previous Distance: 4340.0 Calculate Difference:  0.0005 m/s
+
+13. Current Distance: 4696.0 Previous Distance: 4666.0 Calculate Difference:  0.015 m/s
+
+
+
+------------------------------------
+          Statistics:              
+------------------------------------
+Starting Distance: 992.0
+Program Time Elapsed: 6.856432914733887
+Elapsed Time: 4.838373899459839
+Calculated Gait Speed: 0.8267240364467418 m/s
+
+----------------------------------------------------
+Program finished: 12-26-2021, 18:47:04
+----------------------------------------------------

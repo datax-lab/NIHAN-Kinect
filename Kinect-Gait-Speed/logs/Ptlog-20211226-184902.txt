@@ -1,0 +1,47 @@
+
+----------------------------------------------------
+Program running: 12-26-2021, 18:49:02
+----------------------------------------------------
+
+----------------------------------------------------
+Program running: 12-26-2021, 18:49:02
+----------------------------------------------------
+1. Current Distance: 112.20000000000005 Previous Distance: 111.20000000000005 Calculate Difference:  0.0005 m/s
+
+2. Current Distance: 354.20000000000005 Previous Distance: 340.20000000000005 Calculate Difference:  0.007 m/s
+
+3. Current Distance: 711.2 Previous Distance: 706.2 Calculate Difference:  0.0025 m/s
+
+---------------------------------------------------------------------------------
+Patient Entered Measrument Zone at Frame: 56 and time: 1.917001485824585
+---------------------------------------------------------------------------------
+
+4. Current Distance: 1138.2 Previous Distance: 1137.2 Calculate Difference:  0.0005 m/s
+
+5. Current Distance: 1508.2 Previous Distance: 1499.2 Calculate Difference:  0.0045 m/s
+
+6. Current Distance: 1928.2 Previous Distance: 1927.2 Calculate Difference:  0.0005 m/s
+
+7. Current Distance: 2541.2 Previous Distance: 2540.2 Calculate Difference:  0.0005 m/s
+
+8. Current Distance: 3283.2 Previous Distance: 3282.2 Calculate Difference:  0.0005 m/s
+
+9. Current Distance: 3971.2 Previous Distance: 3970.2 Calculate Difference:  0.0005 m/s
+
+10. Current Distance: 4458.2 Previous Distance: 4442.2 Calculate Difference:  0.008 m/s
+
+11. Current Distance: 4756.2 Previous Distance: 4713.2 Calculate Difference:  0.0215 m/s
+
+
+
+------------------------------------
+          Statistics:              
+------------------------------------
+Starting Distance: 987.8
+Program Time Elapsed: 5.867152690887451
+Elapsed Time: 3.947150468826294
+Calculated Gait Speed: 1.0133892871809929 m/s
+
+----------------------------------------------------
+Program finished: 12-26-2021, 18:49:20
+----------------------------------------------------

@@ -95,7 +95,7 @@ class CVEDITOR_DEPTH(CVEditor):
         if initFrame is None or src2 is None:
             assert("Error, one of the sources are empty!")
         frame1 = cv2.GaussianBlur(initFrame, (23,23), 0)
-        frame2 = cv2.GaussianBlur(src2, (23,23), 0)
+        frame2 = cv2.GaussianBlur(src2, (21,21), 0)
 
         # Create the Delta Frame
         frameDelta = cv2.absdiff(frame1, frame2)
@@ -103,7 +103,7 @@ class CVEDITOR_DEPTH(CVEditor):
         #cv2.imshow("Delta Frame", frameDelta)
 
         # Clean Up the Image a bit more, to better the bacgkround isolation
-        threshImg = cv2.threshold(frameDelta, 38,255, cv2.THRESH_BINARY)[1]
+        threshImg = cv2.threshold(frameDelta, 32,255, cv2.THRESH_BINARY)[1]
         threshImg = cv2.dilate(threshImg, None, iterations=2)
         # Debug Image
         #cv2.imshow("Thresholded Image", threshImg)

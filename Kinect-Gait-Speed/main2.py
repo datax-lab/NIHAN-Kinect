@@ -69,6 +69,7 @@ class GAITFRAME(gait.GAIT):
         
         # Debug 
         self.diffCntr = 0 
+        self._PrevDistance = None
 
     '''
     def _instantVelocity(self, displacement, currTime) -> float:
@@ -119,9 +120,10 @@ class GAITFRAME(gait.GAIT):
         if self.prevFrame is None: 
             return 
         
-        distance_Prev, distance_Curr = None, None 
-        x_Prev_Cent, y_Prev_Cent, x_Curr_Cent, y_Curr_Cent = None, None, None, None
-
+        distance_Prev = None
+        distance_Curr = None
+        x_Curr_Cent, y_Curr_Cent = None, None
+        x_Prev_Cent, y_Curr_Cent = None, None 
         # Get the midpoints of the previous frame blob and the current frame blob
         try: 
             x_Prev_Cent, y_Prev_Cent, _, _ =  self._OpenCVDepthHandler.getObjectMidPoint(self._InitFrame, self.prevFrame)
@@ -154,7 +156,7 @@ class GAITFRAME(gait.GAIT):
         # For Now Just Temporarily Save the info
         sentence = str(self.diffCntr) +  ". Current Distance: " + str(distance_Curr) + " Previous Distance: " + str(distance_Prev) + " Calculate Difference:  "
         self._DataSave.output(3,(sentence + str(np.round(saveSpd,4)) + " m/s\n"))
-        
+        #self._PrevDistance = distance_Curr
         # PLotting info
         xySave = [saveTime, np.round(float(saveSpd), 4)]
         self.plot.insertXY(xySave)
@@ -174,7 +176,7 @@ class GAITFRAME(gait.GAIT):
         # Used just for an output statement to only be printed once
         measurementZoneReached = False 
 
-      
+        
 
         # If supplied an initial image, convert from RGB to Gray, removing the third element of the tuple 
         if self._InitImageFileName is not None:
@@ -213,6 +215,7 @@ class GAITFRAME(gait.GAIT):
                         if self._StartDistance == 0 or self._CalibrateStartDist is True:
                             self._CalibrateStartDist = True
                             calibrationFrameCntr = self.handleStartDistance(calibrationFrameCntr)
+                            self._PrevDistance = self._StartDistance
                             
                         else:
                             self.handleGeneralDistance()
@@ -235,7 +238,7 @@ class GAITFRAME(gait.GAIT):
                                 self.distanceDiffArr.append(distanceDiffTemp)
                     
                     
-                        
+                
                                 
                        
                 '''
@@ -269,47 +272,7 @@ class GAITFRAME(gait.GAIT):
 
         ############### Calculations Before Program Closes ###############
 
-        
-        '''
-        self._DataSave.output(3, "Sum of Distance: " + str(sum(self.distanceDiffArr)))
-        self._DataSave.output(3, self._recordedVelocityArr)
-        
-        try: 
-            self._DataSave.output(3,"Length of Velocity Array: " + str(len(self._recordedVelocityArr)) +  "\nSum of velocities: " + str(sum(self._recordedVelocityArr)) + "\n")
-        except Exception: 
-            print("Length of Velocity Array: " + str(len(self._recordedVelocityArr)) +  "\nSum of velocities: " + str(sum(self._recordedVelocityArr)) + "\n")
-            self._DataSave.output(2, str(traceback.traceback.format_exc()))
-        
-        self._DataSave.output(3, "\nVelocity Initial: " + str(self._VelocityFinalAtEndOfAcce))
-        '''
-        
-        
-        self._DataSave.output(3,"\n\n------------------------------------")
-        self._DataSave.output(3, "          Statistics:              ") 
-        self._DataSave.output(3,"------------------------------------")
-        # Display Stats 
-        if self._EndReached is True and self._CalculationsAllowed == False: 
-            
-            if self.plotFlag is False: 
-                self._programLog.output(2,"------------------------------------")
-                self._programLog.output(2, "          Statistics:              ") 
-                self._programLog.output(2,"------------------------------------")
-                self._programLog.output(3, "\n")
-                self._programLog.output(3, "X-Plot Points (Times)" + str(self.plot.x_Points))
-                self._programLog.output(3, "Y-Plot Points (Speed)" + str(self.plot.y_Points))
-                self.plot.plotPts("test.png", "Time (sec)", "Distance (m/s)")
-
-            self._CalculationsAllowed = True 
-            self.doGaitSpeedCalc()
-        if self._EndReached is True: 
-            self._DataSave.output(1, "\n\n")
-            self._DataSave.output(3,"Starting Distance: " + str(self._StartDistance))
-            self._DataSave.output(3,"Program Time Elapsed: " + str(self._Timer.getTimeDiff()))
-            self._DataSave.output(3,"Elapsed Time: " + str(self._TimeTakenToWalk))
-            self._DataSave.output(3,"Calculated Gait Speed: " + str(self._Gait_Speed) + " m/s")
-        
-        self._programLog.closeFile()
-        self._DataSave.closeFile()
+        self.finishProgram()
         
             
 
