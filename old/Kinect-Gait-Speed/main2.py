@@ -190,7 +190,11 @@ class GAITFRAME(gait.GAIT):
                             
                         else:
                             self.handleGeneralDistance()
-                            
+                            if self._BegZoneReached is True and measurementZoneReached is False:
+                                self._DataSave.output(2,"---------------------------------------------------------------------------------")
+                                self._DataSave.output(2, "Patient Entered Measrument Zone at Frame: " + str(self._FrameTracker) + " and time: " + str(self._Timer.getCurrentTimeDiff())) 
+                                self._DataSave.output(2,"---------------------------------------------------------------------------------\n")
+                                measurementZoneReached = True
 
                 # Track and Record Frames 
                 if (self._AllowDataCollection is True and self.frame is not None) and self._PAUSE is False: 
@@ -218,12 +222,6 @@ class GAITFRAME(gait.GAIT):
                         self._TimerMeasurementZone.endTimer()
                         #self._TimerMeasurementZone.endTimer()
                         self.doGaitSpeedCalc()
-
-                if self._BegZoneReached is True and measurementZoneReached is False:
-                    self._DataSave.output(3,"\n---------------------------------------------------------------------------------")
-                    self._DataSave.output(3, "Patient Entered Measrument Zone at Frame: " + str(self._FrameTracker) + " and time: " + str(self._Timer.getCurrentTimeDiff())) 
-                    self._DataSave.output(3,"---------------------------------------------------------------------------------\n")
-                    measurementZoneReached = True
                         
 
 
