@@ -52,7 +52,7 @@ class GAIT():
         #print("Debug Print:",self._InitImageFileName)
         # Instantiate Image Processing Custom Library
         self._OpenCVDepthHandler = IMPROC.CVEDITOR_DEPTH(self._Height, self._Width, "Kinect V2 Gait Analyzer",
-                                                         None)
+                                                         self._InitFrame)
         
         # Data Plotting
         self.plot, self.plotFlag = plot.PLOTTER() , False 

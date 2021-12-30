@@ -52,7 +52,7 @@ class GAIT():
         #print("Debug Print:",self._InitImageFileName)
         # Instantiate Image Processing Custom Library
         self._OpenCVDepthHandler = IMPROC.CVEDITOR_DEPTH(self._Height, self._Width, "Kinect V2 Gait Analyzer",
-                                                         None)
+                                                         self._InitFrame)
         
         # Data Plotting
         self.plot, self.plotFlag = plot.PLOTTER() , False 
@@ -380,7 +380,7 @@ class GAIT():
         # Display Stats 
         if self._EndReached is True and self._CalculationsAllowed == False: 
             
-            if self.plotFlag is False and self.plot.isListEmpty():  
+            if self.plotFlag is False and self.plot.isListEmpty(): 
                 self._programLog.output(2,"------------------------------------")
                 self._programLog.output(2, "          Statistics:              ") 
                 self._programLog.output(2,"------------------------------------")
@@ -461,7 +461,8 @@ class GAIT():
         
         # Display Stats 
         self.finishProgram()
-        
+
+
 
 
 
@@ -473,8 +474,6 @@ class GAIT():
 
 
 if __name__ == "__main__":
-
-    # Run the actual program now
     gait2 = GAIT()
     gait2.runtime()
 

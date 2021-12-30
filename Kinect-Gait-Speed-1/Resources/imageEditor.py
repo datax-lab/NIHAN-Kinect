@@ -77,8 +77,9 @@ class CVEditor:
 class CVEDITOR_DEPTH(CVEditor):
     # This requires a frame to output contour drawing to, the displayFrame should be the frame that we want to show
     # as the front end to the user, so it should allow for colors, (basically 3d imge, not 2d)
-    def __init__(self, height, width, windowName):
+    def __init__(self, height, width, windowName, displayFrame):
         CVEditor.__init__(self, height, width, windowName)
+        self._DisplayFrame = displayFrame
 
     # Grab the Depth Value from the FrameDataReader
     def getDepth(self, frameData, x, y):
@@ -112,10 +113,10 @@ class CVEDITOR_DEPTH(CVEditor):
 
 
     # Find the Center of a Identified Contour
-    def __GetContourMidPoint(self, x, y, w, h, aDisplayFrame) -> int:
+    def __GetContourMidPoint(self, x, y, w, h) -> int:
         try:
             x_Center, y_Center = (int((x+(x+w))/2)), (int((y+(y+h))/2))
-            cv2.circle(aDisplayFrame, (x_Center, y_Center), 10, (0, 0,255), -1)
+            cv2.circle(self._DisplayFrame, (x_Center, y_Center), 10, (0, 0,255), -1)
         except Exception as err:
             raise("There was an error getting the midpoint of the contour:", err)
 
@@ -126,7 +127,7 @@ class CVEDITOR_DEPTH(CVEditor):
     # Should return 4 items, the xy center point, and then the width and height, in the case something wants to be done with
     # these values
     # Returns None, if error
-    def getObjectMidPoint(self, initFrame, frame, aDisplayFrame):
+    def getObjectMidPoint(self, initFrame, frame, aDisplayFrame = None):
         # Obtain the Background, using background identifier function, it is based of the initFrame
         threshold = self.identifyBackground(initFrame, frame)
 
@@ -140,10 +141,11 @@ class CVEDITOR_DEPTH(CVEditor):
             (x,y,w,h) = cv2.boundingRect(maxContour)
             # Ensure that the contour is somewhat large, as it should be a person, not noise
             if w > 25 and h > 25:
-                x_Cent, y_Cent = self.__GetContourMidPoint(x,y,w,h, aDisplayFrame)
+                x_Cent, y_Cent = self.__GetContourMidPoint(x,y,w,h)
                 # Draw the rectangle around the largest contour
-                cv2.rectangle(aDisplayFrame, (x,y), (x+w, y+h), (0,255,0),3)
-                cv2.circle(aDisplayFrame, (x_Cent,y_Cent), 10, (0,0,255), -1)
+                if aDisplayFrame is not None:
+                    cv2.rectangle(aDisplayFrame, (x,y), (x+w, y+h), (0,255,0),3)
+                    cv2.circle(aDisplayFrame, (x_Cent,y_Cent), 10, (0,0,255), -1)
                 # Return Coordinates
                 return x_Cent, y_Cent, w, h
 
