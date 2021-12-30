@@ -107,7 +107,7 @@ class GAITFRAME(gait.GAIT):
         distance_Curr = None
         x_Curr_Cent, y_Curr_Cent = None, None
         try: 
-            x_Curr_Cent, y_Curr_Cent, w_Curr, h_Curr = self._OpenCVDepthHandler.getObjectMidPoint(self._InitFrame, self.currFrame)
+            x_Curr_Cent, y_Curr_Cent, w_Curr, h_Curr = self._OpenCVDepthHandler.getObjectMidPoint(self._InitFrame, self.currFrame, self.displayFrame)
         except Exception: 
             self._programLog.output(3,str(traceback.format_exc()))
             exit(-1)
