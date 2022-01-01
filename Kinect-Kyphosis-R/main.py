@@ -20,6 +20,7 @@ from Resources.mousePts import MOUSE_PTS
 _ColorPallete = [(255,0,0), (0,255,0), (0,0,255)]
 
 # First Lets Take Care of Camera Params 
+# These are parameters that are needed to get real world points in mm 
 class CamParam:
     def __init__(self): 
         self.focal_X, self.focal_Y = None, None 
@@ -44,12 +45,11 @@ class CamParam:
         
         return True 
 
-
     def getIntrinsics(self) -> tuple: 
         return float(self.focal_X), float(self.focal_Y), float(self.principal_X), float(self.principal_Y)
     
 
-
+# The main class of the kyphosis program 
 class Kyphosis: 
     def __init__(self): 
         # Kinect Setup Steps: 
@@ -74,7 +74,6 @@ class Kyphosis:
 
         # Frames Used in Program 
         self.frameToDisplay, self.frameSave, self.frame, self.frameData = None, None, None, None 
-        self._PauseFrame = None 
         self.saveAnImage, self.saveAnImgWindowName = False, "Kinect V2 Saved Image" 
 
         # Program Flags 
@@ -132,7 +131,7 @@ class Kyphosis:
             self.frameToDisplay, self.frame = self._OpenCVDepthHandler.convtImg(self._KinectDevice.get_last_depth_frame())
             self.frameData = self._KinectDevice._depth_frame_data
             self._OpenCVDepthHandler.setDisplayFrame(self.frameToDisplay)
-            self.frameSave = self.frameToDisplay 
+            self.frameSave = np.copy(self.frameToDisplay)
         else: 
             self.frame, self.frameData = None, None 
     
@@ -174,14 +173,13 @@ class Kyphosis:
         if len(self.spinalLandmarksArr) == self._ReqPts: 
             self._AllowAnalysis = True 
             self._Pause = True 
-            self._PauseFrame = self.frameToDisplay
         
 
     # Now Lets Handle the CV window Keypress Events 
     def __openCVKeyPressEvents(self): 
         
-        
         keypress = cv2.waitKey(1) & 0xFF
+
         if keypress == 27: # press 'esc' to reset the program at any time
             self.reset(clearSpinalArr=True)
         elif keypress == ord(' '): 
@@ -193,16 +191,30 @@ class Kyphosis:
         elif keypress == ord('s'): 
             self._imgSave()
         elif keypress == ord('q'):
-            self._Is_Done = True 
-            cv2.destroyAllWindows()
-            if len(self.kyphosisIndexArr) > 0: 
-                self._PatientLog.output(3, f"\n\nKyphosis Indexes Calculated: {self.kyphosisIndexArr}")
-                self._PatientLog.output(3, f"\nAverage Kyphosis Index: {average(self.kyphosisIndexArr)}")
+            self.programClose()
+            
         elif keypress == ord('p'):
             if not self._Pause:
                 self._Pause = True
             else:
                 self._Pause = False 
+
+    # End of Program Cleanup 
+    def programClose(self): 
+        
+        self._Is_Done = True 
+
+        cv2.destroyAllWindows()
+
+        if len(self.kyphosisIndexArr) > 0: 
+            self._PatientLog.output(3, f"\n\nKyphosis Indexes Calculated: {self.kyphosisIndexArr}")
+            self._PatientLog.output(3, f"\nAverage Kyphosis Index: {average(self.kyphosisIndexArr)}")
+        
+        self._ProgramLog.output(2, "\nProgram Run Complete, Exit Success")
+
+        self._PatientLog.closeFile()
+        self._ProgramLog.closeFile()
+
 
     # Handle the cv window events 
     def handleOpenCVEvents(self): 
@@ -216,16 +228,19 @@ class Kyphosis:
             os.mkdir(os.path.join(self._ProgramPath, "KyphosisImages"))
             self._ProgramLog.output(2, "KyphosisImages Folder Generated\n")
 
+        self.frameSave = self.displayPoints(self.frameSave) 
+    
+
         if self.saveAnImage is False:
             # Create the File Name
-            fileName = f"img-{self._CurrentTime}"
+            fileName = f"img-{self._CurrentTime}.png"
             fileName = os.path.join(os.path.join(self._ProgramPath, "KyphosisImages"), fileName)
             # Save the image
-            cv2.imwrite(fileName, f"{self.frameToDisplay}.png")
+            self._OpenCVDepthHandler.saveImg(fileName, self.frameSave)
             self.saveAnImage = True 
             # Now Display It 
             cv2.namedWindow(self.saveAnImgWindowName)
-            cv2.imshow(self.saveAnImgWindowName, fileName)
+            cv2.imshow(self.saveAnImgWindowName, cv2.imread(fileName))
         
         elif self.saveAnImage is True: 
             cv2.destroyWindow(self.saveAnImgWindowName)
@@ -242,6 +257,7 @@ class Kyphosis:
         self._OpenCVDepthHandler.resetList() 
         self._RunCalculations, self._AllowCalculations, self._CalculationCompleted = False, False, False
         self._Pause = False
+
 
 
     # Calculation Functions 
@@ -361,16 +377,18 @@ class Kyphosis:
         self._ProgramRunTimes += 1 
 
         # Unpause the Program
-        self._Pause = False
-        self._PatientLog.output(3, f"\nKyphosis Index of Program Run: {self._ProgramRunTimes} was: {self.kyphosisIndexValue}\n")
+        self._Pause, self._CalculationCompleted = False, True
+        self._PatientLog.output(3, f"\nProgram Run: {self._ProgramRunTimes}\nKyphosis Index Was: {self.kyphosisIndexValue}\n")
 
 
     def messageDisplay(self, img, text) -> np.ndarray: 
-         return self._OpenCVDepthHandler.displayAMessageToCV(img, text, (0,0), (500, 50), (25,25))
+         return self._OpenCVDepthHandler.displayAMessageToCV(img, text, (0,0), (self._Width, 50), (0,25))
          
     def displayPoints(self, img): 
         for index, spinePts in enumerate(self.spinalLandmarksArr): 
-                return self._OpenCVDepthHandler.drawPoints(spinePts.getXY(), color=_ColorPallete[index%len(_ColorPallete)])
+                img = self._OpenCVDepthHandler.drawPoints(img, spinePts.getXY(), color=_ColorPallete[index%len(_ColorPallete)])
+        
+        return img
 
 
     def handleImgDisplay(self): 
@@ -379,25 +397,19 @@ class Kyphosis:
             return 
         
         #imgTemp = self.displayPoints(self.frameToDisplay)
-        
-        for index, spinePts in enumerate(self.spinalLandmarksArr): 
-            self._OpenCVDepthHandler.drawPoints(spinePts.getXY(), _ColorPallete[index%len(_ColorPallete)])
+        self.frameToDisplay = self.displayPoints(self.frameToDisplay)
 
+        
         if not self._Pause:
-            self.frameToDisplay = self.displayPoints(self.frameToDisplay)
-            self.frameToDisplay = self._OpenCVDepthHandler.drawCoordinates("Coordinates: ")
-            self._OpenCVDepthHandler.displayFrame(self.frameToDisplay)
-            return 
+            self.frameToDisplay = self._OpenCVDepthHandler.drawCoordinates(self.frameToDisplay,"Coordinates: ")
         
-        elif self._AllowAnalysis and not self._AllowCalculations: 
-            self._PauseFrame = self.displayPoints(self._PauseFrame)
-            self._PauseFrame = self.messageDisplay(self._PauseFrame, "Press \"b\" to analyze Thoracic Kyphosis")
+        elif self._AllowAnalysis and not self._CalculationCompleted and self._Pause: 
+            self.frameToDisplay = self.messageDisplay(self.frameToDisplay, "Press \"b\" to analyze Thoracic Kyphosis")
         
-        elif self._AllowAnalysis and self._AllowCalculations:
-            self._PauseFrame = self.displayPoints(self._PauseFrame)
-            self._PauseFrame = self.messageDisplay(self._PauseFrame, "\"spacebar\" to continue, or Press \"esc\" to RESET all points AND continue")
+        elif self._AllowAnalysis and self._CalculationCompleted and self._Pause:
+            self.frameToDisplay = self.messageDisplay(self.frameToDisplay, "Press \"spacebar\" to continue, or \"esc\" to CLEAR and continue")
         
-        self._OpenCVDepthHandler.displayFrame(self._PauseFrame)
+        self._OpenCVDepthHandler.displayFrame(self.frameToDisplay)
 
 
     def runtime(self):
@@ -415,12 +427,14 @@ class Kyphosis:
             if not self._IntrinsicsGathered: 
                 self.gatherIntrinsics()
             elif self._AllowAnalysis and self._RunCalculations: 
-                print("Calc Ran")
                 self.captureDepthData()
                 self.doCalculations()
+                self._ProgramLog.output(3, "Calculation Finished!")
 
             # Now Display The Image 
             self.handleImgDisplay()
+
+    
 
 
             

@@ -1,24 +1,7 @@
 
 ----------------------------------------------------
-Program running: 12-31-2021, 22:55:59
+Program running: 01-01-2022, 01:17:59
 ----------------------------------------------------
-Intrinsics Not Valid
-Intrinsics Not Valid
-Intrinsics Not Valid
-Intrinsics Not Valid
-Intrinsics Not Valid
-Intrinsics Not Valid
-Intrinsics Not Valid
-Intrinsics Not Valid
-Intrinsics Not Valid
-Intrinsics Not Valid
-Intrinsics Not Valid
-Intrinsics Not Valid
-Intrinsics Not Valid
-Intrinsics Not Valid
-Intrinsics Not Valid
-Intrinsics Not Valid
-Intrinsics Not Valid
 Intrinsics Not Valid
 Intrinsics Not Valid
 Intrinsics Not Valid

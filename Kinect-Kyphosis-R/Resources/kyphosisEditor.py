@@ -19,6 +19,7 @@ class ptsStruct:
 # 2. Save and Return the Coordinates of Mouse Presses on Window
 # 3. Draw Circle To CV Window 
 # 
+
 class KyphosisImg(iEdit.CVEDITOR_DEPTH): 
     def __init__(self, height, width, windowName): 
         super(KyphosisImg, self).__init__(height, width, windowName)
@@ -33,23 +34,27 @@ class KyphosisImg(iEdit.CVEDITOR_DEPTH):
     # Set the Display Frame 
     def setDisplayFrame(self, aDisplayFrame): 
         self.aDisplayFrame = aDisplayFrame
+     
+    def saveImg(self,filName,imSave): 
+        super().saveImage(filName, imSave)
 
     def getDepth(self, frameData, x, y): 
         return frameData[(y*self._Width) + x]
 
     # Draw Points to Display
-    def drawPoints(self,xyTuple, color=None):
+    def drawPoints(self, img, xyTuple, color=None):
         if color == None: 
             color = [0,0,255]
-        return cv2.circle(self.aDisplayFrame, xyTuple, 5, color, -1) 
+        return cv2.circle(img, xyTuple, 5, color, -1) 
 
     # Draw Points to Display
-    def drawCoordinates(self, text): 
-        coord1X, coord2X = 0,200
-        coord1Y, coord2Y = 0,58
-        self.aDisplayFrame = cv2.rectangle(self.aDisplayFrame, (coord1X, coord1Y), (coord2X,coord2Y), (0,0,0), -1)
-        self.aDisplayFrame = cv2.putText(self.aDisplayFrame, text, (25,25), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,255,0), 2)
-        return self.aDisplayFrame
+    def drawCoordinates(self,img, text): 
+        coord1X, coord2X = 0,self._Width
+        coord1Y, coord2Y = 0,50
+        text=f"{text} {self.displayX, self.displayY}"
+        img = cv2.rectangle(img, (coord1X, coord1Y), (coord2X,coord2Y), (0,0,0), -1)
+        img = cv2.putText(img, text, (0,25), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,255,0), 2)
+        return img
 
    
     # Handle Mouse Events 
@@ -64,8 +69,9 @@ class KyphosisImg(iEdit.CVEDITOR_DEPTH):
                 self.ix, self.iy = x, y
                 self.__push()
                 self.ix, self.iy = None, None 
-            else: 
-                self.displayX, self.displayY = x,y 
+        else: 
+            self.displayX, self.displayY = x,y
+            
     
             
     # Save the Pressed x and y save to list 

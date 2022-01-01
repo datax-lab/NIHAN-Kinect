@@ -1,7 +1,11 @@
 
 ----------------------------------------------------
-Program running: 12-31-2021, 22:48:28
+Program running: 01-01-2022, 01:28:26
 ----------------------------------------------------
+Intrinsics Not Valid
+Intrinsics Not Valid
+Intrinsics Not Valid
+Intrinsics Not Valid
 Intrinsics Not Valid
 Intrinsics Not Valid
 Intrinsics Not Valid
