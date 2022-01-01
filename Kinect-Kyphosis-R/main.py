@@ -25,17 +25,18 @@ class CamParam:
         self.focal_X, self.focal_Y = None, None 
         self.principal_X, self.principal_Y = None, None 
     
+    # Just check one to see if it is valid
     def __areIntrinsicsValid(self, intrinsics_Matrix): 
-        for value in intrinsics_Matrix: 
-            if value == 0 or (value is None): 
-                return False 
+        if intrinsics_Matrix.FocalLengthX == 0:
+            return False
         
         return True
 
     # Will check if the intrinsics are valid, since the its possible the kinect may not connect properly 
     def setIntrinsics(self, intrinsics_Matrix) -> bool: 
         if not self.__areIntrinsicsValid(intrinsics_Matrix):
-            return False  
+            return False 
+
         self.focal_X = intrinsics_Matrix.FocalLengthX
         self.focal_Y = intrinsics_Matrix.FocalLengthY
         self.principal_X = intrinsics_Matrix.PrincipalPointX
@@ -130,6 +131,7 @@ class Kyphosis:
         if self._KinectDevice.has_new_depth_frame(): 
             self.frameToDisplay, self.frame = self._OpenCVDepthHandler.convtImg(self._KinectDevice.get_last_depth_frame())
             self.frameData = self._KinectDevice._depth_frame_data
+            self._OpenCVDepthHandler.setDisplayFrame(self.frameToDisplay)
             self.frameSave = self.frameToDisplay 
         else: 
             self.frame, self.frameData = None, None 
@@ -172,7 +174,7 @@ class Kyphosis:
         if len(self.spinalLandmarksArr) == self._ReqPts: 
             self._AllowAnalysis = True 
             self._Pause = True 
-            self._PauseFrame = self.frameSave
+            self._PauseFrame = self.frameToDisplay
         
 
     # Now Lets Handle the CV window Keypress Events 
@@ -182,7 +184,7 @@ class Kyphosis:
         keypress = cv2.waitKey(1) & 0xFF
         if keypress == 27: # press 'esc' to reset the program at any time
             self.reset(clearSpinalArr=True)
-        elif keypress == ' ': 
+        elif keypress == ord(' '): 
             self.reset(clearSpinalArr=False)
         elif keypress == ord('b') and self._AllowAnalysis: 
             # Allow For Calculations 
@@ -237,7 +239,7 @@ class Kyphosis:
             self.spinalLandmarksArr = [] 
 
         self.id = 1 
-        self._OpenCVDepthHandler.resetWindow() 
+        self._OpenCVDepthHandler.resetList() 
         self._RunCalculations, self._AllowCalculations, self._CalculationCompleted = False, False, False
         self._Pause = False
 
@@ -266,30 +268,30 @@ class Kyphosis:
 
     def _convtXYToDistance(self, ptIndex) -> tuple: 
         
-        depthVal = self.spinalLandmarks[ptIndex].getAvgDistance()
-        pointX, pointY = self.spinalLandmarks[ptIndex].getXY()
-        distanceX = ((pointX - self._CAM_SETS.principal_x) * depthVal)/self._CAM_SETS.focal_x
-        distanceY = ((pointY - self._CAM_SETS.principal_y) * depthVal)/self._CAM_SETS.focal_y 
+        depthVal = self.spinalLandmarksArr[ptIndex].getAvgDistance()
+        pointX, pointY = self.spinalLandmarksArr[ptIndex].getXY()
+        distanceX = ((pointX - self._CAM_SETS.principal_X) * depthVal)/self._CAM_SETS.focal_X
+        distanceY = ((pointY - self._CAM_SETS.principal_Y) * depthVal)/self._CAM_SETS.focal_Y 
         
         return float(distanceX),float(distanceY), float(depthVal) # Will return as mm distances
     
     # Convert every x,y to distance in mm
     def convt_XY_Pts_To_Distance(self): 
-        for elements in self.spinalLandmarks: 
+        for elements in self.spinalLandmarksArr: 
             if elements.getAvgDistance() == None: 
                 self._ProgramLog.output(3, "Error Average Distances Must Be Calculated First!")
                 exit(-1)
         
         # Set all the real distance values of each x,y coordinate
-        for i in range(len(self.spinalLandmarks)): 
+        for i in range(len(self.spinalLandmarksArr)): 
             distanceX, distanceY, distanceZ = self._convtXYToDistance(i)
-            self.spinalLandmarks[i].set_Real_Distances(distanceX, distanceY)
+            self.spinalLandmarksArr[i].set_Real_Distances(distanceX, distanceY)
 
 
     # Obtain the distance between two points of the spine
     def distanceBetweenPoints(self, index1, index2) -> float:
-        point1x,point1y = self.spinalLandmarks[index1].getRealDistances()
-        point2x,point2y = self.spinalLandmarks[index2].getRealDistances()
+        point1x,point1y = self.spinalLandmarksArr[index1].getRealDistances()
+        point2x,point2y = self.spinalLandmarksArr[index2].getRealDistances()
 
         #Since we're looking for height, we return the y-distances, should be positive values only
         distanceY =  point2y-point1y
@@ -306,17 +308,17 @@ class Kyphosis:
     # move down the y-axis to find the pixel with the furthest depth
     # Will return the c7x and then the y coordinate furthest away
     def getDeepest(self) -> tuple: 
-        c7x, c7y = self.spinalLandmarks[0].getXY()
-        t12x,t12y = self.spinalLandmarks[1].getXY()
+        c7x, c7y = self.spinalLandmarksArr[0].getXY()
+        t12x,t12y = self.spinalLandmarksArr[1].getXY()
 
-        c7z = self.spinalLandmarks[0].getAvgDistance()
+        c7z = self.spinalLandmarksArr[0].getAvgDistance()
         largestDiff, largestDiffY = 0,0
 
         # Get most recent frame data
         # Create a frame reader object
         #frameData=self._KinectDevice._depth_frame_data
         for i in range(c7y+1, t12y-1): 
-            depth = self.calcDepth(self.frameData, c7x, i)
+            depth = self._OpenCVDepthHandler.getDepth(self.frameData, c7x, i)
             self._PatientLog.output(2, f"X,Y Coordinate: {c7x, i} Depth: {depth}")
             depthDiff = c7z-depth
             if depthDiff > largestDiff: 
@@ -344,11 +346,11 @@ class Kyphosis:
     
 
     def doCalculations(self): 
-        if not self._AllowCalculations or not self._AllowAnalysis:
+        if not self._AllowAnalysis or not self._RunCalculations:
             return 
 
         # Disallow any repressing of calculate button at this time 
-        self._AllowCalculations, self._AllowAnalysis = False, False
+        self._AllowAnalysis, self._RunCalculations = False, False
         # Convert To Real Space
         self.convt_XY_Pts_To_Distance()
         # Calculate Kyphosis Index 
@@ -360,28 +362,39 @@ class Kyphosis:
 
         # Unpause the Program
         self._Pause = False
+        self._PatientLog.output(3, f"\nKyphosis Index of Program Run: {self._ProgramRunTimes} was: {self.kyphosisIndexValue}\n")
 
 
     def messageDisplay(self, img, text) -> np.ndarray: 
          return self._OpenCVDepthHandler.displayAMessageToCV(img, text, (0,0), (500, 50), (25,25))
          
+    def displayPoints(self, img): 
+        for index, spinePts in enumerate(self.spinalLandmarksArr): 
+                return self._OpenCVDepthHandler.drawPoints(spinePts.getXY(), color=_ColorPallete[index%len(_ColorPallete)])
+
 
     def handleImgDisplay(self): 
         
         if self.frameToDisplay is None: 
             return 
         
+        #imgTemp = self.displayPoints(self.frameToDisplay)
+        
+        for index, spinePts in enumerate(self.spinalLandmarksArr): 
+            self._OpenCVDepthHandler.drawPoints(spinePts.getXY(), _ColorPallete[index%len(_ColorPallete)])
+
         if not self._Pause:
-            for index, spinePts in enumerate(self.spinalLandmarksArr): 
-                self.frameToDisplay = self._OpenCVDepthHandler.drawPoints(spinePts.getXY(), color=_ColorPallete[index%len(_ColorPallete)])
+            self.frameToDisplay = self.displayPoints(self.frameToDisplay)
             self.frameToDisplay = self._OpenCVDepthHandler.drawCoordinates("Coordinates: ")
             self._OpenCVDepthHandler.displayFrame(self.frameToDisplay)
             return 
         
         elif self._AllowAnalysis and not self._AllowCalculations: 
+            self._PauseFrame = self.displayPoints(self._PauseFrame)
             self._PauseFrame = self.messageDisplay(self._PauseFrame, "Press \"b\" to analyze Thoracic Kyphosis")
         
         elif self._AllowAnalysis and self._AllowCalculations:
+            self._PauseFrame = self.displayPoints(self._PauseFrame)
             self._PauseFrame = self.messageDisplay(self._PauseFrame, "\"spacebar\" to continue, or Press \"esc\" to RESET all points AND continue")
         
         self._OpenCVDepthHandler.displayFrame(self._PauseFrame)
@@ -394,14 +407,15 @@ class Kyphosis:
             # Handle User Input 
             self.handleOpenCVEvents()
 
-            # Capture Depth Frames if program is not paused
-            if not self._Pause:   
+            # Capture Depth Frames if program is not paused  
+            if not self._Pause:
                 self.getNewFrames()
 
             # Now Gather Intrinsics if they weren't already 
             if not self._IntrinsicsGathered: 
                 self.gatherIntrinsics()
-            elif self._AllowAnalysis and self._AllowCalculations: 
+            elif self._AllowAnalysis and self._RunCalculations: 
+                print("Calc Ran")
                 self.captureDepthData()
                 self.doCalculations()
 

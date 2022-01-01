@@ -62,6 +62,7 @@ class CVEditor:
         cv2.imshow("2D Image", self._2DFrame)
         cv2.imshow("3D Image", self._LayeredFrame)
 
+    
     def displayFrame(self, frame):
         cv2.namedWindow(self._WindowName)
         cv2.imshow(self._WindowName, frame)

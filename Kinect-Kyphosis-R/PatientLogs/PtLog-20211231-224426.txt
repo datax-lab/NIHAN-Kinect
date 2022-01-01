@@ -1,0 +1,55 @@
+
+----------------------------------------------------
+Program running: 12-31-2021, 22:44:26
+----------------------------------------------------
+A Point Was Placed at X: 232 Y: 317
+A Point Was Placed at X: 232 Y: 358
+A Point Was Placed at X: 232 Y: 395
+X,Y Coordinate: (232, 318) Depth: 6995
+X,Y Coordinate: (232, 319) Depth: 6990
+X,Y Coordinate: (232, 320) Depth: 6990
+X,Y Coordinate: (232, 321) Depth: 6986
+X,Y Coordinate: (232, 322) Depth: 6981
+X,Y Coordinate: (232, 323) Depth: 6974
+X,Y Coordinate: (232, 324) Depth: 6970
+X,Y Coordinate: (232, 325) Depth: 6963
+X,Y Coordinate: (232, 326) Depth: 6958
+X,Y Coordinate: (232, 327) Depth: 6950
+X,Y Coordinate: (232, 328) Depth: 6943
+X,Y Coordinate: (232, 329) Depth: 6933
+X,Y Coordinate: (232, 330) Depth: 6925
+X,Y Coordinate: (232, 331) Depth: 6919
+X,Y Coordinate: (232, 332) Depth: 6914
+X,Y Coordinate: (232, 333) Depth: 6910
+X,Y Coordinate: (232, 334) Depth: 6911
+X,Y Coordinate: (232, 335) Depth: 6906
+X,Y Coordinate: (232, 336) Depth: 6899
+X,Y Coordinate: (232, 337) Depth: 6890
+X,Y Coordinate: (232, 338) Depth: 6888
+X,Y Coordinate: (232, 339) Depth: 6880
+X,Y Coordinate: (232, 340) Depth: 6874
+X,Y Coordinate: (232, 341) Depth: 6865
+X,Y Coordinate: (232, 342) Depth: 6863
+X,Y Coordinate: (232, 343) Depth: 6858
+X,Y Coordinate: (232, 344) Depth: 6858
+X,Y Coordinate: (232, 345) Depth: 6856
+X,Y Coordinate: (232, 346) Depth: 6847
+X,Y Coordinate: (232, 347) Depth: 6839
+X,Y Coordinate: (232, 348) Depth: 6830
+X,Y Coordinate: (232, 349) Depth: 6825
+X,Y Coordinate: (232, 350) Depth: 6817
+X,Y Coordinate: (232, 351) Depth: 6814
+X,Y Coordinate: (232, 352) Depth: 6811
+X,Y Coordinate: (232, 353) Depth: 6808
+X,Y Coordinate: (232, 354) Depth: 6803
+X,Y Coordinate: (232, 355) Depth: 6802
+X,Y Coordinate: (232, 356) Depth: 6797
+Largest Depth Point Difference 356
+
+Kyphosis Index of Program Run: 1 was: 29.610587945110144
+
+
+
+Kyphosis Indexes Calculated: [29.610587945110144]
+
+Average Kyphosis Index: 29.610587945110144
