@@ -19,8 +19,14 @@ class MOUSE_PTS:
         self._y_RealDistance = distanceY
 
     # Save avg distance 
-    def setAvgDistance(self, avgDistance): 
-        self._avgDistance2 = avgDistance
+    def setAvgDistance(self) -> float: 
+        #self._avgDistance2 = avgDistance
+        sum = 0
+        for depths in self._depthValArr: 
+            sum += depths
+        
+        self._avgDistance2 = (sum/len(self._depthValArr))
+
 
     # Getter Functions
     def get_Pt_ID(self) -> int:

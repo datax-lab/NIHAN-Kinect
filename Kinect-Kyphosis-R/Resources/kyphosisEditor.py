@@ -35,10 +35,10 @@ class KyphosisImg(iEdit.CVEDITOR_DEPTH):
         self.aDisplayFrame = aDisplayFrame
 
     # Draw Points to Display
-    def drawPoints(self, x, y, color=None):
+    def drawPoints(self, xyTuple, color=None):
         if color == None: 
             color = [0,0,255]
-        return cv2.circle(self.aDisplayFrame, (x,y),5, color, -1) 
+        return cv2.circle(self.aDisplayFrame, xyTuple, 5, color, -1) 
 
     # Draw Points to Display
     def drawCoordinates(self, text): 
@@ -48,7 +48,7 @@ class KyphosisImg(iEdit.CVEDITOR_DEPTH):
         self.aDisplayFrame = cv2.putText(self.displayFrame, text, (25,25), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,255,0), 2)
         return self.aDisplayFrame
 
-
+   
     # Handle Mouse Events 
     def handleMouseEvents(self): 
         cv2.namedWindow(self._WindowName)
