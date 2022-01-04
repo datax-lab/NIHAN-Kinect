@@ -1,0 +1,79 @@
+
+----------------------------------------------------
+Program running: 12-26-2021, 22:35:05
+----------------------------------------------------
+
+----------------------------------------------------
+Program running: 12-26-2021, 22:35:05
+----------------------------------------------------
+
+Current Time: 0.5094051361083984
+1. Current Distance 985.2 Previous Distance 979.8 Calculated Speed: 0.0027
+
+Current Time: 1.003890037536621
+2. Current Distance 1020.2 Previous Distance 985.2 Calculated Speed: 0.0175
+
+Current Time: 1.4973101615905762
+3. Current Distance 1132.2 Previous Distance 1020.2 Calculated Speed: 0.056
+
+Current Time: 2.0054304599761963
+4. Current Distance 1260.2 Previous Distance 1132.2 Calculated Speed: 0.064
+
+Current Time: 2.5007593631744385
+5. Current Distance 1294.2 Previous Distance 1260.2 Calculated Speed: 0.017
+---------------------------------------------------------------------------------
+Patient Entered Measrument Zone at Frame: 76 and time: 2.564242124557495
+---------------------------------------------------------------------------------
+
+
+Current Time: 2.9949939250946045
+6. Current Distance 1315.2 Previous Distance 1294.2 Calculated Speed: 0.0105
+
+Current Time: 3.4883413314819336
+7. Current Distance 1599.2 Previous Distance 1315.2 Calculated Speed: 0.142
+
+Current Time: 3.99690580368042
+8. Current Distance 1946.2 Previous Distance 1599.2 Calculated Speed: 0.1735
+
+Current Time: 4.497098207473755
+9. Current Distance 2360.2 Previous Distance 1946.2 Calculated Speed: 0.207
+
+Current Time: 4.992999315261841
+10. Current Distance 2666.2 Previous Distance 2360.2 Calculated Speed: 0.153
+
+Current Time: 5.501658916473389
+11. Current Distance 3007.2 Previous Distance 2666.2 Calculated Speed: 0.1705
+
+Current Time: 5.996079206466675
+12. Current Distance 3355.2 Previous Distance 3007.2 Calculated Speed: 0.174
+
+Current Time: 6.494541168212891
+13. Current Distance 3692.2 Previous Distance 3355.2 Calculated Speed: 0.1685
+
+Current Time: 6.9900500774383545
+14. Current Distance 4002.2 Previous Distance 3692.2 Calculated Speed: 0.155
+
+Current Time: 7.487576484680176
+15. Current Distance 4314.2 Previous Distance 4002.2 Calculated Speed: 0.156
+
+Current Time: 7.997920989990234
+16. Current Distance 4627.2 Previous Distance 4314.2 Calculated Speed: 0.1565
+
+Current Time: 8.493250608444214
+17. Current Distance 4822.2 Previous Distance 4627.2 Calculated Speed: 0.0975
+
+Current Time: 8.98984146118164
+18. Current Distance 5017.2 Previous Distance 4822.2 Calculated Speed: 0.0975
+
+
+------------------------------------
+          Statistics:              
+------------------------------------
+Starting Distance: 979.8
+Program Time Elapsed: 9.12712049484253
+Elapsed Time: 6.559877395629883
+Calculated Gait Speed: 0.6097674939267547 m/s
+
+----------------------------------------------------
+Program finished: 12-26-2021, 22:35:42
+----------------------------------------------------

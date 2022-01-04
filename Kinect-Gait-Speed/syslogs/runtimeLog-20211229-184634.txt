@@ -1,0 +1,9 @@
+
+----------------------------------------------------
+Program running: 12-29-2021, 18:46:34
+----------------------------------------------------
+Traceback (most recent call last):
+  File "c:\Users\Cedric Men\Desktop\Kinect-Gait-Speed\main2.py", line 110, in calculateDistanceDiff
+    x_Curr_Cent, y_Curr_Cent, w_Curr, h_Curr = self._OpenCVDepthHandler.getObjectMidPoint(self._InitFrame, self.currFrame)
+TypeError: getObjectMidPoint() missing 1 required positional argument: 'aDisplayFrame'
+

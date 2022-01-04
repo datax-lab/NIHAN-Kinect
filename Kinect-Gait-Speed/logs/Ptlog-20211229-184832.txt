@@ -1,0 +1,65 @@
+
+----------------------------------------------------
+Program running: 12-29-2021, 18:48:32
+----------------------------------------------------
+
+----------------------------------------------------
+Program running: 12-29-2021, 18:48:32
+----------------------------------------------------
+
+Current Time: 0.5068700313568115
+1. Current Distance 999.0 Previous Distance 985.0 Calculated Speed: 0.007
+
+Current Time: 1.0140900611877441
+2. Current Distance 1063.0 Previous Distance 999.0 Calculated Speed: 0.032
+
+Current Time: 1.5170700550079346
+3. Current Distance 1080.0 Previous Distance 1063.0 Calculated Speed: 0.0085
+
+Current Time: 2.0098369121551514
+4. Current Distance 1393.0 Previous Distance 1080.0 Calculated Speed: 0.1565
+
+Current Time: 2.497429370880127
+5. Current Distance 1398.0 Previous Distance 1393.0 Calculated Speed: 0.0025
+
+---------------------------------------------------------------------------------
+Patient Entered Measrument Zone at Frame: 80 and time: 2.679898738861084
+---------------------------------------------------------------------------------
+
+
+Current Time: 3.0093767642974854
+6. Current Distance 1399.0 Previous Distance 1398.0 Calculated Speed: 0.0005
+
+Current Time: 3.495856761932373
+7. Current Distance 1692.0 Previous Distance 1399.0 Calculated Speed: 0.1465
+
+Current Time: 3.9977896213531494
+8. Current Distance 2089.0 Previous Distance 1692.0 Calculated Speed: 0.1985
+
+Current Time: 4.491166114807129
+9. Current Distance 2571.0 Previous Distance 2089.0 Calculated Speed: 0.241
+
+Current Time: 4.980771064758301
+10. Current Distance 2950.0 Previous Distance 2571.0 Calculated Speed: 0.1895
+
+Current Time: 5.498841047286987
+11. Current Distance 3362.0 Previous Distance 2950.0 Calculated Speed: 0.206
+
+Current Time: 5.991300821304321
+12. Current Distance 3755.0 Previous Distance 3362.0 Calculated Speed: 0.1965
+
+Current Time: 6.480343580245972
+13. Current Distance 4176.0 Previous Distance 3755.0 Calculated Speed: 0.2105
+
+
+------------------------------------
+          Statistics:              
+------------------------------------
+Starting Distance: 985.0
+Program Time Elapsed: 6.680575847625732
+Elapsed Time: 3.996666193008423
+Calculated Gait Speed: 1.0008341469691437 m/s
+
+----------------------------------------------------
+Program finished: 12-29-2021, 18:48:58
+----------------------------------------------------
