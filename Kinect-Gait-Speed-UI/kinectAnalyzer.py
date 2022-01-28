@@ -118,10 +118,7 @@ class programSelectorUI(QDialog):
     def connectButtons(self): 
         self._Window.pushButton.clicked.connect(self.gaitProgram)
         self._Window.pushButton_2.clicked.connect(self.kyphosisProgram)
-        self._Window.pushButton_3.clicked.connect(self.viewRecordsProgram)
-
-        # Since The Last Button Hasn't been implemented yet, disable for now
-        self._Window.pushButton_3.setDisabled(True)
+     
         
 
     def gaitProgram(self): 
@@ -134,8 +131,6 @@ class programSelectorUI(QDialog):
         self.programSelectionChoice.emit(1)
         self.close()
         
-    def viewRecordsProgram(self):
-        print("View Records Button Pressed!!")
 
  
     

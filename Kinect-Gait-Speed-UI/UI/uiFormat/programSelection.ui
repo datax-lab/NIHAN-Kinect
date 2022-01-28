@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>581</width>
-    <height>177</height>
+    <width>494</width>
+    <height>176</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,7 +18,7 @@
     <rect>
      <x>20</x>
      <y>30</y>
-     <width>541</width>
+     <width>461</width>
      <height>51</height>
     </rect>
    </property>
@@ -40,7 +40,7 @@
   <widget class="QPushButton" name="pushButton">
    <property name="geometry">
     <rect>
-     <x>30</x>
+     <x>50</x>
      <y>100</y>
      <width>141</width>
      <height>51</height>
@@ -58,7 +58,7 @@
   <widget class="QPushButton" name="pushButton_2">
    <property name="geometry">
     <rect>
-     <x>220</x>
+     <x>290</x>
      <y>100</y>
      <width>141</width>
      <height>51</height>
@@ -71,24 +71,6 @@
    </property>
    <property name="text">
     <string>Kyphosis Index</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="pushButton_3">
-   <property name="geometry">
-    <rect>
-     <x>410</x>
-     <y>100</y>
-     <width>141</width>
-     <height>51</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <pointsize>10</pointsize>
-    </font>
-   </property>
-   <property name="text">
-    <string>View Records</string>
    </property>
   </widget>
  </widget>
