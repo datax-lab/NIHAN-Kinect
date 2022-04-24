@@ -176,12 +176,12 @@ class GaitAnalyzer(gait.GAIT):
         
         for y in aDict.values(): 
             iVelocity, distance = y['CurrSpd'], y['CurrDistance']
-            time =  y['CurrTime']
+            time, frameCntr =  y['CurrTime'], y['CurrFrameCnt']
             if keyVal in self.Data_Dict: 
-                self.Data_Dict[keyVal].append({'currVelocity': iVelocity, 'distance_Measure': distance, 'CurrTime': time, 'frame' : self.currFrameCnt,'id' : 'Frame'})
+                self.Data_Dict[keyVal].append({'currVelocity': iVelocity, 'distance_Measure': distance, 'CurrTime': time, 'frame' : frameCntr,'id' : 'Frame'})
             else: 
-                self.Data_Dict.update({keyVal: [{'currVelocity': iVelocity, 'distance_Measure': distance, 'CurrTime': time, 'frame' : self.currFrameCnt ,'id' : 'Frame'}]})
-         
+                self.Data_Dict.update({keyVal: [{'currVelocity': iVelocity, 'distance_Measure': distance, 'CurrTime': time, 'frame' : frameCntr ,'id' : 'Frame'}]})
+           
          
                 
 

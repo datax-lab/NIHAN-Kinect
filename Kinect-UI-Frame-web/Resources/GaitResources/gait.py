@@ -164,36 +164,34 @@ class GAIT(QThread):
         self._DataFrame = pd.DataFrame()
 
     def avgData(self) -> tuple[pd.DataFrame, pd.DataFrame]: 
-        tempDataFrameByFrame, tempDataFrameIV = pd.DataFrame(), pd.DataFrame()  
-        print("Entered")
         
-        print(pd.DataFrame.from_records(self._FrameBFrame_Dict[self._currKey-1]))
-        exit(-1)
+        tempDataFrameByFrame, tempDataFrameIV = pd.DataFrame(), pd.DataFrame()
         for keyValue in self.Data_Dict.keys():   
             # Convert To DataFrame 
             if tempDataFrameByFrame.empty or tempDataFrameIV.empty: 
                 tempDataFrameByFrame = pd.DataFrame.from_dict(self._FrameBFrame_Dict[keyValue])   
                 tempDataFrameIV = pd.DataFrame.from_dict(self._IV_Dict[keyValue])
             else: 
-                tempDataFrameByFrame = tempDataFrameByFrame.append(self._IV_Dict[keyValue])
-                tempDataFrameIV = tempDataFrameIV.append(self._FrameBFrame_Dict[keyValue])
+                tempDataFrameByFrame = tempDataFrameByFrame.append(pd.DataFrame.from_dict(self._IV_Dict[keyValue]))
+                tempDataFrameIV = tempDataFrameIV.append(pd.DataFrame.from_dict(self._FrameBFrame_Dict[keyValue]))
         
-        print(tempDataFrameByFrame)
-        exit(-1)
+        
+        print("\n\n")
+        print(tempDataFrameByFrame, end="\n\n")
+        print(tempDataFrameIV)
+        exit(0)
         newFrameBFrameData = pd.DataFrame()
         # Create A New Data Frame for Frame By Frame
         print(tempDataFrameByFrame['frame'].max())
         for i in range(0, int(tempDataFrameByFrame['frame'].max()) + 5, 5): 
             frameAverage = pd.DataFrame(tempDataFrameByFrame[tempDataFrameByFrame['frame'] == i])
-            if not frameAverage.empty:
-                print(frameAverage)
-                exit(0)
-            if not frameAverage.empty:
-                frameData = pd.DataFrame({"Frame" : [i], "Distance" : [frameAverage['distance_Measure'].mean()], "Velocity" : [frameAverage['currVelocity'].mean()], "Time" : [frameAverage['CurrTime'].mean()]})
-                if newFrameBFrameData.empty: 
-                    newFrameBFrameData = frameData
-                else: 
-                    newFrameBFrameData = newFrameBFrameData.append(frameData)
+           
+            frameData = pd.DataFrame.from_dict({"Frame" : [i], "Distance" : [frameAverage['distance_Measure'].mean()], "Velocity" : [frameAverage['currVelocity'].mean()], "Time" : [frameAverage['CurrTime'].mean()]})
+            
+            if newFrameBFrameData.empty: 
+                newFrameBFrameData = frameData
+            else: 
+                newFrameBFrameData.append(frameData)
                 
         print(newFrameBFrameData)
         exit(0)
@@ -215,6 +213,7 @@ class GAIT(QThread):
         
     # {'Results': [{'Distance': currDistance, 'Time': currentTimeHolder, 'Instant Velocity': currentIVHolder}]}
     def setupAvgGraph(self, title): 
+        return 
         print("setupAvgGraph Selected!!!", flush=True)
         frameData, ivData = self.avgData()
         
