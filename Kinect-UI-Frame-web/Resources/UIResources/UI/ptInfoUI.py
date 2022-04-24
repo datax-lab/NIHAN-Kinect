@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'PtInfoUI.ui'
+# Form implementation generated from reading ui file 'ptInfoUI.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.6
 #
@@ -14,32 +14,16 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
-        Dialog.resize(664, 370)
-        self.label = QtWidgets.QLabel(Dialog)
-        self.label.setGeometry(QtCore.QRect(0, 110, 141, 51))
-        font = QtGui.QFont()
-        font.setPointSize(11)
-        self.label.setFont(font)
-        self.label.setAlignment(QtCore.Qt.AlignCenter)
-        self.label.setObjectName("label")
+        Dialog.resize(652, 269)
         self.label_2 = QtWidgets.QLabel(Dialog)
-        self.label_2.setGeometry(QtCore.QRect(-10, 190, 141, 51))
+        self.label_2.setGeometry(QtCore.QRect(0, 100, 131, 51))
         font = QtGui.QFont()
         font.setPointSize(11)
         self.label_2.setFont(font)
         self.label_2.setAlignment(QtCore.Qt.AlignCenter)
         self.label_2.setObjectName("label_2")
-        self.lineEdit = QtWidgets.QLineEdit(Dialog)
-        self.lineEdit.setGeometry(QtCore.QRect(140, 110, 471, 51))
-        font = QtGui.QFont()
-        font.setPointSize(11)
-        self.lineEdit.setFont(font)
-        self.lineEdit.setText("")
-        self.lineEdit.setAlignment(QtCore.Qt.AlignCenter)
-        self.lineEdit.setClearButtonEnabled(True)
-        self.lineEdit.setObjectName("lineEdit")
         self.lineEdit_2 = QtWidgets.QLineEdit(Dialog)
-        self.lineEdit_2.setGeometry(QtCore.QRect(140, 190, 471, 51))
+        self.lineEdit_2.setGeometry(QtCore.QRect(130, 100, 481, 51))
         font = QtGui.QFont()
         font.setPointSize(11)
         self.lineEdit_2.setFont(font)
@@ -49,13 +33,13 @@ class Ui_Dialog(object):
         self.lineEdit_2.setClearButtonEnabled(True)
         self.lineEdit_2.setObjectName("lineEdit_2")
         self.pushButton_2 = QtWidgets.QPushButton(Dialog)
-        self.pushButton_2.setGeometry(QtCore.QRect(250, 280, 191, 51))
+        self.pushButton_2.setGeometry(QtCore.QRect(260, 190, 191, 51))
         font = QtGui.QFont()
         font.setPointSize(11)
         self.pushButton_2.setFont(font)
         self.pushButton_2.setObjectName("pushButton_2")
         self.label_3 = QtWidgets.QLabel(Dialog)
-        self.label_3.setGeometry(QtCore.QRect(10, 30, 641, 61))
+        self.label_3.setGeometry(QtCore.QRect(100, 20, 521, 61))
         font = QtGui.QFont()
         font.setPointSize(10)
         self.label_3.setFont(font)
@@ -69,9 +53,7 @@ class Ui_Dialog(object):
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
         Dialog.setWindowTitle(_translate("Dialog", "Gait and Kyphosis Analyzer"))
-        self.label.setText(_translate("Dialog", "Patient Name:"))
         self.label_2.setText(_translate("Dialog", "Patient ID:"))
-        self.lineEdit.setPlaceholderText(_translate("Dialog", "Required Field"))
         self.lineEdit_2.setPlaceholderText(_translate("Dialog", "Required Field"))
         self.pushButton_2.setText(_translate("Dialog", "Continue"))
         self.label_3.setText(_translate("Dialog", "Please Enter Patient Details Below:"))

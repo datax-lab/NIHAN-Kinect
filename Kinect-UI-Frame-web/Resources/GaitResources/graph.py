@@ -10,37 +10,46 @@ class Graph:
         self._xData, self._yData = [], []
         self._GraphName, self._xAxisName, self._yAxisName = None, None, None 
         self._GraphStorage, self._graphID = {}, 0
+        
+        self._Titles = ["xValuesF", "yValuesF", "xValuesIV", "yValuesIV"] 
 
 
     def setGraphID(self, id: int): 
         self._graphID = id 
 
 
-    def insertToGraph(self, xyData: tuple[list, list], id: int): 
-        
-        if isinstance(xyData, tuple) and isinstance(id, int):
-            self._GraphStorage.update({id: {"xValues": xyData[0], "yValues": xyData[1]}})
-        else: 
-            print(f"{xyData[0]}\n{xyData[1]}")
-            raise Exception("Invalid Paremeters given for insertXY")
-            exit
-
+    def insertToGraph(self, xyDataF: tuple[list, list], xyDataIV : tuple[list, list], id: int): 
+        self._GraphStorage.update({id: {self._Titles[0] : xyDataF[0], self._Titles[1] : xyDataF[1], self._Titles[2]: xyDataIV[0], self._Titles[3] : xyDataIV[1]}})
+   
 
     def setupLabels(self, graphName, xAxisName, yAxisName): 
         self._GraphName, self._xAxisName, self._yAxisName = graphName, xAxisName, yAxisName
 
+        
 
-    def showGraph(self, showLegendBool=False): 
+    def showGraph(self, id=None, showLegendBool=False): 
         
         # Setup The Graph 
         plt.title(self._GraphName)
         plt.xlabel(self._xAxisName)
         plt.ylabel(self._yAxisName)
-        
-        # Place The Points on The Plot
-        for i, keyVal in enumerate(self._GraphStorage.keys()): 
-            x_Data, y_Data = self._GraphStorage[keyVal]["xValues"], self._GraphStorage[keyVal]["yValues"]
-            plt.plot(x_Data, y_Data, color=_colorSchemes[i%len(_colorSchemes)], label=f"Test {keyVal}", marker='o')
+      
+        if id is not None: 
+            x_Data, y_Data = self._GraphStorage[id][self._Titles[0]], self._GraphStorage[id][self._Titles[1]]
+            plt.plot(x_Data, y_Data, color=_colorSchemes[id%len(_colorSchemes)], label=f"Test {id} - Frame By Frame", marker='o')
+            # IV 
+            x_Data, y_Data = self._GraphStorage[id][self._Titles[2]], self._GraphStorage[id][self._Titles[3]]
+            plt.plot(x_Data, y_Data, color=_colorSchemes[id%len(_colorSchemes)], label=f"Test {id} - Instant Velocity", marker='x')
+        else:
+            # Place The Points on The Plot
+            for i, keyVal in enumerate(self._GraphStorage.keys()): 
+                # Frame By Frame
+                x_Data, y_Data = self._GraphStorage[keyVal][self._Titles[0]], self._GraphStorage[keyVal][self._Titles[1]]
+                plt.plot(x_Data, y_Data, color=_colorSchemes[i%len(_colorSchemes)], label=f"Test {keyVal} - Frame By Frame", marker='o')
+                # IV 
+                x_Data, y_Data = self._GraphStorage[keyVal][self._Titles[2]], self._GraphStorage[keyVal][self._Titles[3]]
+                plt.plot(x_Data, y_Data, color=_colorSchemes[i%len(_colorSchemes)], label=f"Test {keyVal} - Instant Velocity", marker='x')
+            
        
         # Show the Graph
         if showLegendBool:

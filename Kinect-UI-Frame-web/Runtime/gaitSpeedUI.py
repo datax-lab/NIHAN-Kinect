@@ -169,14 +169,11 @@ class controlPanelGait(QDialog):
 
 
     def showAvgGraph(self, booleanVal): 
-        if not booleanVal: 
-            #self.gaitProgram.setupAvgGraph("Average Instant Velocity Gait Graph")
-            #self.gaitProgram.displayAvgGraph()
-            print("Done")
+        self.gaitProgram.displayAvgGraph()
     
     def showAllGraphs(self, booleanVal): 
         if booleanVal: 
-            self.gaitProgram.displayGraph()
+            self.gaitProgram.displayGraph(id=-1)
     
     
     def signalFinishProgram(self): 

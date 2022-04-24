@@ -46,26 +46,26 @@ class mainWindow(QDialog):
     def verifyPt(self): 
         # This is where I would first verify if the pt is in the database, output error message if not
         # use setText to output the Error if a patient was not found in the database and tell to register
-        self._PatientName, self._PatientID = self._Window.lineEdit.text(), self._Window.lineEdit_2.text()
+        self._PatientID = self._Window.lineEdit_2.text()
         # This is where i will check if the fields are not empty, if they are launch pop up, or change the text to output the error 
-        if  self._PatientID == "" or self._PatientName == "":
+        if  self._PatientID == "":
             self._Window.label_3.setStyleSheet("background-color: red; color: white")
             self._Window.label_3.setText("Error, Do Not Leave Any Fields Empty!!!")
-            self._PatientName, self._PatientID = None, None
+            self._PatientName, self._PatientID = "", None
         
         # Now I would continue to the program selector
         self.continueToProgramSelector()
         
 
     def continueToProgramSelector(self): 
-        if self._PatientID is not None and self._PatientName is not None: 
+        if self._PatientID is not None: 
             self.hide()
             self._ProgramSelector.show()
 
 
     def programChoice(self, intSelection): 
-        if self._Window.lineEdit is not None: 
-            self._Name, self._PtId = self._Window.lineEdit.text(), self._Window.lineEdit_2.text()
+        if self._Window.lineEdit_2 is not None: 
+            self._PtId = self._Window.lineEdit_2.text()
             if intSelection == 0: # If the Gait Program Was Chosen 
                 self.runGaitProgram()
             elif intSelection == 1: 

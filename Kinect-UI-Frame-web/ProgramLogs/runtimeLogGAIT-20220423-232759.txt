@@ -1,0 +1,55 @@
+
+----------------------------------------------------
+Program running: 04-23-2022, 23:27:59
+----------------------------------------------------
+Reached Measurement Zone at: 1.600135326385498 sec
+Initial Velocity: 1.2498942852025805
+Quantile 1: 0.9546000000000001 Median: 1.08 Quantile 3: 1.23
+Lower Inner Fence: 0.5415000000000003 Median: 1.08 Upper Inner Fence: 1.6430999999999998
+
+Deletions: [21, 22, 23, 24, 25, 26, 25] 
+
+
+
+1 : {'currVelocity': 0, 'distance_Measure': 0, 'CurrTime': 0, 'id': 'IV'}
+2 : {'currVelocity': 0.9130797688643315, 'distance_Measure': 325.20000000000005, 'CurrTime': 0.30069708824157715, 'id': 'IV'}
+3 : {'currVelocity': 0.9984759703601185, 'distance_Measure': 666.2, 'CurrTime': 0.5926070213317871, 'id': 'IV'}
+4 : {'currVelocity': 0.9640525867474015, 'distance_Measure': 953.2, 'CurrTime': 0.8610866069793701, 'id': 'IV'}
+5 : {'currVelocity': 0.8788211421896004, 'distance_Measure': 1227.1999999999998, 'CurrTime': 1.1529958248138428, 'id': 'IV'}
+6 : {'currVelocity': 0.9402905450995167, 'distance_Measure': 1565.1999999999998, 'CurrTime': 1.4292857646942139, 'id': 'IV'}
+7 : {'currVelocity': 0.9280054539565672, 'distance_Measure': 1923.1999999999998, 'CurrTime': 1.7661051750183105, 'id': 'IV'}
+8 : {'currVelocity': 0.9589438681863003, 'distance_Measure': 2194.2, 'CurrTime': 1.986745834350586, 'id': 'IV'}
+9 : {'currVelocity': 0.9845275909447975, 'distance_Measure': 2515.2, 'CurrTime': 2.2513206005096436, 'id': 'IV'}
+10 : {'currVelocity': 0.9625355857369078, 'distance_Measure': 2784.2, 'CurrTime': 2.5168707370758057, 'id': 'IV'}
+11 : {'currVelocity': 0.9602914442250774, 'distance_Measure': 3107.2, 'CurrTime': 2.811709403991699, 'id': 'IV'}
+12 : {'currVelocity': 1.0103710554558787, 'distance_Measure': 3440.2, 'CurrTime': 3.0440673828125, 'id': 'IV'}
+13 : {'currVelocity': 0.9740004930741417, 'distance_Measure': 3719.2, 'CurrTime': 3.3447625637054443, 'id': 'IV'}
+14 : {'currVelocity': 0.9654465526767302, 'distance_Measure': 4001.2, 'CurrTime': 3.6122658252716064, 'id': 'IV'}
+15 : {'currVelocity': 0.9552000000000003, 'distance_Measure': 159.20000000000005, 'CurrTime': 0.13082361221313477, 'frame': 137, 'id': 'Frame'}
+16 : {'currVelocity': 1.23, 'distance_Measure': 364.20000000000005, 'CurrTime': 0.3309621810913086, 'frame': 137, 'id': 'Frame'}
+17 : {'currVelocity': 1.08, 'distance_Measure': 544.2, 'CurrTime': 0.4949777126312256, 'frame': 137, 'id': 'Frame'}
+18 : {'currVelocity': 1.248, 'distance_Measure': 752.2, 'CurrTime': 0.6619234085083008, 'frame': 137, 'id': 'Frame'}
+19 : {'currVelocity': 1.0200000000000002, 'distance_Measure': 922.2, 'CurrTime': 0.8239874839782715, 'frame': 137, 'id': 'Frame'}
+20 : {'currVelocity': 0.9899999999999988, 'distance_Measure': 1087.1999999999998, 'CurrTime': 0.9899561405181885, 'frame': 137, 'id': 'Frame'}
+21 : {'currVelocity': 0.8400000000000001, 'distance_Measure': 1227.1999999999998, 'CurrTime': 1.1529958248138428, 'frame': 137, 'id': 'Frame'}
+22 : {'currVelocity': 1.356, 'distance_Measure': 1453.1999999999998, 'CurrTime': 1.3199410438537598, 'frame': 137, 'id': 'Frame'}
+23 : {'currVelocity': 1.062, 'distance_Measure': 1630.1999999999998, 'CurrTime': 1.4878625869750977, 'frame': 137, 'id': 'Frame'}
+24 : {'currVelocity': 1.068, 'distance_Measure': 1808.1999999999998, 'CurrTime': 1.6509037017822266, 'frame': 137, 'id': 'Frame'}
+25 : {'currVelocity': 1.4040000000000001, 'distance_Measure': 2042.1999999999998, 'CurrTime': 1.8568992614746094, 'frame': 137, 'id': 'Frame'}
+26 : {'currVelocity': 1.104, 'distance_Measure': 2226.2, 'CurrTime': 2.0209157466888428, 'frame': 137, 'id': 'Frame'}
+27 : {'currVelocity': 1.23, 'distance_Measure': 2431.2, 'CurrTime': 2.1927430629730225, 'frame': 137, 'id': 'Frame'}
+28 : {'currVelocity': 1.1340000000000001, 'distance_Measure': 2620.2, 'CurrTime': 2.3518776893615723, 'frame': 137, 'id': 'Frame'}
+29 : {'currVelocity': 1.122, 'distance_Measure': 2807.2, 'CurrTime': 2.5549449920654297, 'frame': 137, 'id': 'Frame'}
+30 : {'currVelocity': 0.9780000000000001, 'distance_Measure': 2970.2, 'CurrTime': 2.7189619541168213, 'frame': 137, 'id': 'Frame'}
+31 : {'currVelocity': 1.278, 'distance_Measure': 3183.2, 'CurrTime': 2.878096342086792, 'frame': 137, 'id': 'Frame'}
+32 : {'currVelocity': 1.542, 'distance_Measure': 3440.2, 'CurrTime': 3.0440673828125, 'frame': 137, 'id': 'Frame'}
+33 : {'currVelocity': 0.9420000000000001, 'distance_Measure': 3597.2, 'CurrTime': 3.2090582847595215, 'frame': 137, 'id': 'Frame'}
+34 : {'currVelocity': 1.1520000000000001, 'distance_Measure': 3789.2, 'CurrTime': 3.3789327144622803, 'frame': 137, 'id': 'Frame'}
+35 : {'currVelocity': 0.9540000000000001, 'distance_Measure': 3948.2, 'CurrTime': 3.54783034324646, 'frame': 137, 'id': 'Frame'}
+Dictionary Format of Data:
+
+{1: [{'currVelocity': 0, 'distance_Measure': 0, 'CurrTime': 0, 'id': 'IV'}, {'currVelocity': 0.9130797688643315, 'distance_Measure': 325.20000000000005, 'CurrTime': 0.30069708824157715, 'id': 'IV'}, {'currVelocity': 0.9984759703601185, 'distance_Measure': 666.2, 'CurrTime': 0.5926070213317871, 'id': 'IV'}, {'currVelocity': 0.9640525867474015, 'distance_Measure': 953.2, 'CurrTime': 0.8610866069793701, 'id': 'IV'}, {'currVelocity': 0.8788211421896004, 'distance_Measure': 1227.1999999999998, 'CurrTime': 1.1529958248138428, 'id': 'IV'}, {'currVelocity': 0.9402905450995167, 'distance_Measure': 1565.1999999999998, 'CurrTime': 1.4292857646942139, 'id': 'IV'}, {'currVelocity': 0.9280054539565672, 'distance_Measure': 1923.1999999999998, 'CurrTime': 1.7661051750183105, 'id': 'IV'}, {'currVelocity': 0.9589438681863003, 'distance_Measure': 2194.2, 'CurrTime': 1.986745834350586, 'id': 'IV'}, {'currVelocity': 0.9845275909447975, 'distance_Measure': 2515.2, 'CurrTime': 2.2513206005096436, 'id': 'IV'}, {'currVelocity': 0.9625355857369078, 'distance_Measure': 2784.2, 'CurrTime': 2.5168707370758057, 'id': 'IV'}, {'currVelocity': 0.9602914442250774, 'distance_Measure': 3107.2, 'CurrTime': 2.811709403991699, 'id': 'IV'}, {'currVelocity': 1.0103710554558787, 'distance_Measure': 3440.2, 'CurrTime': 3.0440673828125, 'id': 'IV'}, {'currVelocity': 0.9740004930741417, 'distance_Measure': 3719.2, 'CurrTime': 3.3447625637054443, 'id': 'IV'}, {'currVelocity': 0.9654465526767302, 'distance_Measure': 4001.2, 'CurrTime': 3.6122658252716064, 'id': 'IV'}, {'currVelocity': 0.9552000000000003, 'distance_Measure': 159.20000000000005, 'CurrTime': 0.13082361221313477, 'frame': 137, 'id': 'Frame'}, {'currVelocity': 1.23, 'distance_Measure': 364.20000000000005, 'CurrTime': 0.3309621810913086, 'frame': 137, 'id': 'Frame'}, {'currVelocity': 1.08, 'distance_Measure': 544.2, 'CurrTime': 0.4949777126312256, 'frame': 137, 'id': 'Frame'}, {'currVelocity': 1.248, 'distance_Measure': 752.2, 'CurrTime': 0.6619234085083008, 'frame': 137, 'id': 'Frame'}, {'currVelocity': 1.0200000000000002, 'distance_Measure': 922.2, 'CurrTime': 0.8239874839782715, 'frame': 137, 'id': 'Frame'}, {'currVelocity': 0.9899999999999988, 'distance_Measure': 1087.1999999999998, 'CurrTime': 0.9899561405181885, 'frame': 137, 'id': 'Frame'}, {'currVelocity': 0.8400000000000001, 'distance_Measure': 1227.1999999999998, 'CurrTime': 1.1529958248138428, 'frame': 137, 'id': 'Frame'}, {'currVelocity': 1.356, 'distance_Measure': 1453.1999999999998, 'CurrTime': 1.3199410438537598, 'frame': 137, 'id': 'Frame'}, {'currVelocity': 1.062, 'distance_Measure': 1630.1999999999998, 'CurrTime': 1.4878625869750977, 'frame': 137, 'id': 'Frame'}, {'currVelocity': 1.068, 'distance_Measure': 1808.1999999999998, 'CurrTime': 1.6509037017822266, 'frame': 137, 'id': 'Frame'}, {'currVelocity': 1.4040000000000001, 'distance_Measure': 2042.1999999999998, 'CurrTime': 1.8568992614746094, 'frame': 137, 'id': 'Frame'}, {'currVelocity': 1.104, 'distance_Measure': 2226.2, 'CurrTime': 2.0209157466888428, 'frame': 137, 'id': 'Frame'}, {'currVelocity': 1.23, 'distance_Measure': 2431.2, 'CurrTime': 2.1927430629730225, 'frame': 137, 'id': 'Frame'}, {'currVelocity': 1.1340000000000001, 'distance_Measure': 2620.2, 'CurrTime': 2.3518776893615723, 'frame': 137, 'id': 'Frame'}, {'currVelocity': 1.122, 'distance_Measure': 2807.2, 'CurrTime': 2.5549449920654297, 'frame': 137, 'id': 'Frame'}, {'currVelocity': 0.9780000000000001, 'distance_Measure': 2970.2, 'CurrTime': 2.7189619541168213, 'frame': 137, 'id': 'Frame'}, {'currVelocity': 1.278, 'distance_Measure': 3183.2, 'CurrTime': 2.878096342086792, 'frame': 137, 'id': 'Frame'}, {'currVelocity': 1.542, 'distance_Measure': 3440.2, 'CurrTime': 3.0440673828125, 'frame': 137, 'id': 'Frame'}, {'currVelocity': 0.9420000000000001, 'distance_Measure': 3597.2, 'CurrTime': 3.2090582847595215, 'frame': 137, 'id': 'Frame'}, {'currVelocity': 1.1520000000000001, 'distance_Measure': 3789.2, 'CurrTime': 3.3789327144622803, 'frame': 137, 'id': 'Frame'}, {'currVelocity': 0.9540000000000001, 'distance_Measure': 3948.2, 'CurrTime': 3.54783034324646, 'frame': 137, 'id': 'Frame'}]}
+
+----------------------------------------------------
+Program finished: 04-23-2022, 23:28:33
+----------------------------------------------------

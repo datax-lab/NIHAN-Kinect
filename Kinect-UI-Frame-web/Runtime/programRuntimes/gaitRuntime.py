@@ -1,28 +1,15 @@
-# Import pykinect libraries
-import enum
-from re import template
-from PyQt5.QtCore import pyqtSignal
-from PyQt5.uic.uiparser import QtCore
- 
-import cv2 
 # Regular Librarires 
-import os, time
-import traceback
-import numpy as np 
- 
-# Custom Resource Program
-from Resources import Logging as lg 
-
+import os, time, cv2
+import pandas as pd 
 # Import the class to inherit
 from Resources.GaitResources import gait
 
 # Pyqt Impoorts 
+from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import * 
 
-  
-import pandas as pd 
-     
+
 class GaitAnalyzer(gait.GAIT): 
     # Pyqt Signals
     signalShowControlWindow = pyqtSignal(str)
@@ -175,7 +162,7 @@ class GaitAnalyzer(gait.GAIT):
                 listOfPops.append(keyVal)
 
         
-        self._programLog.output(3, f"\nDeletions: {listOfPops} ") 
+        self._programLog.output(2, f"\nDeletions: {listOfPops} ") 
         for item in listOfPops: 
             if item in self.frameSpdsDict:
                 del self.frameSpdsDict[item]
@@ -190,10 +177,10 @@ class GaitAnalyzer(gait.GAIT):
         for y in aDict.values(): 
             iVelocity, distance = y['CurrSpd'], y['CurrDistance']
             time =  y['CurrTime']
-            if keyVal in self.iV_Dict: 
-                self.iV_Dict[keyVal].append({'currVelocity': iVelocity, 'distance_Measure': distance, 'CurrTime': time})
+            if keyVal in self.Data_Dict: 
+                self.Data_Dict[keyVal].append({'currVelocity': iVelocity, 'distance_Measure': distance, 'CurrTime': time, 'frame' : self.currFrameCnt,'id' : 'Frame'})
             else: 
-                self.iV_Dict.update({keyVal: [{'currVelocity': iVelocity, 'distance_Measure': distance, 'CurrTime': time}]})
+                self.Data_Dict.update({keyVal: [{'currVelocity': iVelocity, 'distance_Measure': distance, 'CurrTime': time, 'frame' : self.currFrameCnt ,'id' : 'Frame'}]})
          
          
                 
@@ -239,10 +226,10 @@ class GaitAnalyzer(gait.GAIT):
 
         keyVal = self._currKey
     
-        if keyVal in self.iV_Dict:
-            self.iV_Dict[keyVal].append({'currVelocity': iVelocity, 'distance_Measure': distance, 'CurrTime': time, "id" : "IV"})
+        if keyVal in self.Data_Dict:
+            self.Data_Dict[keyVal].append({'currVelocity': iVelocity, 'distance_Measure': distance, 'CurrTime': time, "id" : "IV"})
         else: 
-            self.iV_Dict.update({keyVal: [{'currVelocity': iVelocity, 'distance_Measure': distance, 'CurrTime': time, 'id' : "IV"}]})
+            self.Data_Dict.update({keyVal: [{'currVelocity': iVelocity, 'distance_Measure': distance, 'CurrTime': time, 'id' : "IV"}]})
 
 
 
@@ -304,11 +291,11 @@ class GaitAnalyzer(gait.GAIT):
 
 
     def finishUp(self) -> bool: 
-        self.debugPrintDict(comment="NO DELETIONS")
+        #self.debugPrintDict(comment="NO DELETIONS")
         self.removeNoise()
         self.reportGait()
         self.programCanContinue.emit(True)
-        self.debugPrintDict()
+        #self.debugPrintDict()
         return False
 
          
