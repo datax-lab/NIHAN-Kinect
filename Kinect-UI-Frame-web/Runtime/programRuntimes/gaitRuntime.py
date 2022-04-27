@@ -1,4 +1,5 @@
 # Regular Librarires 
+from math import ceil, floor
 import os, time, cv2
 import pandas as pd 
 # Import the class to inherit
@@ -227,10 +228,11 @@ class GaitAnalyzer(gait.GAIT):
         keyVal = self._currKey
     
         if keyVal in self.Data_Dict:
-            self.Data_Dict[keyVal].append({'currVelocity': iVelocity, 'distance_Measure': distance, 'CurrTime': time, 'id' : 'IV', 'frame' : None, 'distanceID' : int(self.distanceOffset_Min)})
+            self.Data_Dict[keyVal].append({'currVelocity': iVelocity, 'distance_Measure': distance, 'CurrTime': time, 'id' : 'IV', 'frame' : None, 'distanceID' : self.currDistanceIteration})
         else: 
-            self.Data_Dict.update({keyVal: [{'currVelocity': iVelocity, 'distance_Measure': distance, 'CurrTime': time, 'id' : 'IV', 'frame' : None, 'distanceID' : int(self.distanceOffset_Min)}]})
-
+            self.Data_Dict.update({keyVal: [{'currVelocity': iVelocity, 'distance_Measure': distance, 'CurrTime': time, 'id' : 'IV', 'frame' : None, 'distanceID' : self.currDistanceIteration}]})
+        
+        self.currDistanceIteration += 1
 
 
 

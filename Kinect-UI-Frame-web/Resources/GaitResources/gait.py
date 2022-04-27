@@ -1,5 +1,6 @@
 # Pykinect Library imports
 
+from math import ceil
 from multiprocessing.dummy import Array
 from Resources.pykinect2 import PyKinectV2
 from Resources.pykinect2 import PyKinectRuntime
@@ -136,6 +137,7 @@ class GAIT(QThread):
         self.vf_AccelZone, self.vi_MeasureZone = None, None     
         self.prevDistance = 0 
         self.lastIvCalculated = False 
+        self.currDistanceIteration = 0
 
         ######################################################
         #             End Instant Velocity                   #
@@ -170,25 +172,26 @@ class GAIT(QThread):
         for x,y in self._IV_Dict.items(): 
              print(f"Key: {x}")
              for data in y: 
-                self._programLog.output(3, f"Velocity: {round(data['currVelocity'],4)}")
+                self._programLog.output(3, f"Velocity: {round(data['currVelocity'],4)}\tDistance ID: {data['distanceID']}")
             
         self._programLog.output(3, "\nFrame By Frame Data")
         for x,y in self._FrameBFrame_Dict.items(): 
             print(f"Key: {x}")
             for data in y: 
-                self._programLog.output(3,f"Velocity: {data['currVelocity']}\tFrame: {round(data['frame'],4)}")
+                self._programLog.output(3,f"Velocity: {round(data['currVelocity'],4)}\tFrame: {data['frame']}")
         
-        tempFrameBFrame, tempIVs = pd.DataFrame(), pd.DataFrame() 
+        tempFrameBFrame, tempIV_dict = pd.DataFrame(), pd.DataFrame() 
         
         # Iterate through all keys 
         for keyVals in self.Data_Dict.keys(): 
             # Assign the data held under each key to their appropriate dataframe for averaging
             tempHolderFrame, tempIVHolder =   pd.DataFrame.from_dict(self._FrameBFrame_Dict[keyVals]), pd.DataFrame.from_dict(self._IV_Dict[keyVals])
-            if tempFrameBFrame.empty and tempIVs.empty: 
-                tempFrameBFrame, tempIVs = tempHolderFrame, tempIVHolder
+            if tempFrameBFrame.empty and tempIV_dict.empty: 
+                tempFrameBFrame, tempIV_dict = tempHolderFrame, tempIVHolder
             else: 
-                tempFrameBFrame, tempIVs = tempFrameBFrame.append(tempHolderFrame), tempIVs.append(tempIVHolder)
+                tempFrameBFrame, tempIV_dict = tempFrameBFrame.append(tempHolderFrame), tempIV_dict.append(tempIVHolder)
        
+        self._programLog.output(3,f"Temporary IVS:\n{tempIV_dict}")
        
         # Find Averages Based on A Column Value 
         newFrameBFrameDataSet, newIVDataSet = pd.DataFrame(), pd.DataFrame()
@@ -202,8 +205,8 @@ class GAIT(QThread):
             else: 
                 newFrameBFrameDataSet = newFrameBFrameDataSet.append(tempFrame)
         
-        for i in range(int(self._DistanceOffset), int(self._EndMeasurementZone_mm), int(self._DistanceOffset)): 
-            tempIV = tempIVs.loc[tempIVs['distanceID'] == i] # Grab All The Rows that Have The Wanted Distance
+        for i in range(int(tempIV_dict['distanceID'].max()) + 1): 
+            tempIV = tempIV_dict.loc[tempIV_dict['distanceID'] == i] # Grab All The Rows that Have The Wanted Distance
             tempIV = pd.DataFrame.from_dict({'Distance Mark' : [i], 'Distance': [tempIV['distance_Measure'].mean()], 'Velocity' : [tempIV['currVelocity'].mean()]})
             if newIVDataSet.empty: 
                 newIVDataSet = tempIV
@@ -222,17 +225,16 @@ class GAIT(QThread):
     # {'Results': [{'Distance': currDistance, 'Time': currentTimeHolder, 'Instant Velocity': currentIVHolder}]}
     def setupAvgGraph(self, title): 
       
-       
-        print("setupAvgGraph Selected!!!", flush=True)
         frameData, ivData = self.avgData()
         
         print(frameData.shape, ivData.shape, flush=True)
         self._IV_Avg_Graph.setupLabels(title, "Distance (m)", "Speed (m/s)")
         self._IV_Avg_Graph.insertToGraph((frameData['Distance'], frameData['Velocity']), (ivData['Distance'], ivData['Velocity']), 1)
-    
-    
-    def displayAvgGraph(self, id=None): 
-        self._IV_Avg_Graph.showGraph(1)
+        self._programLog.output(3,f"\n Frame By Frame Average Data:\n{frameData}")
+        self._programLog.output(3, f"\nInstant Velocity Average Data:\n{ivData}")
+        
+    def displayAvgGraph(self, id=1): 
+        self._IV_Avg_Graph.showGraph(id, showLegendBool=True, average=self._Gait_Speed_Avg, customText="Averages For")
 
 
 
@@ -347,6 +349,7 @@ class GAIT(QThread):
         
         self.prevDistance = 0 
         self.lastIvCalculated = False 
+        self.currDistanceIteration = 0
         
         # GUI Signal to continue program 
         self.calculationsDone = False 

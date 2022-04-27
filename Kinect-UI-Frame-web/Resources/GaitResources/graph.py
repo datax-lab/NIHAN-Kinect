@@ -27,28 +27,36 @@ class Graph:
 
         
 
-    def showGraph(self, id=None, showLegendBool=False): 
+    def showGraph(self, id=None, showLegendBool=False, average=None, customText=None): 
         
         # Setup The Graph 
         plt.title(self._GraphName)
         plt.xlabel(self._xAxisName)
         plt.ylabel(self._yAxisName)
-      
+        
+        labelFrame, lableIV = str(), str()
+        if customText is None:
+            labelFrame, lableIV = f"Test {id} - Frame By Frame", f"Test {id} - Instant Velocity"
+        else: 
+            labelFrame, lableIV = f"{customText} Frame By Frame", f"{customText} Instant Velocity"
+        
+            
+            
         if id is not None: 
             x_Data, y_Data = self._GraphStorage[id][self._Titles[0]], self._GraphStorage[id][self._Titles[1]]
-            plt.plot(x_Data, y_Data, color=_colorSchemes[id%len(_colorSchemes)], label=f"Test {id} - Frame By Frame", marker='o')
+            plt.plot(x_Data, y_Data, color=_colorSchemes[id%len(_colorSchemes)], label=labelFrame, marker='o')
             # IV 
             x_Data, y_Data = self._GraphStorage[id][self._Titles[2]], self._GraphStorage[id][self._Titles[3]]
-            plt.plot(x_Data, y_Data, color=_colorSchemes[id%len(_colorSchemes)], label=f"Test {id} - Instant Velocity", marker='x')
+            plt.plot(x_Data, y_Data, color=_colorSchemes[id%len(_colorSchemes)], label=lableIV, marker='x')
         else:
             # Place The Points on The Plot
             for i, keyVal in enumerate(self._GraphStorage.keys()): 
                 # Frame By Frame
                 x_Data, y_Data = self._GraphStorage[keyVal][self._Titles[0]], self._GraphStorage[keyVal][self._Titles[1]]
-                plt.plot(x_Data, y_Data, color=_colorSchemes[i%len(_colorSchemes)], label=f"Test {keyVal} - Frame By Frame", marker='o')
+                plt.plot(x_Data, y_Data, color=_colorSchemes[i%len(_colorSchemes)], label=labelFrame, marker='o')
                 # IV 
                 x_Data, y_Data = self._GraphStorage[keyVal][self._Titles[2]], self._GraphStorage[keyVal][self._Titles[3]]
-                plt.plot(x_Data, y_Data, color=_colorSchemes[i%len(_colorSchemes)], label=f"Test {keyVal} - Instant Velocity", marker='x')
+                plt.plot(x_Data, y_Data, color=_colorSchemes[i%len(_colorSchemes)], label=lableIV, marker='x')
             
        
         # Show the Graph
