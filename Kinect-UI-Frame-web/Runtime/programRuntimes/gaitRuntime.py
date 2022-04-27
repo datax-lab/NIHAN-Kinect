@@ -178,9 +178,9 @@ class GaitAnalyzer(gait.GAIT):
             iVelocity, distance = y['CurrSpd'], y['CurrDistance']
             time, frameCntr =  y['CurrTime'], y['CurrFrameCnt']
             if keyVal in self.Data_Dict: 
-                self.Data_Dict[keyVal].append({'currVelocity': iVelocity, 'distance_Measure': distance, 'CurrTime': time, 'frame' : frameCntr,'id' : 'Frame'})
+                self.Data_Dict[keyVal].append({'currVelocity': iVelocity, 'distance_Measure': distance, 'CurrTime': time, 'id' : 'Frame', 'frame' : frameCntr, 'distanceID' : None})
             else: 
-                self.Data_Dict.update({keyVal: [{'currVelocity': iVelocity, 'distance_Measure': distance, 'CurrTime': time, 'frame' : frameCntr ,'id' : 'Frame'}]})
+                self.Data_Dict.update({keyVal: [{'currVelocity': iVelocity, 'distance_Measure': distance, 'CurrTime': time, 'id' : 'Frame', 'frame' : frameCntr, 'distanceID' : None}]})
            
          
                 
@@ -227,9 +227,9 @@ class GaitAnalyzer(gait.GAIT):
         keyVal = self._currKey
     
         if keyVal in self.Data_Dict:
-            self.Data_Dict[keyVal].append({'currVelocity': iVelocity, 'distance_Measure': distance, 'CurrTime': time, "id" : "IV"})
+            self.Data_Dict[keyVal].append({'currVelocity': iVelocity, 'distance_Measure': distance, 'CurrTime': time, 'id' : 'IV', 'frame' : None, 'distanceID' : int(self.distanceOffset_Min)})
         else: 
-            self.Data_Dict.update({keyVal: [{'currVelocity': iVelocity, 'distance_Measure': distance, 'CurrTime': time, 'id' : "IV"}]})
+            self.Data_Dict.update({keyVal: [{'currVelocity': iVelocity, 'distance_Measure': distance, 'CurrTime': time, 'id' : 'IV', 'frame' : None, 'distanceID' : int(self.distanceOffset_Min)}]})
 
 
 

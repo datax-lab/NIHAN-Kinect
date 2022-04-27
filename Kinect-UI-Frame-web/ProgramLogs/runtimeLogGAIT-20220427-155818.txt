@@ -1,0 +1,111 @@
+
+----------------------------------------------------
+Program running: 04-27-2022, 15:58:18
+----------------------------------------------------
+Reached Measurement Zone at: 1.857741117477417 sec
+Initial Velocity: 1.0765762684500157
+Quantile 1: 0.6255 Median: 0.723 Quantile 3: 0.858
+Lower Inner Fence: 0.2767499999999999 Median: 0.723 Upper Inner Fence: 1.20675
+
+Deletions: [31, 32, 33, 13, 14, 32] 
+Reached Measurement Zone at: 1.8401284217834473 sec
+Initial Velocity: 1.086880663503695
+Quantile 1: 0.675 Median: 0.81 Quantile 3: 0.879
+Lower Inner Fence: 0.3690000000000001 Median: 0.81 Upper Inner Fence: 1.185
+
+Deletions: [29, 30, 9, 13] 
+Dictionary Format of Data:
+
+{1: [{'currVelocity': 0, 'distance_Measure': 0, 'CurrTime': 0, 'id': 'IV', 'frame': None, 'distanceID': 304}, {'currVelocity': 0.47693288536169853, 'distance_Measure': 309.4000000000001, 'CurrTime': 0.39832401275634766, 'id': 'IV', 'frame': None, 'distanceID': 304}, {'currVelocity': 0.424625138508119, 'distance_Measure': 643.4000000000001, 'CurrTime': 0.857180118560791, 'id': 'IV', 'frame': None, 'distanceID': 609}, {'currVelocity': 0.432458752989747, 'distance_Measure': 969.4000000000001, 'CurrTime': 1.284794569015503, 'id': 'IV', 'frame': None, 'distanceID': 914}, {'currVelocity': 0.49178295675294614, 'distance_Measure': 1321.4, 'CurrTime': 1.6850731372833252, 'id': 'IV', 'frame': None, 'distanceID': 1219}, {'currVelocity': 0.5090662855815797, 'distance_Measure': 1543.4, 'CurrTime': 1.946718692779541, 'id': 'IV', 'frame': None, 'distanceID': 1524}, {'currVelocity': 0.5027095437623783, 'distance_Measure': 1903.4, 'CurrTime': 2.410456657409668, 'id': 'IV', 'frame': None, 'distanceID': 1828}, {'currVelocity': 0.4903138448619426, 'distance_Measure': 2155.4, 'CurrTime': 2.7511820793151855, 'id': 'IV', 'frame': None, 'distanceID': 2133}, {'currVelocity': 0.49516050812309476, 'distance_Measure': 2477.4, 'CurrTime': 3.1524362564086914, 'id': 'IV', 'frame': None, 'distanceID': 2438}, {'currVelocity': 0.4755633211682977, 'distance_Measure': 2781.4, 'CurrTime': 3.583956003189087, 'id': 'IV', 'frame': None, 'distanceID': 2743}, {'currVelocity': 0.49340526037469123, 'distance_Measure': 3095.4, 'CurrTime': 3.9432311058044434, 'id': 'IV', 'frame': None, 'distanceID': 3048}, {'currVelocity': 0.4694070236178698, 'distance_Measure': 3382.3999999999996, 'CurrTime': 4.3757264614105225, 'id': 'IV', 'frame': None, 'distanceID': 3352}, {'currVelocity': 0.4981245337466971, 'distance_Measure': 3706.3999999999996, 'CurrTime': 4.7074339389801025, 'id': 'IV', 'frame': None, 'distanceID': 3657}, {'currVelocity': 0.4768198699635302, 'distance_Measure': 4021.3999999999996, 'CurrTime': 5.177558898925781, 'id': 'IV', 'frame': None, 'distanceID': 3962}, {'currVelocity': 0.6024000000000006, 'distance_Measure': 100.40000000000009, 'CurrTime': 0.12886810302734375, 'id': 'Frame', 'frame': 5, 'distanceID': None}, {'currVelocity': 0.714, 'distance_Measure': 219.4000000000001, 'CurrTime': 0.29386091232299805, 'id': 'Frame', 'frame': 10, 'distanceID': None}, {'currVelocity': 0.858, 'distance_Measure': 362.4000000000001, 'CurrTime': 0.45885419845581055, 'id': 'Frame', 'frame': 15, 'distanceID': None}, {'currVelocity': 0.786, 'distance_Measure': 493.4000000000001, 'CurrTime': 0.6287281513214111, 'id': 'Frame', 'frame': 20, 'distanceID': None}, {'currVelocity': 0.618, 'distance_Measure': 596.4000000000001, 'CurrTime': 0.7946972846984863, 'id': 'Frame', 'frame': 25, 'distanceID': None}, {'currVelocity': 0.732, 'distance_Measure': 718.4000000000001, 'CurrTime': 0.9557850360870361, 'id': 'Frame', 'frame': 30, 'distanceID': None}, {'currVelocity': 0.858, 'distance_Measure': 861.4000000000001, 'CurrTime': 1.1256592273712158, 'id': 'Frame', 'frame': 35, 'distanceID': None}, {'currVelocity': 0.648, 'distance_Measure': 969.4000000000001, 'CurrTime': 1.284794569015503, 'id': 'Frame', 'frame': 40, 'distanceID': None}, {'currVelocity': 0.708, 'distance_Measure': 1087.4, 'CurrTime': 1.4507641792297363, 'id': 'Frame', 'frame': 45, 'distanceID': None}, {'currVelocity': 0.768, 'distance_Measure': 1215.4, 'CurrTime': 1.614781141281128, 'id': 'Frame', 'frame': 50, 'distanceID': None}, {'currVelocity': 1.122, 'distance_Measure': 1402.4, 'CurrTime': 1.788560390472412, 'id': 'Frame', 'frame': 55, 'distanceID': None}, {'currVelocity': 0.846, 'distance_Measure': 1543.4, 'CurrTime': 1.946718692779541, 'id': 'Frame', 'frame': 60, 'distanceID': None}, {'currVelocity': 0.876, 'distance_Measure': 1689.4, 'CurrTime': 2.1117117404937744, 'id': 'Frame', 'frame': 65, 'distanceID': None}, {'currVelocity': 0.534, 'distance_Measure': 2067.4, 'CurrTime': 2.62133526802063, 'id': 'Frame', 'frame': 80, 'distanceID': None}, {'currVelocity': 0.666, 'distance_Measure': 2178.4, 'CurrTime': 2.7833988666534424, 'id': 'Frame', 'frame': 85, 'distanceID': None}, {'currVelocity': 0.786, 'distance_Measure': 2309.4, 'CurrTime': 2.953273296356201, 'id': 'Frame', 'frame': 90, 'distanceID': None}, {'currVelocity': 0.87, 'distance_Measure': 2454.4, 'CurrTime': 3.11631441116333, 'id': 'Frame', 'frame': 95, 'distanceID': None}, {'currVelocity': 0.714, 'distance_Measure': 2573.4, 'CurrTime': 3.2871651649475098, 'id': 'Frame', 'frame': 100, 'distanceID': None}, {'currVelocity': 0.618, 'distance_Measure': 2676.4, 'CurrTime': 3.4531333446502686, 'id': 'Frame', 'frame': 105, 'distanceID': None}, {'currVelocity': 0.6960000000000001, 'distance_Measure': 2792.4, 'CurrTime': 3.6210553646087646, 'id': 'Frame', 'frame': 110, 'distanceID': None}, {'currVelocity': 0.792, 'distance_Measure': 2924.4, 'CurrTime': 3.78604793548584, 'id': 'Frame', 'frame': 115, 'distanceID': None}, {'currVelocity': 1.0260000000000002, 'distance_Measure': 3095.4, 'CurrTime': 3.9432311058044434, 'id': 'Frame', 'frame': 120, 'distanceID': None}, {'currVelocity': 0.7799999999999973, 'distance_Measure': 3225.3999999999996, 'CurrTime': 4.1082236766815186, 'id': 'Frame', 'frame': 125, 'distanceID': None}, {'currVelocity': 0.5820000000000001, 'distance_Measure': 3322.3999999999996, 'CurrTime': 4.274193048477173, 'id': 'Frame', 'frame': 130, 'distanceID': None}, {'currVelocity': 0.714, 'distance_Measure': 3441.3999999999996, 'CurrTime': 4.446019887924194, 'id': 'Frame', 'frame': 135, 'distanceID': None}, {'currVelocity': 1.098, 'distance_Measure': 3624.3999999999996, 'CurrTime': 4.607852220535278, 'id': 'Frame', 'frame': 140, 'distanceID': None}, {'currVelocity': 1.05, 'distance_Measure': 3799.3999999999996, 'CurrTime': 4.777500629425049, 'id': 'Frame', 'frame': 145, 'distanceID': None}, {'currVelocity': 0.5100000000000001, 'distance_Measure': 3884.3999999999996, 'CurrTime': 4.941517114639282, 'id': 'Frame', 'frame': 150, 'distanceID': None}, {'currVelocity': 0.40800000000000003, 'distance_Measure': 3952.3999999999996, 'CurrTime': 5.109218120574951, 'id': 'Frame', 'frame': 155, 'distanceID': None}], 2: [{'currVelocity': 0, 'distance_Measure': 0, 'CurrTime': 0, 'id': 'IV', 'frame': None, 'distanceID': 304}, {'currVelocity': 0.6246665727379086, 'distance_Measure': 310.79999999999995, 'CurrTime': 0.36318016052246094, 'id': 'IV', 'frame': None, 'distanceID': 304}, {'currVelocity': 0.5399420469105454, 'distance_Measure': 648.8, 'CurrTime': 0.7976284027099609, 'id': 'IV', 'frame': None, 'distanceID': 609}, {'currVelocity': 0.5132312948104507, 'distance_Measure': 949.8, 'CurrTime': 1.1871669292449951, 'id': 'IV', 'frame': None, 'distanceID': 914}, {'currVelocity': 0.5642763718648958, 'distance_Measure': 1288.8000000000002, 'CurrTime': 1.5610871315002441, 'id': 'IV', 'frame': None, 'distanceID': 1219}, {'currVelocity': 0.5456135892227589, 'distance_Measure': 1538.8000000000002, 'CurrTime': 1.8852133750915527, 'id': 'IV', 'frame': None, 'distanceID': 1524}, {'currVelocity': 0.6183134692200252, 'distance_Measure': 1922.8000000000002, 'CurrTime': 2.2552270889282227, 'id': 'IV', 'frame': None, 'distanceID': 1828}, {'currVelocity': 0.5476133195428874, 'distance_Measure': 2171.8, 'CurrTime': 2.657458543777466, 'id': 'IV', 'frame': None, 'distanceID': 2133}, {'currVelocity': 0.5784976623786966, 'distance_Measure': 2486.8, 'CurrTime': 2.986468553543091, 'id': 'IV', 'frame': None, 'distanceID': 2438}, {'currVelocity': 0.558175185021373, 'distance_Measure': 2760.8, 'CurrTime': 3.3564817905426025, 'id': 'IV', 'frame': None, 'distanceID': 2743}, {'currVelocity': 0.5888229601189054, 'distance_Measure': 3110.8, 'CurrTime': 3.7128283977508545, 'id': 'IV', 'frame': None, 'distanceID': 3048}, {'currVelocity': 0.572556649789046, 'distance_Measure': 3386.8, 'CurrTime': 4.081865549087524, 'id': 'IV', 'frame': None, 'distanceID': 3352}, {'currVelocity': 0.5899634331327308, 'distance_Measure': 3672.8, 'CurrTime': 4.38060998916626, 'id': 'IV', 'frame': None, 'distanceID': 3657}, {'currVelocity': 0.5598155754772132, 'distance_Measure': 3991.8, 'CurrTime': 4.848253011703491, 'id': 'IV', 'frame': None, 'distanceID': 3962}, {'currVelocity': 0.6587999999999997, 'distance_Measure': 109.79999999999995, 'CurrTime': 0.13179802894592285, 'id': 'Frame', 'frame': 5, 'distanceID': None}, {'currVelocity': 0.858, 'distance_Measure': 252.79999999999995, 'CurrTime': 0.29581499099731445, 'id': 'Frame', 'frame': 10, 'distanceID': None}, {'currVelocity': 0.876, 'distance_Measure': 398.79999999999995, 'CurrTime': 0.46471309661865234, 'id': 'Frame', 'frame': 15, 'distanceID': None}, {'currVelocity': 0.66, 'distance_Measure': 508.79999999999995, 'CurrTime': 0.6297059059143066, 'id': 'Frame', 'frame': 20, 'distanceID': None}, {'currVelocity': 0.8400000000000001, 'distance_Measure': 648.8, 'CurrTime': 0.7976284027099609, 'id': 'Frame', 'frame': 25, 'distanceID': None}, {'currVelocity': 0.846, 'distance_Measure': 789.8, 'CurrTime': 0.9635961055755615, 'id': 'Frame', 'frame': 30, 'distanceID': None}, {'currVelocity': 0.642, 'distance_Measure': 896.8, 'CurrTime': 1.1266374588012695, 'id': 'Frame', 'frame': 35, 'distanceID': None}, {'currVelocity': 0.78, 'distance_Measure': 1026.8, 'CurrTime': 1.2867481708526611, 'id': 'Frame', 'frame': 40, 'distanceID': None}, {'currVelocity': 0.7440000000000013, 'distance_Measure': 1150.8000000000002, 'CurrTime': 1.4527184963226318, 'id': 'Frame', 'frame': 45, 'distanceID': None}, {'currVelocity': 0.798, 'distance_Measure': 1489.8000000000002, 'CurrTime': 1.7875854969024658, 'id': 'Frame', 'frame': 55, 'distanceID': None}, {'currVelocity': 0.5820000000000001, 'distance_Measure': 1586.8000000000002, 'CurrTime': 1.952577829360962, 'id': 'Frame', 'frame': 60, 'distanceID': None}, {'currVelocity': 0.672, 'distance_Measure': 1698.8000000000002, 'CurrTime': 2.116594076156616, 'id': 'Frame', 'frame': 65, 'distanceID': None}, {'currVelocity': 0.678, 'distance_Measure': 2036.8000000000002, 'CurrTime': 2.4573192596435547, 'id': 'Frame', 'frame': 75, 'distanceID': None}, {'currVelocity': 0.672, 'distance_Measure': 2148.8, 'CurrTime': 2.625241279602051, 'id': 'Frame', 'frame': 80, 'distanceID': None}, {'currVelocity': 0.852, 'distance_Measure': 2290.8, 'CurrTime': 2.7873051166534424, 'id': 'Frame', 'frame': 85, 'distanceID': None}, {'currVelocity': 1.08, 'distance_Measure': 2470.8, 'CurrTime': 2.9562034606933594, 'id': 'Frame', 'frame': 90, 'distanceID': None}, {'currVelocity': 0.768, 'distance_Measure': 2598.8, 'CurrTime': 3.122173547744751, 'id': 'Frame', 'frame': 95, 'distanceID': None}, {'currVelocity': 0.738, 'distance_Measure': 2721.8, 'CurrTime': 3.2891180515289307, 'id': 'Frame', 'frame': 100, 'distanceID': None}, {'currVelocity': 0.738, 'distance_Measure': 2844.8, 'CurrTime': 3.4550869464874268, 'id': 'Frame', 'frame': 105, 'distanceID': None}, {'currVelocity': 0.864, 'distance_Measure': 2988.8, 'CurrTime': 3.621056079864502, 'id': 'Frame', 'frame': 110, 'distanceID': None}, {'currVelocity': 1.122, 'distance_Measure': 3175.8, 'CurrTime': 3.781168222427368, 'id': 'Frame', 'frame': 115, 'distanceID': None}, {'currVelocity': 0.6060000000000001, 'distance_Measure': 3276.8, 'CurrTime': 3.948113441467285, 'id': 'Frame', 'frame': 120, 'distanceID': None}, {'currVelocity': 0.81, 'distance_Measure': 3411.8, 'CurrTime': 4.1150593757629395, 'id': 'Frame', 'frame': 125, 'distanceID': None}, {'currVelocity': 0.894, 'distance_Measure': 3560.8, 'CurrTime': 4.28005313873291, 'id': 'Frame', 'frame': 130, 'distanceID': None}, {'currVelocity': 0.9960000000000001, 'distance_Measure': 3726.8, 'CurrTime': 4.446021318435669, 'id': 'Frame', 'frame': 135, 'distanceID': None}, {'currVelocity': 0.642, 'distance_Measure': 3833.8, 'CurrTime': 4.613942384719849, 'id': 'Frame', 'frame': 140, 'distanceID': None}, {'currVelocity': 0.8160000000000001, 'distance_Measure': 3969.8, 'CurrTime': 4.782840967178345, 'id': 'Frame', 'frame': 145, 'distanceID': None}]}
+
+Instant Velocities
+Velocity: 0.0
+Velocity: 0.4769
+Velocity: 0.4246
+Velocity: 0.4325
+Velocity: 0.4918
+Velocity: 0.5091
+Velocity: 0.5027
+Velocity: 0.4903
+Velocity: 0.4952
+Velocity: 0.4756
+Velocity: 0.4934
+Velocity: 0.4694
+Velocity: 0.4981
+Velocity: 0.4768
+Velocity: 0.0
+Velocity: 0.6247
+Velocity: 0.5399
+Velocity: 0.5132
+Velocity: 0.5643
+Velocity: 0.5456
+Velocity: 0.6183
+Velocity: 0.5476
+Velocity: 0.5785
+Velocity: 0.5582
+Velocity: 0.5888
+Velocity: 0.5726
+Velocity: 0.59
+Velocity: 0.5598
+
+Frame By Frame Data
+Velocity: 0.6024000000000006	Frame: 5.0
+Velocity: 0.714	Frame: 10.0
+Velocity: 0.858	Frame: 15.0
+Velocity: 0.786	Frame: 20.0
+Velocity: 0.618	Frame: 25.0
+Velocity: 0.732	Frame: 30.0
+Velocity: 0.858	Frame: 35.0
+Velocity: 0.648	Frame: 40.0
+Velocity: 0.708	Frame: 45.0
+Velocity: 0.768	Frame: 50.0
+Velocity: 1.122	Frame: 55.0
+Velocity: 0.846	Frame: 60.0
+Velocity: 0.876	Frame: 65.0
+Velocity: 0.534	Frame: 80.0
+Velocity: 0.666	Frame: 85.0
+Velocity: 0.786	Frame: 90.0
+Velocity: 0.87	Frame: 95.0
+Velocity: 0.714	Frame: 100.0
+Velocity: 0.618	Frame: 105.0
+Velocity: 0.6960000000000001	Frame: 110.0
+Velocity: 0.792	Frame: 115.0
+Velocity: 1.0260000000000002	Frame: 120.0
+Velocity: 0.7799999999999973	Frame: 125.0
+Velocity: 0.5820000000000001	Frame: 130.0
+Velocity: 0.714	Frame: 135.0
+Velocity: 1.098	Frame: 140.0
+Velocity: 1.05	Frame: 145.0
+Velocity: 0.5100000000000001	Frame: 150.0
+Velocity: 0.40800000000000003	Frame: 155.0
+Velocity: 0.6587999999999997	Frame: 5.0
+Velocity: 0.858	Frame: 10.0
+Velocity: 0.876	Frame: 15.0
+Velocity: 0.66	Frame: 20.0
+Velocity: 0.8400000000000001	Frame: 25.0
+Velocity: 0.846	Frame: 30.0
+Velocity: 0.642	Frame: 35.0
+Velocity: 0.78	Frame: 40.0
+Velocity: 0.7440000000000013	Frame: 45.0
+Velocity: 0.798	Frame: 55.0
+Velocity: 0.5820000000000001	Frame: 60.0
+Velocity: 0.672	Frame: 65.0
+Velocity: 0.678	Frame: 75.0
+Velocity: 0.672	Frame: 80.0
+Velocity: 0.852	Frame: 85.0
+Velocity: 1.08	Frame: 90.0
+Velocity: 0.768	Frame: 95.0
+Velocity: 0.738	Frame: 100.0
+Velocity: 0.738	Frame: 105.0
+Velocity: 0.864	Frame: 110.0
+Velocity: 1.122	Frame: 115.0
+Velocity: 0.6060000000000001	Frame: 120.0
+Velocity: 0.81	Frame: 125.0
+Velocity: 0.894	Frame: 130.0
+Velocity: 0.9960000000000001	Frame: 135.0
+Velocity: 0.642	Frame: 140.0
+Velocity: 0.8160000000000001	Frame: 145.0
+
+----------------------------------------------------
+Program finished: 04-27-2022, 15:59:04
+----------------------------------------------------

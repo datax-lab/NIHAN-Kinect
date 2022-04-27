@@ -165,55 +165,64 @@ class GAIT(QThread):
 
     def avgData(self) -> tuple[pd.DataFrame, pd.DataFrame]: 
         
-        tempDataFrameByFrame, tempDataFrameIV = pd.DataFrame(), pd.DataFrame()
-        for keyValue in self.Data_Dict.keys():   
-            # Convert To DataFrame 
-            if tempDataFrameByFrame.empty or tempDataFrameIV.empty: 
-                tempDataFrameByFrame = pd.DataFrame.from_dict(self._FrameBFrame_Dict[keyValue])   
-                tempDataFrameIV = pd.DataFrame.from_dict(self._IV_Dict[keyValue])
-            else: 
-                tempDataFrameByFrame = tempDataFrameByFrame.append(pd.DataFrame.from_dict(self._IV_Dict[keyValue]))
-                tempDataFrameIV = tempDataFrameIV.append(pd.DataFrame.from_dict(self._FrameBFrame_Dict[keyValue]))
-        
-        
-        print("\n\n")
-        print(tempDataFrameByFrame, end="\n\n")
-        print(tempDataFrameIV)
-        exit(0)
-        newFrameBFrameData = pd.DataFrame()
-        # Create A New Data Frame for Frame By Frame
-        print(tempDataFrameByFrame['frame'].max())
-        for i in range(0, int(tempDataFrameByFrame['frame'].max()) + 5, 5): 
-            frameAverage = pd.DataFrame(tempDataFrameByFrame[tempDataFrameByFrame['frame'] == i])
-           
-            frameData = pd.DataFrame.from_dict({"Frame" : [i], "Distance" : [frameAverage['distance_Measure'].mean()], "Velocity" : [frameAverage['currVelocity'].mean()], "Time" : [frameAverage['CurrTime'].mean()]})
+        # Debugging 
+        self._programLog.output(3,"\nInstant Velocities")
+        for x,y in self._IV_Dict.items(): 
+             print(f"Key: {x}")
+             for data in y: 
+                self._programLog.output(3, f"Velocity: {round(data['currVelocity'],4)}")
             
-            if newFrameBFrameData.empty: 
-                newFrameBFrameData = frameData
-            else: 
-                newFrameBFrameData.append(frameData)
-                
-        print(newFrameBFrameData)
-        exit(0)
+        self._programLog.output(3, "\nFrame By Frame Data")
+        for x,y in self._FrameBFrame_Dict.items(): 
+            print(f"Key: {x}")
+            for data in y: 
+                self._programLog.output(3,f"Velocity: {data['currVelocity']}\tFrame: {round(data['frame'],4)}")
         
-        # Create a New Data Frame for IV 
-        newIVDataFrame = pd.DataFrame()
-        for  i in range(self._BeginMeasurementZone_mm, self._EndMeasurementZone_mm+self._BeginMeasurementZone_mm, self._BeginMeasurementZone_mm): 
-            ivAverage = tempDataFrameIV[tempDataFrameIV['distance_Measure'] == i]
-            ivData = pd.DataFrame({"Distance" : [i], "Velocity" : [ivAverage['currVelocity'].mean()], "Time" : [ivAverage['CurrTime'].mean()] })
-            if newIVDataFrame.empty: 
-                newIVDataFrame = ivData
+        tempFrameBFrame, tempIVs = pd.DataFrame(), pd.DataFrame() 
+        
+        # Iterate through all keys 
+        for keyVals in self.Data_Dict.keys(): 
+            # Assign the data held under each key to their appropriate dataframe for averaging
+            tempHolderFrame, tempIVHolder =   pd.DataFrame.from_dict(self._FrameBFrame_Dict[keyVals]), pd.DataFrame.from_dict(self._IV_Dict[keyVals])
+            if tempFrameBFrame.empty and tempIVs.empty: 
+                tempFrameBFrame, tempIVs = tempHolderFrame, tempIVHolder
             else: 
-                newIVDataFrame = newIVDataFrame.append(ivData) #pd.concat([newIVDataFrame, ivData])
-                #
-
-        return newFrameBFrameData.to_records(index=False), newIVDataFrame.to_records(index=False)
+                tempFrameBFrame, tempIVs = tempFrameBFrame.append(tempHolderFrame), tempIVs.append(tempIVHolder)
+       
+       
+        # Find Averages Based on A Column Value 
+        newFrameBFrameDataSet, newIVDataSet = pd.DataFrame(), pd.DataFrame()
+        
+        # Should Start from frame 5-maxFrame + 5
+        for i in range(int(tempFrameBFrame['frame'].min()), int(tempFrameBFrame['frame'].max() + tempFrameBFrame['frame'].min()), int(tempFrameBFrame['frame'].min())): 
+            tempFrame = tempFrameBFrame.loc[tempFrameBFrame['frame'] == i] # Get all Rows that Match the Frame I am currently looking at
+            tempFrame = pd.DataFrame.from_dict({'FrameID' : [i], 'Distance' : [tempFrame['distance_Measure'].mean()], 'Velocity' : [tempFrame['currVelocity'].mean()]})
+            if newFrameBFrameDataSet.empty: 
+                newFrameBFrameDataSet = tempFrame
+            else: 
+                newFrameBFrameDataSet = newFrameBFrameDataSet.append(tempFrame)
+        
+        for i in range(int(self._DistanceOffset), int(self._EndMeasurementZone_mm), int(self._DistanceOffset)): 
+            tempIV = tempIVs.loc[tempIVs['distanceID'] == i] # Grab All The Rows that Have The Wanted Distance
+            tempIV = pd.DataFrame.from_dict({'Distance Mark' : [i], 'Distance': [tempIV['distance_Measure'].mean()], 'Velocity' : [tempIV['currVelocity'].mean()]})
+            if newIVDataSet.empty: 
+                newIVDataSet = tempIV
+            else: 
+                newIVDataSet = newIVDataSet.append(tempIV)
+            
+        
+        
+        print(newFrameBFrameDataSet, end="\n\n", flush=True)
+        print(newIVDataSet, end="\n\n", flush=True)
+        return newFrameBFrameDataSet, newIVDataSet
+       
 
         
         
     # {'Results': [{'Distance': currDistance, 'Time': currentTimeHolder, 'Instant Velocity': currentIVHolder}]}
     def setupAvgGraph(self, title): 
-        return 
+      
+       
         print("setupAvgGraph Selected!!!", flush=True)
         frameData, ivData = self.avgData()
         
@@ -227,12 +236,12 @@ class GAIT(QThread):
 
 
 
-    def processNParition(self, aDict : pd.DataFrame) -> tuple[np.record, np.record]: 
+    def processNParition(self, aDict : pd.DataFrame) -> tuple[dict, dict]: 
         tempArrDistances = list()
         # Convert all the data into m/s
         aDict['distance_Measure'] = aDict['distance_Measure'].div(self._UnitConversionFactor)
         # Now Partition Data into a Frame By Frame and instant velocity for easy graphing 
-        return aDict[aDict['id'] == 'Frame'].to_records(index=False), aDict[aDict['id'] == 'IV'].to_records(index=False) 
+        return (aDict[aDict['id'] == 'Frame']).to_dict('records'), (aDict[aDict['id'] == 'IV']).to_dict('records') 
     
     
     def insertGraphData(self, title):
@@ -247,6 +256,9 @@ class GAIT(QThread):
         self._FrameBFrame_Dict.update({self._currKey : frameBFrameHolder})
         self._IV_Dict.update({self._currKey : ivHolder})
         # Setup the Graph
+        # Need to convert to datframe first
+        frameBFrameHolder = pd.DataFrame.from_dict(frameBFrameHolder)
+        ivHolder = pd.DataFrame.from_dict(ivHolder)
         self.plot.setupLabels(title, "Distance (m)", "Speed (m/s)")
         self.plot.insertToGraph((frameBFrameHolder['distance_Measure'], frameBFrameHolder['currVelocity']), 
                                 (ivHolder['distance_Measure'], ivHolder['currVelocity']), int(keyVal))
@@ -575,7 +587,7 @@ class GAIT(QThread):
             # Append gait speed to the arr to be averaged, and then emit a signal to the ui to allow another program run
             self.gait_Speed_Arr.append(self._Gait_Speed)
             self.programRuntimes += 1 
-            self._currKey += 1
+            self._currKey += 1 # Update current Proram Iteration
             self.aRunTimeComplete, self.calculationsDone = True, True 
             
 
