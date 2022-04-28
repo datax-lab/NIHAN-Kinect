@@ -35,14 +35,16 @@ class Graph:
         plt.ylabel(self._yAxisName)
         
         labelFrame, lableIV = str(), str()
-        if customText is None:
-            labelFrame, lableIV = f"Test {id} - Frame By Frame", f"Test {id} - Instant Velocity"
-        else: 
-            labelFrame, lableIV = f"{customText} Frame By Frame", f"{customText} Instant Velocity"
+       
         
             
             
         if id is not None: 
+            if customText is None:
+                labelFrame, lableIV = f"Test {id} - Frame By Frame", f"Test {id} - Instant Velocity"
+            else: 
+                labelFrame, lableIV = f"{customText} Frame By Frame", f"{customText} Instant Velocity"
+            
             x_Data, y_Data = self._GraphStorage[id][self._Titles[0]], self._GraphStorage[id][self._Titles[1]]
             plt.plot(x_Data, y_Data, color=_colorSchemes[id%len(_colorSchemes)], label=labelFrame, marker='o')
             # IV 
@@ -51,6 +53,10 @@ class Graph:
         else:
             # Place The Points on The Plot
             for i, keyVal in enumerate(self._GraphStorage.keys()): 
+                if customText is None:
+                    labelFrame, lableIV = f"Test {keyVal} - Frame By Frame", f"Test {keyVal} - Instant Velocity"
+                else: 
+                    labelFrame, lableIV = f"{customText} Frame By Frame", f"{customText} Instant Velocity"
                 # Frame By Frame
                 x_Data, y_Data = self._GraphStorage[keyVal][self._Titles[0]], self._GraphStorage[keyVal][self._Titles[1]]
                 plt.plot(x_Data, y_Data, color=_colorSchemes[i%len(_colorSchemes)], label=labelFrame, marker='o')
@@ -59,9 +65,13 @@ class Graph:
                 plt.plot(x_Data, y_Data, color=_colorSchemes[i%len(_colorSchemes)], label=lableIV, marker='x')
             
        
+       
+        if average is not None: 
+            plt.axhline(average,label="Average Velocity", color='r', linestyle="-")
         # Show the Graph
         if showLegendBool:
             plt.legend()
+        
 
         plt.show()
 
