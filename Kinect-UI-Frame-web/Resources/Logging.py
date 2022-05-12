@@ -44,7 +44,8 @@ class LOGGING:
 
         if self.PROGRAM_LOG.closed: 
             self.PROGRAM_LOG = open(self.PROGRAM_FILE, 'a')
-        if(outputLoc == 1):
+        if(outputLoc == 0): return 
+        elif(outputLoc == 1):
             print(message)
         elif(outputLoc == 2):
             self.PROGRAM_LOG.write(str(message) + "\n")

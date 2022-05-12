@@ -2,6 +2,7 @@
 
 from math import ceil
 from multiprocessing.dummy import Array
+from socket import IPV6_CHECKSUM
 from Resources.pykinect2 import PyKinectV2
 from Resources.pykinect2 import PyKinectRuntime
 
@@ -148,7 +149,7 @@ class GAIT(QThread):
 
         # Patient Info 
         self._PatientID, self._PatientName = None, None 
-        self._Database = WebReq() #DataHandler()
+        self._Database = WebReq() # This will actually be set in the setDataDatabase Function
 
         # Arrays to Help With Averaging 
         self._IV_Overall, self._IV_time_Overall = [], []
@@ -162,24 +163,27 @@ class GAIT(QThread):
         self.setupDirectories()
         self.resetProgram()
         
-        
         self._DataFrame = pd.DataFrame()
+        
+        
 
     def avgData(self) -> tuple[pd.DataFrame, pd.DataFrame]: 
         
+       
+        '''
         # Debugging 
-        self._programLog.output(3,"\nInstant Velocities")
+        self._programLog.output(0,"\nInstant Velocities")
         for x,y in self._IV_Dict.items(): 
              print(f"Key: {x}")
              for data in y: 
-                self._programLog.output(3, f"Velocity: {round(data['currVelocity'],4)}\tDistance ID: {data['distanceID']}")
+                self._programLog.output(0, f"Velocity: {round(data['currVelocity'],4)}\tDistance ID: {data['distanceID']}")
             
-        self._programLog.output(3, "\nFrame By Frame Data")
+        self._programLog.output(1, "\nFrame By Frame Data")
         for x,y in self._FrameBFrame_Dict.items(): 
             print(f"Key: {x}")
             for data in y: 
-                self._programLog.output(3,f"Velocity: {round(data['currVelocity'],4)}\tFrame: {data['frame']}")
-        
+                self._programLog.output(1,f"Velocity: {round(data['currVelocity'],4)}\tFrame: {data['frame']}")
+        '''
         tempFrameBFrame, tempIV_dict = pd.DataFrame(), pd.DataFrame() 
         
         # Iterate through all keys 
@@ -191,23 +195,24 @@ class GAIT(QThread):
             else: 
                 tempFrameBFrame, tempIV_dict = tempFrameBFrame.append(tempHolderFrame), tempIV_dict.append(tempIVHolder)
        
-        self._programLog.output(3,f"Temporary IVS:\n{tempIV_dict}")
+        self._programLog.output(0,f"Temporary IVS:\n{tempIV_dict}")
        
         # Find Averages Based on A Column Value 
         newFrameBFrameDataSet, newIVDataSet = pd.DataFrame(), pd.DataFrame()
         
-        # Should Start from frame 5-maxFrame + 5
+        # Should Start from frame 5 through maxFrame + 5
         for i in range(int(tempFrameBFrame['frame'].min()), int(tempFrameBFrame['frame'].max() + tempFrameBFrame['frame'].min()), int(tempFrameBFrame['frame'].min())): 
             tempFrame = tempFrameBFrame.loc[tempFrameBFrame['frame'] == i] # Get all Rows that Match the Frame I am currently looking at
-            tempFrame = pd.DataFrame.from_dict({'FrameID' : [i], 'Distance' : [tempFrame['distance_Measure'].mean()], 'Velocity' : [tempFrame['currVelocity'].mean()]})
+            tempFrame = pd.DataFrame.from_dict({'Type' : "Frame", 'Time': [tempFrame['CurrTime'].mean()], 'Distance' : [tempFrame['distance_Measure'].mean()], 'Velocity' : [tempFrame['currVelocity'].mean()]})
             if newFrameBFrameDataSet.empty: 
                 newFrameBFrameDataSet = tempFrame
             else: 
                 newFrameBFrameDataSet = newFrameBFrameDataSet.append(tempFrame)
         
+        # Now do something similar to the above but for iv distances
         for i in range(int(tempIV_dict['distanceID'].max()) + 1): 
             tempIV = tempIV_dict.loc[tempIV_dict['distanceID'] == i] # Grab All The Rows that Have The Wanted Distance
-            tempIV = pd.DataFrame.from_dict({'Distance Mark' : [i], 'Distance': [tempIV['distance_Measure'].mean()], 'Velocity' : [tempIV['currVelocity'].mean()]})
+            tempIV = pd.DataFrame.from_dict({'Type' : "Instant Velocity", 'Time' : [tempIV['CurrTime'].mean()], 'Distance': [tempIV['distance_Measure'].mean()], 'Velocity' : [tempIV['currVelocity'].mean()]})
             if newIVDataSet.empty: 
                 newIVDataSet = tempIV
             else: 
@@ -215,23 +220,38 @@ class GAIT(QThread):
             
         
         
-        print(newFrameBFrameDataSet, end="\n\n", flush=True)
-        print(newIVDataSet, end="\n\n", flush=True)
+        self._programLog.output(0, f"{newFrameBFrameDataSet}\n\n")
+        self._programLog.output(0, f"{newIVDataSet}\n\n")
         return newFrameBFrameDataSet, newIVDataSet
        
 
         
         
     # {'Results': [{'Distance': currDistance, 'Time': currentTimeHolder, 'Instant Velocity': currentIVHolder}]}
+    # This Function Also Handles Formatting the Data to be uploaded, since this is where we average all the data
     def setupAvgGraph(self, title): 
       
         frameData, ivData = self.avgData()
         
-        print(frameData.shape, ivData.shape, flush=True)
+        self._programLog.output(0, f"{frameData.shape, ivData.shape}")
         self._IV_Avg_Graph.setupLabels(title, "Distance (m)", "Speed (m/s)")
         self._IV_Avg_Graph.insertToGraph((frameData['Distance'], frameData['Velocity']), (ivData['Distance'], ivData['Velocity']), 1)
-        self._programLog.output(3,f"\n Frame By Frame Average Data:\n{frameData}")
-        self._programLog.output(3, f"\nInstant Velocity Average Data:\n{ivData}")
+        
+        # Since we should be done w the original dict, we need to clear it, and then re-create it for data uploading
+        self.Data_Dict.clear()
+        # Format of Gait Dictionary
+        #[
+        #   {
+        #         'Type' : , # This is indicates whether the current results are from Frame By Frame or Instant Velocity 
+        #         'Time' : , 
+        #         'Distance' : , 
+        #         'Velocity' : , 
+        #   }
+        # ]
+        self.Data_Dict = (frameData.append(ivData)).to_dict('records')
+        
+        self._programLog.output(0,f"\n Frame By Frame Average Data:\n{frameData}")
+        self._programLog.output(0, f"\nInstant Velocity Average Data:\n{ivData}")
         
     def displayAvgGraph(self, id=1): 
         self._IV_Avg_Graph.showGraph(id, showLegendBool=True, average=self._Gait_Speed_Avg, customText="Averages For")
@@ -273,10 +293,10 @@ class GAIT(QThread):
         elif id == -1: 
             self.plot.showGraph(showLegendBool=showLegend)
 
-   
+    
     def setDatabaseInstance(self, database): 
         self._Database = database
-
+        
     def setPatientInfo(self, ptInfo): 
         self._PatientID, self._PatientName = ptInfo
 
@@ -298,6 +318,7 @@ class GAIT(QThread):
         # Save the Stats 
         ptLogDirectory = os.path.join(self._ProgramPath, "PatientLogs")
         self._ptLog = lg.LOGGING(os.path.join(ptLogDirectory, str("PtlogGAIT-" + time.strftime("%Y%m%d-%H%M%S") + ".txt")))
+        
 
 
 
@@ -526,8 +547,8 @@ class GAIT(QThread):
                 if self.currentDistance >= self._BeginMeasurementZone_mm and self.currentDistance <= self._EndMeasurementZone_mm:
                     if self._find_min(x_Cent, width, y_Cent, height) >= self._BeginMeasurementZone_mm:
                        
-                        #self._OpenCVDepthHandler.displayAMessageToCV(self.displayFrame, "Measurement Zone Entered!",
-                         #                                        self._BgStart, self._BgEnd, self._TextStart)
+                        self._OpenCVDepthHandler.displayAMessageToCV(self.displayFrame, "Measurement Zone Entered!",
+                                                                 self._BgStart, self._BgEnd, self._TextStart)
                         # Start The Timer 
                         if not self._TimerMeasure.isTimerStarted(): 
                             self._TimerMeasure.starTtimer() 
@@ -547,19 +568,17 @@ class GAIT(QThread):
                     distance = self._find_min(x_Cent, width, y_Cent, height) - self._BeginMeasurementZone_mm
                     #distance = self.curr_Distance_measure_zone
                     if distance >= self._EndMeasurementZone_mm:
-                        #self._OpenCVDepthHandler.displayAMessageToCV(self.displayFrame, "Patient Has Reached Enpoint! Press \"c\" to get gait speed",
-                        #                                                self._BgStart, self._BgEnd, self._TextStart)
+                        self._OpenCVDepthHandler.displayAMessageToCV(self.displayFrame, "Patient Has Reached Enpoint! Press \"c\" to get gait speed",
+                                                                        self._BgStart, self._BgEnd, self._TextStart)
                         self._PAUSE, self._EndReached = True, True
                         self._AllowDataCollection = False 
                 # End broken code block
                 if self._BegZoneReached: 
                     self.curr_Distance_measure_zone = self.currentDistance - self._BeginMeasurementZone_mm
-                    self._OpenCVDepthHandler.displayAMessageToCV(self.displayFrame, f"Distance: {self.curr_Distance_measure_zone}",
-                                                                    self._BgStart, self._BgEnd, self._TextStart)
-                    #self._OpenCVDepthHandler.displayFloatingMessage(self.displayFrame, f"Distance {self.curr_Distance_measure_zone}", (x_Cent, y_Cent-10), (0,255,0))
-                    #self._debugCntr += 1
-                    #if self._debugCntr % 15 == 0:
-                      #  print(self.curr_Distance_measure_zone, self.currentDistance)
+                    #self._OpenCVDepthHandler.displayAMessageToCV(self.displayFrame, f"Distance: {self.curr_Distance_measure_zone}",
+                    #                                               self._BgStart, self._BgEnd, self._TextStart)
+                   
+                   
 
             else: 
                 self.messages.emit("Press \"Start\" to Start Gait Tracking")
@@ -620,13 +639,13 @@ class GAIT(QThread):
 
 
     def debugDictPrint(self, dictionary, label=None):
-        self._programLog.output(3, "\n\n")
+        self._programLog.output(1, "\n\n")
         if label is not None: 
-            self._programLog.output(3,label)
+            self._programLog.output(1,label)
         for x, y in dictionary.items(): 
             print(f"\nCurrent Key Val: {x}")
             for i, data in enumerate(y):
-                self._programLog.output(3, f"{i + 1} : {data}")
+                self._programLog.output(1, f"{i + 1} : {data}")
             # Save this data as a dataframe
             if self._DataFrame is None: 
                 self._DataFrame = pd.DataFrame.from_dict(y)
@@ -644,16 +663,16 @@ class GAIT(QThread):
     def debugDictPrint2(self, dictionary, label=None):
         sum = 0
         cntr = 0
-        self._programLog.output(3, "\n\n")
+        self._programLog.output(1, "\n\n")
         if label is not None:
-            self._programLog.output(3,label)
+            self._programLog.output(1,label)
         for x, y in dictionary.items():
             for i, data in enumerate(y):
-                self._programLog.output(3, f"{i + 1} : {data}")
+                self._programLog.output(1, f"{i + 1} : {data}")
                 sum += data['Instant Velocity']
                 cntr +=1
 
-        self._programLog.output(3, f"\nAverage of Instant Velocities: {sum/cntr}")
+        self._programLog.output(1, f"\nAverage of Instant Velocities: {sum/cntr}")
 
 
    
@@ -682,10 +701,11 @@ class GAIT(QThread):
             self._ptLog.output(2,"\n\n---------------------------------------------")
             self._ptLog.output(2, f"Average Gait Speed: {self._Gait_Speed_Avg}") 
             self._ptLog.output(2,"---------------------------------------------")
-            self._programLog.output(2, "Dictionary Format of Data:\n")
-            self._programLog.output(2, self.Data_Dict)
-            # Debug Print  For Now
-            #self.debugDictPrint(self.Data_Dict)
+            # Debug Calls 
+            self._programLog.output(0, "Dictionary Format of Data:\n")
+            self._programLog.output(0, self.Data_Dict)
+            # End Debug
+            
             # Now Calculate the Average Instant Vel and time at Each Distance
             self.setupAvgGraph("Average Graph")
             # Now upload the data to the database
