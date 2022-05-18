@@ -203,7 +203,7 @@ class GAIT(QThread):
         # Should Start from frame 5 through maxFrame + 5
         for i in range(int(tempFrameBFrame['frame'].min()), int(tempFrameBFrame['frame'].max() + tempFrameBFrame['frame'].min()), int(tempFrameBFrame['frame'].min())): 
             tempFrame = tempFrameBFrame.loc[tempFrameBFrame['frame'] == i] # Get all Rows that Match the Frame I am currently looking at
-            tempFrame = pd.DataFrame.from_dict({'Type' : "Frame", 'Time': [tempFrame['CurrTime'].mean()], 'Distance' : [tempFrame['distance_Measure'].mean()], 'Velocity' : [tempFrame['currVelocity'].mean()]})
+            tempFrame = pd.DataFrame.from_dict({'type' : "Frame", 'time': [tempFrame['CurrTime'].mean()], 'distance' : [tempFrame['distance_Measure'].mean()], 'velocity' : [tempFrame['currVelocity'].mean()]})
             if newFrameBFrameDataSet.empty: 
                 newFrameBFrameDataSet = tempFrame
             else: 
@@ -212,7 +212,7 @@ class GAIT(QThread):
         # Now do something similar to the above but for iv distances
         for i in range(int(tempIV_dict['distanceID'].max()) + 1): 
             tempIV = tempIV_dict.loc[tempIV_dict['distanceID'] == i] # Grab All The Rows that Have The Wanted Distance
-            tempIV = pd.DataFrame.from_dict({'Type' : "Instant Velocity", 'Time' : [tempIV['CurrTime'].mean()], 'Distance': [tempIV['distance_Measure'].mean()], 'Velocity' : [tempIV['currVelocity'].mean()]})
+            tempIV = pd.DataFrame.from_dict({'type' : "Instant velocity", 'time' : [tempIV['CurrTime'].mean()], 'distance': [tempIV['distance_Measure'].mean()], 'velocity' : [tempIV['currVelocity'].mean()]})
             if newIVDataSet.empty: 
                 newIVDataSet = tempIV
             else: 
@@ -222,7 +222,7 @@ class GAIT(QThread):
         
         self._programLog.output(0, f"{newFrameBFrameDataSet}\n\n")
         self._programLog.output(0, f"{newIVDataSet}\n\n")
-        return newFrameBFrameDataSet, newIVDataSet
+        return newFrameBFrameDataSet.dropna(), newIVDataSet.dropna()
        
 
         
@@ -235,7 +235,7 @@ class GAIT(QThread):
         
         self._programLog.output(0, f"{frameData.shape, ivData.shape}")
         self._IV_Avg_Graph.setupLabels(title, "Distance (m)", "Speed (m/s)")
-        self._IV_Avg_Graph.insertToGraph((frameData['Distance'], frameData['Velocity']), (ivData['Distance'], ivData['Velocity']), 1)
+        self._IV_Avg_Graph.insertToGraph((frameData['distance'], frameData['velocity']), (ivData['distance'], ivData['velocity']), 1)
         
         # Since we should be done w the original dict, we need to clear it, and then re-create it for data uploading
         self.Data_Dict.clear()

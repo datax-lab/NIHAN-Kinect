@@ -1,0 +1,229 @@
+{
+      "patientId": "12345678",
+      "date": "2022-05-17",
+      "averageGaitSpeed": 0.8170282925214848,
+      "gaitSpeedResults": [
+            {
+                  "type": "Frame",
+                  "time": 0.13570451736450195,
+                  "distance": 0.148,
+                  "velocity": 0.888
+            },
+            {
+                  "type": "Frame",
+                  "time": 0.29776835441589355,
+                  "distance": 0.315,
+                  "velocity": 1.0020000000000002
+            },
+            {
+                  "type": "Frame",
+                  "time": 0.46959614753723145,
+                  "distance": 0.484,
+                  "velocity": 1.0140000000000002
+            },
+            {
+                  "type": "Frame",
+                  "time": 0.630683183670044,
+                  "distance": 0.679,
+                  "velocity": 1.1700000000000002
+            },
+            {
+                  "type": "Frame",
+                  "time": 0.7927484512329102,
+                  "distance": 0.889,
+                  "velocity": 1.26
+            },
+            {
+                  "type": "Frame",
+                  "time": 0.9587173461914062,
+                  "distance": 1.096,
+                  "velocity": 1.242
+            },
+            {
+                  "type": "Frame",
+                  "time": 1.1275432109832764,
+                  "distance": 1.225,
+                  "velocity": 0.774
+            },
+            {
+                  "type": "Frame",
+                  "time": 1.2847256660461426,
+                  "distance": 1.415,
+                  "velocity": 1.1400000000000001
+            },
+            {
+                  "type": "Frame",
+                  "time": 1.4526472091674805,
+                  "distance": 1.575,
+                  "velocity": 0.9600000000000001
+            },
+            {
+                  "type": "Frame",
+                  "time": 1.6195931434631348,
+                  "distance": 1.795,
+                  "velocity": 1.32
+            },
+            {
+                  "type": "Frame",
+                  "time": 1.7875161170959473,
+                  "distance": 2.006,
+                  "velocity": 1.266
+            },
+            {
+                  "type": "Frame",
+                  "time": 1.9593427181243896,
+                  "distance": 2.096,
+                  "velocity": 0.54
+            },
+            {
+                  "type": "Frame",
+                  "time": 2.1253132820129395,
+                  "distance": 2.266,
+                  "velocity": 1.0200000000000002
+            },
+            {
+                  "type": "Frame",
+                  "time": 2.2903053760528564,
+                  "distance": 2.482,
+                  "velocity": 1.296
+            },
+            {
+                  "type": "Frame",
+                  "time": 2.4541969299316406,
+                  "distance": 2.638,
+                  "velocity": 0.936
+            },
+            {
+                  "type": "Frame",
+                  "time": 2.624114990234375,
+                  "distance": 2.799,
+                  "velocity": 0.9660000000000001
+            },
+            {
+                  "type": "Frame",
+                  "time": 2.792036771774292,
+                  "distance": 2.985,
+                  "velocity": 1.116
+            },
+            {
+                  "type": "Frame",
+                  "time": 2.9482433795928955,
+                  "distance": 3.193,
+                  "velocity": 1.248
+            },
+            {
+                  "type": "Frame",
+                  "time": 3.1161651611328125,
+                  "distance": 3.364,
+                  "velocity": 1.0260000000000002
+            },
+            {
+                  "type": "Frame",
+                  "time": 3.283111333847046,
+                  "distance": 3.508,
+                  "velocity": 0.864
+            },
+            {
+                  "type": "Frame",
+                  "time": 3.4481041431427,
+                  "distance": 3.727,
+                  "velocity": 1.314
+            },
+            {
+                  "type": "Frame",
+                  "time": 3.6130971908569336,
+                  "distance": 3.876,
+                  "velocity": 0.894
+            },
+            {
+                  "type": "Frame",
+                  "time": 3.7839484214782715,
+                  "distance": 3.97,
+                  "velocity": 0.5640000000000001
+            },
+            {
+                  "type": "Instant velocity",
+                  "time": 0.0,
+                  "distance": 0.0,
+                  "velocity": 0.0
+            },
+            {
+                  "type": "Instant velocity",
+                  "time": 0.29776835441589355,
+                  "distance": 0.315,
+                  "velocity": 0.8496519100105309
+            },
+            {
+                  "type": "Instant velocity",
+                  "time": 0.630683183670044,
+                  "distance": 0.679,
+                  "velocity": 0.8871338776542588
+            },
+            {
+                  "type": "Instant velocity",
+                  "time": 0.8591358661651611,
+                  "distance": 0.955,
+                  "velocity": 0.9570773972756761
+            },
+            {
+                  "type": "Instant velocity",
+                  "time": 1.155855417251587,
+                  "distance": 1.226,
+                  "velocity": 0.8552859042246495
+            },
+            {
+                  "type": "Instant velocity",
+                  "time": 1.5161068439483643,
+                  "distance": 1.549,
+                  "velocity": 0.7773049212056644
+            },
+            {
+                  "type": "Instant velocity",
+                  "time": 1.7181987762451172,
+                  "distance": 1.877,
+                  "velocity": 0.9187594752971602
+            },
+            {
+                  "type": "Instant velocity",
+                  "time": 2.056972026824951,
+                  "distance": 2.192,
+                  "velocity": 0.8652014129999277
+            },
+            {
+                  "type": "Instant velocity",
+                  "time": 2.3253262042999268,
+                  "distance": 2.503,
+                  "velocity": 0.8867295475195733
+            },
+            {
+                  "type": "Instant velocity",
+                  "time": 2.624114990234375,
+                  "distance": 2.799,
+                  "velocity": 0.8672039745796127
+            },
+            {
+                  "type": "Instant velocity",
+                  "time": 2.88478422164917,
+                  "distance": 3.151,
+                  "velocity": 0.9184787847047711
+            },
+            {
+                  "type": "Instant velocity",
+                  "time": 3.147406578063965,
+                  "distance": 3.378,
+                  "velocity": 0.8804424749385731
+            },
+            {
+                  "type": "Instant velocity",
+                  "time": 3.4481041431427,
+                  "distance": 3.727,
+                  "velocity": 0.8956809671253818
+            },
+            {
+                  "type": "Instant velocity",
+                  "time": 3.814213275909424,
+                  "distance": 4.016,
+                  "velocity": 0.8397210967259208
+            }
+      ]
+}
