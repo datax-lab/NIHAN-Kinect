@@ -1,0 +1,60 @@
+
+----------------------------------------------------
+Program running: 05-17-2022, 20:11:27
+----------------------------------------------------
+A Point Was Placed at X: 248 Y: 313
+A Point Was Placed at X: 248 Y: 354
+A Point Was Placed at X: 248 Y: 382
+X,Y Coordinate: (248, 314) Depth: 7544
+X,Y Coordinate: (248, 315) Depth: 7533
+X,Y Coordinate: (248, 316) Depth: 7531
+X,Y Coordinate: (248, 317) Depth: 7525
+X,Y Coordinate: (248, 318) Depth: 7516
+X,Y Coordinate: (248, 319) Depth: 7504
+X,Y Coordinate: (248, 320) Depth: 7499
+X,Y Coordinate: (248, 321) Depth: 7499
+X,Y Coordinate: (248, 322) Depth: 7495
+X,Y Coordinate: (248, 323) Depth: 7485
+X,Y Coordinate: (248, 324) Depth: 7481
+X,Y Coordinate: (248, 325) Depth: 7473
+X,Y Coordinate: (248, 326) Depth: 7471
+X,Y Coordinate: (248, 327) Depth: 7463
+X,Y Coordinate: (248, 328) Depth: 7460
+X,Y Coordinate: (248, 329) Depth: 7454
+X,Y Coordinate: (248, 330) Depth: 7452
+X,Y Coordinate: (248, 331) Depth: 7445
+X,Y Coordinate: (248, 332) Depth: 7435
+X,Y Coordinate: (248, 333) Depth: 7425
+X,Y Coordinate: (248, 334) Depth: 7414
+X,Y Coordinate: (248, 335) Depth: 7413
+X,Y Coordinate: (248, 336) Depth: 7406
+X,Y Coordinate: (248, 337) Depth: 7405
+X,Y Coordinate: (248, 338) Depth: 7397
+X,Y Coordinate: (248, 339) Depth: 7400
+X,Y Coordinate: (248, 340) Depth: 7394
+X,Y Coordinate: (248, 341) Depth: 7392
+X,Y Coordinate: (248, 342) Depth: 7381
+X,Y Coordinate: (248, 343) Depth: 7377
+X,Y Coordinate: (248, 344) Depth: 7375
+X,Y Coordinate: (248, 345) Depth: 7373
+X,Y Coordinate: (248, 346) Depth: 7368
+X,Y Coordinate: (248, 347) Depth: 7362
+X,Y Coordinate: (248, 348) Depth: 7360
+X,Y Coordinate: (248, 349) Depth: 7354
+X,Y Coordinate: (248, 350) Depth: 7353
+X,Y Coordinate: (248, 351) Depth: 7352
+X,Y Coordinate: (248, 352) Depth: 7346
+Largest Depth Point Difference 352
+
+Program Run: 1
+Kyphosis Index Was: 24.503190664880787
+
+
+
+Kyphosis Indexes Calculated: [24.503190664880787]
+
+Average Kyphosis Index: 24.503190664880787
+
+----------------------------------------------------
+Program finished: 05-17-2022, 20:12:10
+----------------------------------------------------

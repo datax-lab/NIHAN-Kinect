@@ -152,8 +152,8 @@ class GaitAnalyzer(gait.GAIT):
         innerFenceL, innerFenceU = tempList.loc[0.25, 0] - iqr, tempList.loc[0.75, 0] + iqr 
         
         # Debug Prints
-        self._programLog.output(2, f"Quantile 1: {tempList.loc[0.25,0]} Median: {tempList.loc[0.5,0]} Quantile 3: {tempList.loc[0.75,0]}")
-        self._programLog.output(2, f'Lower Inner Fence: {innerFenceL} Median: {tempList.loc[0.5,0]} Upper Inner Fence: {innerFenceU}')
+        self._programLog.output(0, f"Quantile 1: {tempList.loc[0.25,0]} Median: {tempList.loc[0.5,0]} Quantile 3: {tempList.loc[0.75,0]}")
+        self._programLog.output(0, f'Lower Inner Fence: {innerFenceL} Median: {tempList.loc[0.5,0]} Upper Inner Fence: {innerFenceU}')
         
         
        
@@ -163,7 +163,7 @@ class GaitAnalyzer(gait.GAIT):
                 listOfPops.append(keyVal)
 
         
-        self._programLog.output(2, f"\nDeletions: {listOfPops} ") 
+        self._programLog.output(0, f"\nDeletions: {listOfPops} ") 
         for item in listOfPops: 
             if item in self.frameSpdsDict:
                 del self.frameSpdsDict[item]
@@ -251,10 +251,10 @@ class GaitAnalyzer(gait.GAIT):
             return 
         elif self.vf_AccelZone is None: 
             distance, time = self._BeginMeasurementZone_mm, self._Timer.getCurrentTimeDiff()
-            self._programLog.output(2, f"Reached Measurement Zone at: {time} sec")
+            self._programLog.output(0, f"Reached Measurement Zone at: {time} sec")
             self.vf_AccelZone = self._instantVelocityHelper(distance, time, 0)
             self.vi_MeasureZone = self.vf_AccelZone
-            self._programLog.output(2, f"Initial Velocity: {self.vi_MeasureZone}")
+            self._programLog.output(0, f"Initial Velocity: {self.vi_MeasureZone}")
             self._saveToDict(0, 0, 0)
             return 
         

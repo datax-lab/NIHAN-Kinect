@@ -12,7 +12,6 @@ from Runtime.kyphosisUI import kyphosisControl
 from Runtime.gaitSpeedUI import controlPanelGait
 
 # Data Base Connection
-from Resources.data import DataHandler
 from Resources.webRequests import WebReq
 
 # AKA the patient information window 

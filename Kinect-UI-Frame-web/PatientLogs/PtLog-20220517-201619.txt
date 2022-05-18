@@ -1,0 +1,49 @@
+
+----------------------------------------------------
+Program running: 05-17-2022, 20:16:19
+----------------------------------------------------
+A Point Was Placed at X: 251 Y: 303
+A Point Was Placed at X: 251 Y: 333
+A Point Was Placed at X: 251 Y: 361
+X,Y Coordinate: (251, 304) Depth: 7575
+X,Y Coordinate: (251, 305) Depth: 7569
+X,Y Coordinate: (251, 306) Depth: 7562
+X,Y Coordinate: (251, 307) Depth: 7559
+X,Y Coordinate: (251, 308) Depth: 7557
+X,Y Coordinate: (251, 309) Depth: 7555
+X,Y Coordinate: (251, 310) Depth: 7545
+X,Y Coordinate: (251, 311) Depth: 7540
+X,Y Coordinate: (251, 312) Depth: 7536
+X,Y Coordinate: (251, 313) Depth: 7535
+X,Y Coordinate: (251, 314) Depth: 7523
+X,Y Coordinate: (251, 315) Depth: 7514
+X,Y Coordinate: (251, 316) Depth: 7509
+X,Y Coordinate: (251, 317) Depth: 7506
+X,Y Coordinate: (251, 318) Depth: 7502
+X,Y Coordinate: (251, 319) Depth: 7498
+X,Y Coordinate: (251, 320) Depth: 7492
+X,Y Coordinate: (251, 321) Depth: 7488
+X,Y Coordinate: (251, 322) Depth: 7485
+X,Y Coordinate: (251, 323) Depth: 7479
+X,Y Coordinate: (251, 324) Depth: 7472
+X,Y Coordinate: (251, 325) Depth: 7458
+X,Y Coordinate: (251, 326) Depth: 7455
+X,Y Coordinate: (251, 327) Depth: 7455
+X,Y Coordinate: (251, 328) Depth: 7453
+X,Y Coordinate: (251, 329) Depth: 7445
+X,Y Coordinate: (251, 330) Depth: 7434
+X,Y Coordinate: (251, 331) Depth: 7429
+Largest Depth Point Difference 331
+
+Program Run: 1
+Kyphosis Index Was: 26.79179035409654
+
+
+
+Kyphosis Indexes Calculated: [26.79179035409654]
+
+Average Kyphosis Index: 26.79179035409654
+
+----------------------------------------------------
+Program finished: 05-17-2022, 20:16:55
+----------------------------------------------------
