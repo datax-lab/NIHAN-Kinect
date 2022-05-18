@@ -105,9 +105,9 @@ class Kyphosis(QThread):
         self._AvgKyphosisIndex = 0
         #self.spinePtCntr = 0 # if becomes > 3 then notify that there should only be 3 points on the spine
         # Setup Logging
-        self._ProgramPath, self._CurrentTime, self._ProgramLogPath, self._PatientLogPath = None, None, None, None  
+        self._ProgramPath, self._CurrentTime, self._ProgramLogPath = None, None, None #self._PatientLogPath = None, None, None, None  
          # Actual Logging Variables 
-        self._ProgramLog, self._PatientLog = None, None
+        self._ProgramLog = None #self._PatientLog = None, None
       
         # Patient Info 
         self._PatientID, self._PatientName = None, None
@@ -132,15 +132,15 @@ class Kyphosis(QThread):
         '''
         self._CurrentTime = time.strftime("%Y%m%d-%H%M%S")
         self._ProgramLogPath = os.path.join(self._ProgramPath, "ProgramLogs")
-        self._PatientLogPath = os.path.join(self._ProgramPath, "PatientLogs")
+        #self._PatientLogPath = os.path.join(self._ProgramPath, "PatientLogs")
         
         if not os.path.exists(self._ProgramLogPath): 
             os.mkdir(self._ProgramLogPath)
-        if not os.path.exists(self._PatientLogPath): 
-            os.mkdir(self._PatientLogPath)
+        #if not os.path.exists(#self._PatientLogPath): 
+         #   os.mkdir(#self._PatientLogPath)
         
         self._ProgramLog = LOGGING(os.path.join(self._ProgramLogPath, f"ProgramLog-{self._CurrentTime}.txt"))
-        self._PatientLog = LOGGING(os.path.join(self._PatientLogPath, f"PtLog-{self._CurrentTime}.txt"))
+        #self._PatientLog = LOGGING(os.path.join(self._PatientLogPath, f"PtLog-{self._CurrentTime}.txt"))
 
     def gatherIntrinsics(self): 
         intrinsics = self._KinectDevice._mapper.GetDepthCameraIntrinsics()
@@ -190,7 +190,7 @@ class Kyphosis(QThread):
             
             self.spinalLandmarksArr.append(MOUSE_PTS(self.id, (mouseX, mouseY)))
             self.id += 1 
-            self._PatientLog.output(2, f"A Point Was Placed at X: {mouseX} Y: {mouseY}")
+            #self._PatientLog.output(2, f"A Point Was Placed at X: {mouseX} Y: {mouseY}")
         
         # Once there are 3 points (C7, T12/L1, S1) allow the user to press the processing keybind to analyse kyphosis 
         if len(self.spinalLandmarksArr) == self._ReqPts: 
@@ -232,14 +232,14 @@ class Kyphosis(QThread):
 
         
 
-        if len(self.kyphosisIndexArr) > 0: 
-            self._PatientLog.output(2, f"\n\nKyphosis Indexes Calculated: {self.kyphosisIndexArr}")
-            self._PatientLog.output(2, f"\nAverage Kyphosis Index: {average(self.kyphosisIndexArr)}")
+        #if len(self.kyphosisIndexArr) > 0: 
+            #self._PatientLog.output(2, f"\n\nKyphosis Indexes Calculated: {self.kyphosisIndexArr}")
+            #self._PatientLog.output(2, f"\nAverage Kyphosis Index: {average(self.kyphosisIndexArr)}")
             
         
         self._ProgramLog.output(2, "\nProgram Run Complete, Exit Success")
 
-        self._PatientLog.closeFile()
+        #self._PatientLog.closeFile()
         self._ProgramLog.closeFile()
 
         if len(self.kyphosisIndexArr) > 0: 
@@ -379,13 +379,13 @@ class Kyphosis(QThread):
         #frameData=self._KinectDevice._depth_frame_data
         for i in range(c7y+1, t12y-1): 
             depth = self._OpenCVDepthHandler.getDepth(self.frameData, c7x, i)
-            self._PatientLog.output(2, f"X,Y Coordinate: {c7x, i} Depth: {depth}")
+            ##self._PatientLog.output(2, f"X,Y Coordinate: {c7x, i} Depth: {depth}")
             depthDiff = c7z-depth
             if depthDiff > largestDiff: 
                 largestDiff = depthDiff
                 largestDiffY = i
        
-        self._PatientLog.output(2, f"Largest Depth Point Difference {largestDiffY}")
+        #self._PatientLog.output(2, f"Largest Depth Point Difference {largestDiffY}")
         
         if largestDiff == 0: 
             self._ProgramLog.output(2,"Error, Kyphosis Index Could Not Be Calculated!")
@@ -424,7 +424,7 @@ class Kyphosis(QThread):
 
         # Unpause the Program
         self._Pause, self._CalculationCompleted = False, True
-        self._PatientLog.output(2, f"\nProgram Run: {self._ProgramRunTimes}\nKyphosis Index Was: {self.kyphosisIndexValue}\n")
+        #self._PatientLog.output(2, f"\nProgram Run: {self._ProgramRunTimes}\nKyphosis Index Was: {self.kyphosisIndexValue}\n")
 
 
     def messageDisplay(self, img, text) -> np.ndarray: 

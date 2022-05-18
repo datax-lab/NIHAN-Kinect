@@ -102,6 +102,7 @@ class userLogin(QDialog):
             self.callMainUI()
         else: 
             self.connectClearLoginTimer()
+            
     
     def outputMessage(self, message: tuple): 
         if message[0] == -1: 
@@ -145,7 +146,9 @@ class twoFactorIn(QDialog):
         self._Window.label.setText(f"Enter The Code Sent To: {email}")
         
     def sendCode(self): 
-        self.twoFactorCode.emit(self._Window.lineEdit.text())
+        tempCode = self._Window.lineEdit.text()
+        self._Window.lineEdit.setText('')
+        self.twoFactorCode.emit(tempCode)
         self.close()
         
     def closeEvent(self, a0: QtGui.QCloseEvent) -> None:
