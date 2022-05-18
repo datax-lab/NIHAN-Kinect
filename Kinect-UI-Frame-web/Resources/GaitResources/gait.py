@@ -568,7 +568,7 @@ class GAIT(QThread):
                     distance = self._find_min(x_Cent, width, y_Cent, height) - self._BeginMeasurementZone_mm
                     #distance = self.curr_Distance_measure_zone
                     if distance >= self._EndMeasurementZone_mm:
-                        self._OpenCVDepthHandler.displayAMessageToCV(self.displayFrame, "Patient Has Reached Enpoint! Press \"c\" to get gait speed",
+                        self._OpenCVDepthHandler.displayAMessageToCV(self.displayFrame, "Patient Has Reached Enpoint!",
                                                                         self._BgStart, self._BgEnd, self._TextStart)
                         self._PAUSE, self._EndReached = True, True
                         self._AllowDataCollection = False 

@@ -1,4 +1,4 @@
-import requests, time
+import requests, time, sys, os
 from PyQt5.QtCore import pyqtSignal, QThread
 import pandas as pd 
 from Resources import Logging as lg
@@ -164,7 +164,7 @@ class WebReq(QThread):
              
         # Disabled for now 
         # Send the Data Now That We Have Prepared it
-        self.__sendGaitSpd(dataDict)
+        #self.__sendGaitSpd(dataDict)
         self.__sendGaitSpd()
 
      
@@ -217,7 +217,7 @@ class WebReq(QThread):
        
        # Disable For Now
        # Now Actually Upload the Data to the Server
-       self.__sendKyphosisIndex(avgKypIndex) # Remove Param Later to enable actual server uploading
+       #self.__sendKyphosisIndex(avgKypIndex) # Remove Param Later to enable actual server uploading
        self.__sendKyphosisIndex()
        
     
@@ -228,4 +228,3 @@ class WebReq(QThread):
             self.newPrint("Logged Out")
         except Exception as err: 
             self.newPrint(f"There was an error: {err}") 
-            
