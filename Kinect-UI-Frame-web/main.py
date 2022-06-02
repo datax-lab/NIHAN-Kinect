@@ -33,7 +33,7 @@ class userLogin(QDialog):
 
         # Two Factor Window
         self._twoFactorWindow = twoFactorIn()
-
+ 
         # Timer to clear input
         self._LoginTimer, self._ReqTimer = QtCore.QTimer(self),QtCore.QTimer(self)
         self.__LoginTimeOut, self.__ReqRefreshInterval = 30, 180000 # This is in seconds
@@ -50,6 +50,9 @@ class userLogin(QDialog):
     def connectSignals(self):
         self._WebInteraction.webReqMessage.connect(self.outputMessage)
         self._twoFactorWindow.twoFactorCode.connect(self.verifyCode)
+        # Handle Logout, without closing program 
+        self._mainUI.re_login.connect(self.show) 
+        # Handle Switching Patient without re-login 
      
      
     def connectButtons(self):
@@ -117,13 +120,13 @@ class userLogin(QDialog):
         self._mainUI.show()
         
 
-    def closeEvent(self, a0: QtGui.QCloseEvent) -> None:
+    #def closeEvent(self, a0: QtGui.QCloseEvent) -> None:
       
-        self._WebInteraction.logout()
+     #   self._WebInteraction.logout()
      
-        print("logged out")
+     #   print("logged out")
         
-        return super().closeEvent(a0)
+      #  return super().closeEvent(a0)
 
 
 

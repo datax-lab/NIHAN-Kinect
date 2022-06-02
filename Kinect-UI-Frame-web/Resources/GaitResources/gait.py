@@ -103,6 +103,8 @@ class GAIT(QThread):
         self.calibrationFrameCntr = int
         self.calculationsDone = bool
         
+        self.wasEmitted = False 
+        
         # Error Handling
         self._LastPosition = []
 
@@ -126,7 +128,7 @@ class GAIT(QThread):
         #               Instant Velocity                     #
         ######################################################
         # Dictionary to save data
-        self.Data_Dict = {} #  Dictionary = {
+        self.Data_Dict = dict() #  Dictionary = {
                                   # '1': [{'distance_Measure': 15, 'currVelocity': 12, 'CurrTime': 15}, {'distance_Measure': 31, 'currVelocity': 12, 'CurrTime': 70}]
                                   #  } 
         
@@ -376,6 +378,15 @@ class GAIT(QThread):
         self.calculationsDone = False 
 
 
+    def fullReset(self): 
+        self.Data_Dict = dict()
+        self._IV_Dict_Averages = {}
+        self._IV_Avg_Graph = graph.Graph()
+        self.wasEmitted = False
+        self._currKey = self._StartKey
+        # To Help With Final Graphing Later
+        self._FrameBFrame_Dict, self._IV_Dict = dict(), dict()
+        self.resetProgram()
 
 
     def handleNewDepthFrames(self) -> np.ndarray:

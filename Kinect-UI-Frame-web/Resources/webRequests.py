@@ -164,8 +164,8 @@ class WebReq(QThread):
              
         # Disabled for now 
         # Send the Data Now That We Have Prepared it
-        #self.__sendGaitSpd(dataDict)
-        self.__sendGaitSpd()
+        self.__sendGaitSpd(dataDict)
+        #self.__sendGaitSpd()
 
      
         
@@ -228,3 +228,5 @@ class WebReq(QThread):
             self.newPrint("Logged Out")
         except Exception as err: 
             self.newPrint(f"There was an error: {err}") 
+        
+        return 

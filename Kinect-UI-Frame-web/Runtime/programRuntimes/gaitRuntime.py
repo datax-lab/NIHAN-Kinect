@@ -25,7 +25,7 @@ class GaitAnalyzer(gait.GAIT):
 
         # QThread Flags
         self.threadRunning = True 
-        self.wasEmitted = False 
+        
         
 
         ##### Frame By Frame #####

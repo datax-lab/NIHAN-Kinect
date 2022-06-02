@@ -1,5 +1,6 @@
 
 import sys, os, time, cv2
+from tkinter import BooleanVar
 
 # PyQt5 
 from PyQt5 import Qt, QtGui, QtWidgets, QtCore
@@ -15,14 +16,15 @@ from Runtime.gaitSpeedUI import controlPanelGait
 from Resources.webRequests import WebReq
 
 # AKA the patient information window 
-class mainWindow(QDialog): 
+class mainWindow(QDialog):
+    re_login = pyqtSignal(bool) 
+    switch_a_patient = pyqtSignal(bool)
     
     def __init__(self): 
         super(mainWindow, self).__init__()
         self._Window = ptInfoUI.Ui_Dialog()
         self._Window.setupUi(self)
-        # Connect the Buttons 
-        self.connectButtons()
+
         # Instantiate the Other Windows
         self._GaitControlPanel, self._KyphosisPanel = controlPanelGait(), kyphosisControl()
         self._ProgramSelector = programSelectorUI()
@@ -32,8 +34,18 @@ class mainWindow(QDialog):
 
         # Database Links 
         self._Database = WebReq()
-        self._PatientName, self._PatientID = None, None        
+        self._PatientName, self._PatientID = None, None  
+        
+        # Connect the Buttons 
+        self.connectButtons()
+        self.connectSignals()
+        
+              
 
+    def connectSignals(self): 
+        self._GaitControlPanel.trigger_Program_restart.connect(self.reshow_Login)
+        self._GaitControlPanel.trigger_patient_switch.connect(self.reshow_patient_id_req)
+    
     def connectButtons(self):
         #self._Window.pushButton.clicked.connect(self.registAccount)
         self._Window.pushButton_2.clicked.connect(self.verifyPt)
@@ -44,8 +56,9 @@ class mainWindow(QDialog):
     
     def verifyPt(self): 
         # This is where I would first verify if the pt is in the database, output error message if not
-        # use setText to output the Error if a patient was not found in the database and tell to register
+        # use setText to output the Error if a patient was not found  in the database and tell to register
         self._PatientID = self._Window.lineEdit_2.text()
+        self._Window.lineEdit_2.clear()
         # This is where i will check if the fields are not empty, if they are launch pop up, or change the text to output the error 
         if  self._PatientID == "":
             self._Window.label_3.setStyleSheet("background-color: red; color: white")
@@ -78,6 +91,16 @@ class mainWindow(QDialog):
         self._GaitControlPanel.show()
 
 
+    def reshow_Login(self, booleanVal = True):
+        if booleanVal: 
+            self.re_login.emit(True)
+    
+    def reshow_patient_id_req(self, booleanVal=True):
+        if booleanVal: 
+            print("Reshowing patiend id prompt", flush=True)
+            self.show()
+            #self.switch_a_patient.emit(True)
+    
     def runKyphosisProgram(self): 
         self._KyphosisPanel.setPtInfoNStart(self._PatientID, self._PatientName, self._Database)
         self._KyphosisPanel.show()
