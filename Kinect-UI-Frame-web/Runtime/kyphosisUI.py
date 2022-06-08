@@ -34,13 +34,13 @@ class kyphosisControl(QDialog):
 
 
     def connectButtons(self): 
-        self._Window.pushButton_6.clicked.connect(self.runAnalyzation) # Analyze Button
-        self._Window.pushButton_4.clicked.connect(self.captureImg) # Capture Button
-        self._Window.pushButton_5.clicked.connect(self.resetSpinePoints) # Reset Points Button
-        self._Window.pushButton_3.clicked.connect(self.closeProgram) # Done Button 
+        self._Window.pushButton.clicked.connect(self.runAnalyzation) # Analyze Button
+        self._Window.pushButton_2.clicked.connect(self.captureImg) # Capture Button
+        self._Window.pushButton_3.clicked.connect(self.resetSpinePoints) # Reset Points Button
+        self._Window.pushButton_4.clicked.connect(self.closeProgram) # Done Button 
         
         # Disable Certain Buttons Until Allowed 
-        self._Window.pushButton_6.setDisabled(True)
+        self._Window.pushButton.setDisabled(True)
 
 
     def setupThreads(self): 
@@ -73,12 +73,12 @@ class kyphosisControl(QDialog):
 
     def takeInput(self, boolVal): 
         if boolVal: 
-            self._Window.pushButton_6.setDisabled(False)
+            self._Window.pushButton.setDisabled(False)
         else: 
-            self._Window.pushButton_6.setDisabled(True)
+            self._Window.pushButton.setDisabled(True)
 
     def runAnalyzation(self): 
-        self._Window.pushButton_6.setDisabled(True)
+        self._Window.pushButton.setDisabled(True)
         self._KyphosisProgram._ProgramLog.output(2, "Beginning Analysis...")
         self._KyphosisProgram._RunCalculations = True 
     
@@ -144,8 +144,8 @@ class window_Curr_Kyph(QDialog):
 
     
     def connectButtons(self):
-        self._Window.pushButton_7.clicked.connect(self.keepNContinue)
-        self._Window.pushButton_6.clicked.connect(self.resetNContinue)
+        self._Window.pushButton.clicked.connect(self.keepNContinue)
+        self._Window.pushButton_2.clicked.connect(self.resetNContinue)
 
     def showCurrKyph(self, kyphosisIndex): 
         self._Window.label_2.setText(f"{round(kyphosisIndex,4)}")
@@ -173,7 +173,7 @@ class window_Avg_Kyph(QDialog):
         self.AvgKyphosis = None 
         
         # Connect Button
-        self._Window.pushButton_3.clicked.connect(self.closeProgram)
+        self._Window.pushButton.clicked.connect(self.closeProgram)
     
     def displayAvgKyp(self, kyphosisIndex): 
         self._Window.label_2.setText(f"{round(kyphosisIndex,4)}")

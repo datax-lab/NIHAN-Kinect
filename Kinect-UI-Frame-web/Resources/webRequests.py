@@ -217,8 +217,8 @@ class WebReq(QThread):
        
        # Disable For Now
        # Now Actually Upload the Data to the Server
-       #self.__sendKyphosisIndex(avgKypIndex) # Remove Param Later to enable actual server uploading
-       self.__sendKyphosisIndex()
+       self.__sendKyphosisIndex(avgKypIndex) # Remove Param Later to enable actual server uploading
+       #self.__sendKyphosisIndex()
        
     
     
