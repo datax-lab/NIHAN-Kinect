@@ -57,7 +57,6 @@ class KyphosisImg(iEdit.CVEDITOR_DEPTH):
         
         return img
 
-   
     # Handle Mouse Events 
     def handleMouseEvents(self): 
         cv2.namedWindow(self._WindowName)

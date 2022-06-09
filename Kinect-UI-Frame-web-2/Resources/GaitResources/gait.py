@@ -53,7 +53,7 @@ class GAIT(QThread):
         self._StartKey = 1
         self._currKey = self._StartKey
         # Gait Constants
-        self._BeginMeasurementZone_mm, self._EndMeasurementZone_mm = 1000, 4000 # Begin Measurement Zone at 1m and end at 4m
+        self._BeginMeasurementZone_mm, self._EndMeasurementZone_mm = 1000, 4000 #0,500 #1000,<- Debug 4000 # Begin Measurement Zone at 1m and end at 4m
         self._UnitConversionFactor = 1000
         # Instant Velocity Constants
         self._DistanceOffset = 304.8 # For now its every 1 foot report

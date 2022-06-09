@@ -36,6 +36,9 @@ class controlPanelGait(QDialog):
         # GAIT Reporting Windows 
         self.uiShowGaitSpd = gaitSpdUI()
         self.avgGaitSpdUI = avgSpdUI()
+        
+        # Flags
+        self._ValidActionCommand = False
 
         # Button Connections 
         self.connectButtons()
@@ -191,6 +194,7 @@ class controlPanelGait(QDialog):
 
     def signalLogoutOnly(self, booleanVAl=True):
         if booleanVAl:
+            self._ValidActionCommand = True
             self.close()
             print("Logout button presed", flush=True)
             self.gaitProgram.fullReset()
@@ -199,6 +203,7 @@ class controlPanelGait(QDialog):
     
     def signalPatientSwitch(self, booleanVal=True): 
         if booleanVal: 
+            self._ValidActionCommand = True
             self.close()
             self.gaitProgram.fullReset()
             print("Patient Switching Pressed", flush=True)
@@ -220,6 +225,7 @@ class controlPanelGait(QDialog):
             self.avgGaitSpdUI.show()
         else: 
             self.signalExit(True)
+            
        
        
 
@@ -232,9 +238,16 @@ class controlPanelGait(QDialog):
         if not os.path.exists(picturePath):
             os.mkdir(picturePath) 
 
-    #def closeEvent(self, a0: QtGui.QCloseEvent) -> None:
-     #   self._DatabaseRef.logout()
-      #  exit(0)
+    def showEvent(self, a0: QtGui.QShowEvent) -> None:
+        self._ValidActionCommand = False
+        return super().showEvent(a0)
+    
+    def closeEvent(self, a0: QtGui.QCloseEvent) -> None:
+        if not self._ValidActionCommand:
+            self._DatabaseRef.logout()
+            exit(0)
+        
+        
         
    
        

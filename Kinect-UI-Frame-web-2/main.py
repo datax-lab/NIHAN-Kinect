@@ -89,6 +89,8 @@ class userLogin(QDialog):
         if _DebugMode: 
             print(f"User: {self._Email}, Passd: {self._Passwd}")
             self.callMainUI()
+            self._Window.lineEdit.clear()
+            self._Window.lineEdit_2.clear()
         elif self._WebInteraction.linkStart() > -1: 
            self._twoFactorWindow.setEmail(self._Email)
            self._twoFactorWindow.show()
@@ -100,9 +102,14 @@ class userLogin(QDialog):
             self.connectClearLoginTimer()
             
     def verifyCode(self, code): 
+        # First Check if the code is valid
         if code != "-1" and self._WebInteraction.linkStart(token=code) > -1: 
             self.connectRefreshTimer()
             self.callMainUI()
+            # Clear the Input User Name and Password
+            self._Window.lineEdit.clear()
+            self._Window.lineEdit_2.clear()
+        # If Not Activate a Clear timer to clear the input
         else: 
             self.connectClearLoginTimer()
             
@@ -120,13 +127,10 @@ class userLogin(QDialog):
         self._mainUI.show()
         
 
-    #def closeEvent(self, a0: QtGui.QCloseEvent) -> None:
-      
-     #   self._WebInteraction.logout()
+    def closeEvent(self, a0: QtGui.QCloseEvent) -> None:
+        self._WebInteraction.logout()
+        exit(0)
      
-     #   print("logged out")
-        
-      #  return super().closeEvent(a0)
 
 
 

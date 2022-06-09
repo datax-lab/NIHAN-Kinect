@@ -75,7 +75,8 @@ class Kyphosis(QThread):
         # Set the Height and Width of the Frame 
         self._Height, self._Width = self._KinectDevice.depth_frame_desc.Height, self._KinectDevice.depth_frame_desc.Width
         # Class to help convert images to readable and editable formats 
-        self._OpenCVDepthHandler = KyphosisImg(self._Height, self._Width, "Kinect V2 Kyphosis Analyzer")
+        self.WINDOWNAME = "Kinect V2 Kyphosis Analyzer"
+        self._OpenCVDepthHandler = KyphosisImg(self._Height, self._Width, self.WINDOWNAME)
         
         
         # Actual Program Vars: 
@@ -147,7 +148,7 @@ class Kyphosis(QThread):
         # Patient Info 
         self._PatientID, self._PatientName = None, None
         self._Database = WebReq() #DataHandler()
-
+        
         self.setupLogs()
         
     def setDatabaseInstance(self, dataBasePtr):
@@ -275,6 +276,7 @@ class Kyphosis(QThread):
         #self._PatientLog.closeFile()
         self._ProgramLog.closeFile()
 
+        print("Attempting Signal Sending", flush=True)
         if len(self.kyphosisIndexArr) > 0: 
             # Upload to DB/Web Server
             self._Database.uploadKyphosisResult((self._PatientID, self._PatientName), average(self.kyphosisIndexArr))
@@ -496,31 +498,38 @@ class Kyphosis(QThread):
    
     def runtime(self):
         
-
+        self.awaitingActionFromUI = False 
+        self.windowDestroyed = False
         
         while not self._Is_Done:
 
             # Handle User Input 
             self.handleOpenCVEvents()
+            if not self.awaitingActionFromUI:
+                # Capture Depth Frames if program is not paused  
+                if not self._Pause:
+                    self.getNewFrames()
 
-            # Capture Depth Frames if program is not paused  
-            if not self._Pause:
-                self.getNewFrames()
+                # Now Gather Intrinsics if they weren't already 
+                if not self._IntrinsicsGathered: 
+                    self.gatherIntrinsics()
+                elif self._AllowAnalysis and self._RunCalculations: 
+                    self.captureDepthData()
+                    self.doCalculations()
+                    self._ProgramLog.output(2, "Calculation Finished!")
 
-            # Now Gather Intrinsics if they weren't already 
-            if not self._IntrinsicsGathered: 
-                self.gatherIntrinsics()
-            elif self._AllowAnalysis and self._RunCalculations: 
-                self.captureDepthData()
-                self.doCalculations()
-                self._ProgramLog.output(2, "Calculation Finished!")
+                # Now Display The Image 
+                self.handleImgDisplay()
 
-            # Now Display The Image 
-            self.handleImgDisplay()
-
-            if self.messsageSent is False: 
-                self.messsageSent = True
-                self.signalControlWindowtoShow.emit(True)
+                if self.messsageSent is False: 
+                    self.messsageSent = True
+                    self.signalControlWindowtoShow.emit(True)
+            else: 
+                if not self.windowDestroyed:
+                    cv2.waitKey(1)
+                    self._OpenCVDepthHandler.closeAWindow(self.WINDOWNAME)
+                    self.windowDestroyed = True
+                    print("Window Destroyed", flush=True)
 
         self.programClose()
         

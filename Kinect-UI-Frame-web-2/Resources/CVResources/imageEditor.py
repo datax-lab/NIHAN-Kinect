@@ -68,11 +68,15 @@ class CVEditor:
         cv2.imshow(self._WindowName, frame)
 
     def closeWindows(self):
+        cv2.waitKey(1)
         cv2.destroyWindow("2D Image")
         cv2.destroyWindow("3D Image")
+        
 
     def closeAllWindows(self):
+        cv2.waitKey(1)
         cv2.destroyAllWindows()
+        
 
     def displayFloatingMessage(self, img, textOut :str, xyStartText : tuple, color : tuple): 
         imgTemp = cv2.putText(img, textOut, xyStartText, cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.9, color, 2)
@@ -84,6 +88,7 @@ class CVEDITOR_DEPTH(CVEditor):
     # as the front end to the user, so it should allow for colors, (basically 3d imge, not 2d)
     def __init__(self, height, width, windowName):
         CVEditor.__init__(self, height, width, windowName)
+        
 
     # Grab the Depth Value from the FrameDataReader
     def getDepth(self, frameData, x, y):
@@ -92,7 +97,12 @@ class CVEDITOR_DEPTH(CVEditor):
             return 0
         return frameData[(y * self._Width) + x]
 
-
+    def closeAWindow(self, aDisplayFrame=None):
+        print(f"Destroying Window {aDisplayFrame}", flush=True)
+        cv2.waitKey(1)
+        cv2.destroyWindow(aDisplayFrame)
+        
+        
     # Function that gets the background of an image
     def identifyBackground(self, initFrame, src2):
         # Blur Both Images, to remove any noise that may make the program think its a foreground object

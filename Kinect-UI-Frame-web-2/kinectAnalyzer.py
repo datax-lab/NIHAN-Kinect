@@ -48,6 +48,8 @@ class mainWindow(QDialog):
 
         self._KyphosisPanel.logout_signal.connect(self.reshow_Login)
         self._KyphosisPanel.switch_signal.connect(self.reshow_patient_id_req)
+        
+        self._KyphosisPanel.exitTriggered.connect(self.closeControlPanel)
     
     def connectButtons(self):
         #self._Window.pushButton.clicked.connect(self.registAccount)
@@ -115,6 +117,13 @@ class mainWindow(QDialog):
         self._KyphosisPanel.setPtInfoNStart(self._PatientID, self._PatientName, self._Database)
         self._KyphosisPanel.show()
     
+    def closeControlPanel(self, booleanVal):
+        if booleanVal: 
+            self._KyphosisPanel.close()
+        else: 
+            self._GaitControlPanel.close()
+        print("Attempting Exit!!", flush=True)
+        exit(0)
         
 
 
