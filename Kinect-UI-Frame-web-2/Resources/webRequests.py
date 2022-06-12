@@ -198,8 +198,9 @@ class WebReq(QThread):
             # Check if the attempts were exceeded
             if currAttempt == self._uploadMaxAttempts:
                 self.webReqMessage.emit((-1, f"Error Unable to upload data to {self._Kyphosis_URL}!"))
+                print(f"Kyphosis Average: {kyphosisAvg}", flush=True)
                 break 
-    
+            
     
     
     def uploadKyphosisResult(self, ptInfo: tuple, avgKypIndex : float): 
@@ -217,9 +218,9 @@ class WebReq(QThread):
        
        # Disable For Now
        # Now Actually Upload the Data to the Server
-       print(f"Patient ID: {ptID}", flush=True)
-       self.__sendKyphosisIndex(avgKypIndex) # Remove Param Later to enable actual server uploading
-       #self.__sendKyphosisIndex()
+       #print(f"Patient ID: {ptID}", flush=True)
+       #self.__sendKyphosisIndex(avgKypIndex) # Remove Param Later to enable actual server uploading
+       self.__sendKyphosisIndex()
        
     
     

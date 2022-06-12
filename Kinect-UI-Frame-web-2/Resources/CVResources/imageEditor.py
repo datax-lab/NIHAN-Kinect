@@ -100,7 +100,11 @@ class CVEDITOR_DEPTH(CVEditor):
     def closeAWindow(self, aDisplayFrame=None):
         print(f"Destroying Window {aDisplayFrame}", flush=True)
         cv2.waitKey(1)
-        cv2.destroyWindow(aDisplayFrame)
+        try: 
+            cv2.destroyWindow(aDisplayFrame)
+        except Exception: 
+            pass 
+        
         
         
     # Function that gets the background of an image

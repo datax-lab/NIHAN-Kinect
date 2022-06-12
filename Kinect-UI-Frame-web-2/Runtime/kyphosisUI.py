@@ -45,7 +45,7 @@ class kyphosisControl(QDialog):
         self._Window.pushButton_2.clicked.connect(self.captureImg) # Capture Button
         self._Window.pushButton_3.clicked.connect(self.resetSpinePoints) # Reset Points Button
         self._Window.pushButton_4.clicked.connect(self.closeProgram) # Done Button 
-        self._Window.commandLinkButton.clicked.connect(self.send_logout)
+        #self._Window.commandLinkButton.clicked.connect(self.send_logout)
         # Disable Certain Buttons Until Allowed 
         self._Window.pushButton.setDisabled(True)
 
@@ -54,6 +54,7 @@ class kyphosisControl(QDialog):
         self._KyphosisThread = QThread()
         self._KyphosisProgram.moveToThread(self._KyphosisThread)
         self._KyphosisThread.start()
+        self._KyphosisProgram.blockSignals(False)
         self._KyphosisProgram.awaitingActionFromUI = False
 
     def connectSignals(self): 
@@ -77,6 +78,7 @@ class kyphosisControl(QDialog):
         self._ValidActionCommand = True
         self._KyphosisProgram._Is_Done = True
         self._DatabaseRef.logout()
+        self._KyphosisProgram.blockSignals(True)
         # End the Thread
         self._KyphosisThread.quit()
         self._KyphosisThread.wait(5)
@@ -84,6 +86,7 @@ class kyphosisControl(QDialog):
         self._KyphosisProgram.awaitingActionFromUI = True
         # Send signal to switch to login window
         self.logout_signal.emit(True)
+        
         
         self.close()
 
@@ -138,17 +141,16 @@ class kyphosisControl(QDialog):
     def resetSpinePoints(self):
         self._KyphosisProgram.reset(clearSpinalArr=True)
 
-    # Program does not quit and window stays open if there is no data if either the action command 
-    # or the done button is pressed, 
-    # but when there is data the program works as expected
+   
     def displayAvgKyphosis(self, kyphosisAvg): 
         self._KyphosisProgram._OpenCVDepthHandler.closeAllWindows()   
         
         if kyphosisAvg <= 0: 
-            pass
+            self._AvgKyphWindow.displayAvgKyp(0)
         else: 
             self._AvgKyphWindow.displayAvgKyp(kyphosisAvg)
-            self._AvgKyphWindow.show()
+        
+        self._AvgKyphWindow.show()
             
             
     

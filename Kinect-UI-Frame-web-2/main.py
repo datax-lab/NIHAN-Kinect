@@ -109,6 +109,9 @@ class userLogin(QDialog):
             # Clear the Input User Name and Password
             self._Window.lineEdit.clear()
             self._Window.lineEdit_2.clear()
+            # Clear any Error Messages
+            self._Window.label.setStyleSheet("color: black")
+            self._Window.label.setText("Please Login Below:")
         # If Not Activate a Clear timer to clear the input
         else: 
             self.connectClearLoginTimer()

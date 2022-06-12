@@ -14,9 +14,9 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
-        Dialog.resize(413, 522)
+        Dialog.resize(413, 488)
         self.verticalLayoutWidget = QtWidgets.QWidget(Dialog)
-        self.verticalLayoutWidget.setGeometry(QtCore.QRect(20, 60, 371, 91))
+        self.verticalLayoutWidget.setGeometry(QtCore.QRect(20, 20, 371, 91))
         font = QtGui.QFont()
         font.setPointSize(11)
         self.verticalLayoutWidget.setFont(font)
@@ -37,7 +37,7 @@ class Ui_Dialog(object):
         self.label.setObjectName("label")
         self.verticalLayout.addWidget(self.label)
         self.verticalLayoutWidget_2 = QtWidgets.QWidget(Dialog)
-        self.verticalLayoutWidget_2.setGeometry(QtCore.QRect(80, 180, 251, 321))
+        self.verticalLayoutWidget_2.setGeometry(QtCore.QRect(80, 140, 251, 321))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -101,13 +101,6 @@ class Ui_Dialog(object):
         self.pushButton_4.setFont(font)
         self.pushButton_4.setObjectName("pushButton_4")
         self.verticalLayout_2.addWidget(self.pushButton_4)
-        self.commandLinkButton = QtWidgets.QCommandLinkButton(Dialog)
-        self.commandLinkButton.setGeometry(QtCore.QRect(20, 10, 185, 41))
-        font = QtGui.QFont()
-        font.setFamily("Segoe UI")
-        font.setPointSize(11)
-        self.commandLinkButton.setFont(font)
-        self.commandLinkButton.setObjectName("commandLinkButton")
 
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
@@ -120,7 +113,6 @@ class Ui_Dialog(object):
         self.pushButton_2.setText(_translate("Dialog", "Capture"))
         self.pushButton_3.setText(_translate("Dialog", "Clear Points"))
         self.pushButton_4.setText(_translate("Dialog", "Done"))
-        self.commandLinkButton.setText(_translate("Dialog", "Logout"))
 
 
 if __name__ == "__main__":
