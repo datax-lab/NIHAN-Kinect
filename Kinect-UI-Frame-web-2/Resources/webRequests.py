@@ -1,3 +1,4 @@
+from http import cookiejar
 import requests, time, sys, os
 from PyQt5.QtCore import pyqtSignal, QThread
 import pandas as pd 
@@ -116,7 +117,7 @@ class WebReq(QThread):
     def __sendGaitSpd(self, dataTest=None):
         if dataTest is not None:  
             self.newPrint("\nDebug Sending Gait Data Test")
-            self.newPrint(f"{pd.DataFrame(dataTest)}\n\n")
+            
             import os, json
             with open(os.path.join(os.getcwd(), "gaitAnylsis.json"), 'w') as gaitJson: 
                 json.dump(self._GaitData, gaitJson, indent=6)
@@ -142,8 +143,10 @@ class WebReq(QThread):
             # If the data was not uploaded after this amount of max attempts then exit
             if currAttempt == self._uploadMaxAttempts: 
                 self.webReqMessage.emit((-1, f"Error Unable to upload data to {self._GAIT_URL}!"))
+                self.newPrint(f"Gait Data: \n{pd.DataFrame(dataTest)}\n\n")
                 break;  
 
+            
 
     def uploadGaitResults(self, ptInfo : tuple, dataDict : dict, gaitAvgSpd : float):
         
@@ -164,8 +167,8 @@ class WebReq(QThread):
              
         # Disabled for now 
         # Send the Data Now That We Have Prepared it
-        self.__sendGaitSpd(dataDict)
-        #self.__sendGaitSpd()
+        #self.__sendGaitSpd(dataDict)
+        self.__sendGaitSpd()
 
      
         
@@ -227,6 +230,8 @@ class WebReq(QThread):
     def logout(self): 
         try:
             requests.post(self._Logout_URL, cookies=self._Response.cookies)
+            self._Response.cookies.clear()
+            self._ConnectionActive = False
             self.newPrint("Logged Out")
         except Exception as err: 
             self.newPrint(f"There was an error: {err}") 

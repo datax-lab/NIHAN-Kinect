@@ -78,7 +78,7 @@ class kyphosisControl(QDialog):
         self._ValidActionCommand = True
         self._KyphosisProgram._Is_Done = True
         self._DatabaseRef.logout()
-        self._KyphosisProgram.blockSignals(True)
+      
         # End the Thread
         self._KyphosisThread.quit()
         self._KyphosisThread.wait(5)
