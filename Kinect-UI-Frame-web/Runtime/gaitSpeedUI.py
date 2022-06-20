@@ -16,7 +16,8 @@ _ProgramPath = os.path.dirname(os.getcwd())
 
 class controlPanelGait(QDialog):
     
-
+    trigger_Program_restart = pyqtSignal(bool)
+    trigger_patient_switch = pyqtSignal(bool)
     def __init__(self):
         super(controlPanelGait, self).__init__()
         self._Window = controlCenterGait.Ui_Dialog()
@@ -71,6 +72,13 @@ class controlPanelGait(QDialog):
         self.uiShowGaitSpd.signalContinuePressed.connect(self.continuingProg)
         # Handle Ending Program Once the Avg Box Pops Up 
         self.avgGaitSpdUI.endProgram.connect(self.signalExit)
+        
+        # Handle Logout without quitting
+        self.avgGaitSpdUI.logout_sig.connect(self.signalLogoutOnly)
+        # Handle Switching Patient Without Logout and exit
+        self.avgGaitSpdUI.switch_patient.connect(self.signalPatientSwitch)
+        
+        
 
         # Handle Showing Graph At End if requested
         self.avgGaitSpdUI.signalShowAllGraphPressed.connect(self.showAllGraphs)
@@ -80,6 +88,8 @@ class controlPanelGait(QDialog):
         self._GaitProgramThread = QThread()
         self.gaitProgram.moveToThread(self._GaitProgramThread)
         self._GaitProgramThread.start()
+        
+        
 
     # Run the Program and Save Patient Information
     def setInfoNRun(self,id, name, database = None): 
@@ -179,7 +189,20 @@ class controlPanelGait(QDialog):
     def signalFinishProgram(self): 
         self.gaitProgram._IsDone = True 
 
+    def signalLogoutOnly(self, booleanVAl=True):
+        if booleanVAl:
+            self.close()
+            print("Logout button presed", flush=True)
+            self.gaitProgram.fullReset()
+            self._DatabaseRef.logout()
+            self.trigger_Program_restart.emit(True)
     
+    def signalPatientSwitch(self, booleanVal=True): 
+        if booleanVal: 
+            self.close()
+            self.gaitProgram.fullReset()
+            print("Patient Switching Pressed", flush=True)
+            self.trigger_patient_switch.emit(True)
 
     def signalExit(self, booleanVal=True): 
         if booleanVal:
@@ -198,6 +221,7 @@ class controlPanelGait(QDialog):
         else: 
             self.signalExit(True)
        
+       
 
     
     ##################################################
@@ -208,9 +232,9 @@ class controlPanelGait(QDialog):
         if not os.path.exists(picturePath):
             os.mkdir(picturePath) 
 
-    def closeEvent(self, a0: QtGui.QCloseEvent) -> None:
-        self._DatabaseRef.logout()
-        exit(0)
+    #def closeEvent(self, a0: QtGui.QCloseEvent) -> None:
+     #   self._DatabaseRef.logout()
+      #  exit(0)
         
    
        
@@ -243,7 +267,7 @@ class gaitSpdUI(QDialog):
     def saveNQuit(self): 
         self.saveNquitPressed = True 
         self.signalSavenQuitPressed.emit(True)
-        self.close()
+        self.hide()
     
     def showGraph(self): 
        self.gaitProRef.displayGraph()
@@ -267,6 +291,9 @@ class gaitSpdUI(QDialog):
 # End of Program Display, shows the calculated average of the gait speed
 class avgSpdUI(QDialog):
     endProgram = pyqtSignal(bool)
+    logout_sig = pyqtSignal(bool)
+    switch_patient = pyqtSignal(bool)
+    
     # Signals to be recieved on program's final window
     signalShowAvgGraphPressed = pyqtSignal(bool)
     signalShowAllGraphPressed = pyqtSignal(bool)
@@ -278,6 +305,8 @@ class avgSpdUI(QDialog):
         self._Window.pushButton_2.clicked.connect(self.closeAvgBox)
         self._Window.pushButton_3.clicked.connect(self.showAvgGraph)
         self._Window.pushButton_4.clicked.connect(self.showAllGraphs)
+        self._Window.commandLinkButton.clicked.connect(self.sendLogout)
+        self._Window.commandLinkButton_2.clicked.connect(self.sendPatientSwitch)
     
     def showAllGraphs(self): 
         self.signalShowAllGraphPressed.emit(True)
@@ -285,6 +314,15 @@ class avgSpdUI(QDialog):
     def showAvgGraph(self): 
         self.signalShowAvgGraphPressed.emit(True)
 
+    def sendLogout(self): 
+        self.hide()
+        self.logout_sig.emit(True)
+    
+    def sendPatientSwitch(self): 
+        self.hide()
+        print("Switch Patient Button Pressed", flush=True)
+        self.switch_patient.emit(True)
+    
     def closeAvgBox(self): 
         self.close()
         self.endProgram.emit(True)
