@@ -133,7 +133,7 @@ class WebReq(QThread):
             # Attempt to upload the data
             self._PostData = requests.post(self._GAIT_URL, json=self._GaitData)    
             # Check if the data was uploaded
-            if not self._PostData.ok: 
+            if not self._PostData.ok and (not sys.argv[1]  == "--DEBUG"): 
                currAttempt += 1 
                print(f"There was an error uploading patient gait data, Error : {self._PostData}")
                self.webReqMessage.emit((-1, f"Gait Data Upload Failed, will attempt to send again in {self._timeBetweenSends} sec"))
@@ -191,7 +191,7 @@ class WebReq(QThread):
         
         while True: 
             self._PostData = requests.post(self._Kyphosis_URL, json=self._KyphosisData)
-            if not self._PostData.ok: 
+            if not self._PostData.ok and (not sys.argv[1]  == "--DEBUG"): 
                 currAttempt += 1
                 print(f"Failed to send kyphosis index!! Error Code: {self._PostData}")
                 self.webReqMessage.emit((-1, f"Kyphosis Data Upload Failed, will attempt to send again in {self._timeBetweenSends} sec"))

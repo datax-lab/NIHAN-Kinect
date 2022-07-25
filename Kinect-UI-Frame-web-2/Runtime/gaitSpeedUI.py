@@ -131,6 +131,7 @@ class controlPanelGait(QDialog):
     def showGaitSpd(self): 
         self.uiShowGaitSpd.setSpd(self.gaitProgram.gait_Speed_Arr[self.gaitProgram.programRuntimes])
         self.uiShowGaitSpd.gaitProRef = self.gaitProgram
+        self.uiShowGaitSpd.show()
         
         
 
@@ -148,7 +149,7 @@ class controlPanelGait(QDialog):
         if boolVal: 
             self._Window.pushButton.setDisabled(False)
             # Activate the trackbar here also
-            self.trackbarWindow.show()
+            #self.trackbarWindow.show()
 
     def signalGetStartDistance(self): 
         if self.gaitProgram._InitFrame is not None: 
@@ -376,7 +377,8 @@ class trackBarUI(QDialog):
     
     def connectItems(self): 
         self._Window.horizontalSlider.valueChanged.connect(self.updateLineText)
-        self._Window.lineEdit.textChanged.connect(self.updateSlider)
+        self._Window.lineEdit.returnPressed.connect(self.updateSlider)
+
         
     def updateLineText(self):
         sliderValue = self._Window.horizontalSlider.value()
@@ -398,8 +400,12 @@ class trackBarUI(QDialog):
             self._ErrorOut.setMessage("Error, invalid entry, value must be an integer (i.e 21,23)!")
             self._ErrorOut.show()
         else:   
-            self._Window.horizontalSlider.setValue(int(self._Window.lineEdit.text()))
-            if(textValue % 2 == 1): self.sliderValueUpdate.emit(textValue)
+            if(textValue > self._Window.horizontalSlider.maximum()): 
+                    self._ErrorOut.setMessage(f"Error, invalid entry, value must be an integer between {self._Window.horizontalSlider.minimum()}-{self._Window.horizontalSlider.maximum()}") 
+                    self._ErrorOut.show()
+            else:
+                self._Window.horizontalSlider.setValue(int(self._Window.lineEdit.text()))
+                if(textValue % 2 == 1): self.sliderValueUpdate.emit(textValue)
      
          
             

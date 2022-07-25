@@ -69,14 +69,14 @@ class Kyphosis(QThread):
         QThread.__init__(self) 
         # Kinect Setup Steps: 
         # Create the kinectDevice Object, that holds all the depth frame function
-        self._KinectDevice = PyKinectRuntime.PyKinectRuntime(PyKinectV2.FrameSourceTypes_Depth)
+        self._KinectDevice = None #PyKinectRuntime.PyKinectRuntime(PyKinectV2.FrameSourceTypes_Depth)
         # Get the Kinect's Camera Parameters, will be needed to calculate the distance between C7 and T12/L1 
         self._CAM_SETS = CamParam()
         # Set the Height and Width of the Frame 
-        self._Height, self._Width = self._KinectDevice.depth_frame_desc.Height, self._KinectDevice.depth_frame_desc.Width
+        self._Height, self._Width = None, None #self._KinectDevice.depth_frame_desc.Height, self._KinectDevice.depth_frame_desc.Width
         # Class to help convert images to readable and editable formats 
         self.WINDOWNAME = "Kinect V2 Kyphosis Analyzer"
-        self._OpenCVDepthHandler = KyphosisImg(self._Height, self._Width, self.WINDOWNAME)
+        self._OpenCVDepthHandler = None # KyphosisImg(self._Height, self._Width, self.WINDOWNAME)
         
         
         # Actual Program Vars: 
@@ -117,6 +117,12 @@ class Kyphosis(QThread):
 
         self.setupLogs()
 
+
+    def kyphosisSetup(self): 
+         self._KinectDevice = PyKinectRuntime.PyKinectRuntime(PyKinectV2.FrameSourceTypes_Depth)
+         self._Height, self._Width = self._KinectDevice.depth_frame_desc.Height, self._KinectDevice.depth_frame_desc.Width
+         self._OpenCVDepthHandler = KyphosisImg(self._Height, self._Width, self.WINDOWNAME)
+         
    
     def resetProgram(self): 
         self.spinalLandmarksArr, self._KyphosisIndexArr = [], [] 
@@ -500,6 +506,7 @@ class Kyphosis(QThread):
         
         self.awaitingActionFromUI = False 
         self.windowDestroyed = False
+        self.kyphosisSetup()
         
         while not self._Is_Done:
 
