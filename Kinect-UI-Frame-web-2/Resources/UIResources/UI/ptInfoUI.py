@@ -15,6 +15,9 @@ class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
         Dialog.resize(652, 269)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap("icons/general-windows.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        Dialog.setWindowIcon(icon)
         self.label_2 = QtWidgets.QLabel(Dialog)
         self.label_2.setGeometry(QtCore.QRect(0, 100, 131, 51))
         font = QtGui.QFont()

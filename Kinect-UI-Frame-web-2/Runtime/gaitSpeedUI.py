@@ -5,11 +5,13 @@ import sys, os, cv2, time
 from PyQt5 import QtGui
 from PyQt5.QtCore import QThread, pyqtSignal
 from PyQt5.QtWidgets import QDialog
+from matplotlib.pyplot import text
 
 # UI Imports
-from Resources.UIResources.UI import controlCenterGait, gaitSpdGeneral, gaitSpdAverageUI
+from Resources.UIResources.UI import controlCenterGait, gaitSpdGeneral, gaitSpdAverageUI, trackbar, errorLog 
 # Gait Runtime Program
 from Runtime.programRuntimes.gaitRuntime import GaitAnalyzer
+
 
 # Directory Path 
 _ProgramPath = os.path.dirname(os.getcwd())
@@ -36,6 +38,9 @@ class controlPanelGait(QDialog):
         # GAIT Reporting Windows 
         self.uiShowGaitSpd = gaitSpdUI()
         self.avgGaitSpdUI = avgSpdUI()
+       
+        # Tracbar adjustments window 
+        self.trackbarWindow = trackBarUI() 
         
         # Flags
         self._ValidActionCommand = False
@@ -59,6 +64,8 @@ class controlPanelGait(QDialog):
         self._Window.pushButton_3.clicked.connect(self.signalFinishProgram)
         self._Window.pushButton_4.clicked.connect(self.signalCaptureImg)
 
+        # Connect Trackbar 
+        self._Window.toolButton.clicked.connect(self.showTrackbar)
         # Disable The Start and Get Start Distance Button On Startup, but allow get start button if an init image was given (handled in the signals)
         self._Window.pushButton.setDisabled(True)
         self._Window.pushButton_2.setDisabled(True)
@@ -76,6 +83,8 @@ class controlPanelGait(QDialog):
         # Handle Ending Program Once the Avg Box Pops Up 
         self.avgGaitSpdUI.endProgram.connect(self.signalExit)
         
+        # Handle Trackbar Events 
+        self.trackbarWindow.sliderValueUpdate.connect(self.gaitProgram.updateCVFiltering)
         # Handle Logout without quitting
         self.avgGaitSpdUI.logout_sig.connect(self.signalLogoutOnly)
         # Handle Switching Patient Without Logout and exit
@@ -101,6 +110,7 @@ class controlPanelGait(QDialog):
         self._DatabaseRef = database
         self.gaitProgram.setDatabaseInstance(self._DatabaseRef)
         self.gaitProgram.runtime()
+        
 
 
     ##################################################
@@ -121,7 +131,7 @@ class controlPanelGait(QDialog):
     def showGaitSpd(self): 
         self.uiShowGaitSpd.setSpd(self.gaitProgram.gait_Speed_Arr[self.gaitProgram.programRuntimes])
         self.uiShowGaitSpd.gaitProRef = self.gaitProgram
-        self.uiShowGaitSpd.show()
+        
         
 
     def updateLabel(self, text):
@@ -131,9 +141,14 @@ class controlPanelGait(QDialog):
     ##################################################
     #       Program Signal Handling Functions        # 
     ##################################################
+    def showTrackbar(self): 
+        self.trackbarWindow.show()
+        
     def signalallowStartdistanceBut(self, boolVal):
         if boolVal: 
             self._Window.pushButton.setDisabled(False)
+            # Activate the trackbar here also
+            self.trackbarWindow.show()
 
     def signalGetStartDistance(self): 
         if self.gaitProgram._InitFrame is not None: 
@@ -342,4 +357,63 @@ class avgSpdUI(QDialog):
 
     def setAvgSpd(self, avgSpd): 
         self._Window.label_2.setText(f"{avgSpd} m/s")
+
+
+
+class trackBarUI(QDialog): 
     
+    sliderValueUpdate = pyqtSignal(int)
+    
+    
+    def __init__(self): 
+        super(trackBarUI, self).__init__()
+        self._Window = trackbar.Ui_Dialog()
+        self._Window.setupUi(self)
+        self._ErrorOut = errorWindow()
+        
+        self.connectItems()
+        
+    
+    def connectItems(self): 
+        self._Window.horizontalSlider.valueChanged.connect(self.updateLineText)
+        self._Window.lineEdit.textChanged.connect(self.updateSlider)
+        
+    def updateLineText(self):
+        sliderValue = self._Window.horizontalSlider.value()
+        self._Window.lineEdit.setText(str(sliderValue))
+        # Since gausian blur only accepts kernels > 0 and height, width % 2  == 1
+        if(sliderValue % 2 == 1): self.sliderValueUpdate.emit(sliderValue) 
+        
+    
+    # When the text in the textbox is changed for a custom value, update the slider also
+    # Then send the data
+    # If the text input was bad then we should launch an error window explaining the issue
+    def updateSlider(self):
+        # Requires some error checks because user may input bad values 
+        textValue = self._Window.lineEdit.text()
+        try:
+            textValue = int(textValue)
+        except Exception as e: 
+            self._Window.lineEdit.setText(str(23))
+            self._ErrorOut.setMessage("Error, invalid entry, value must be an integer (i.e 21,23)!")
+            self._ErrorOut.show()
+        else:   
+            self._Window.horizontalSlider.setValue(int(self._Window.lineEdit.text()))
+            if(textValue % 2 == 1): self.sliderValueUpdate.emit(textValue)
+     
+         
+            
+            
+    
+
+class errorWindow(QDialog): 
+    
+    def __init__(self): 
+        super(errorWindow, self).__init__()
+        self._Window = errorLog.Ui_Dialog()
+        self._Window.setupUi(self)
+
+    def setMessage(self, msg):
+        self._Window.label_2.setText(msg)
+    
+        

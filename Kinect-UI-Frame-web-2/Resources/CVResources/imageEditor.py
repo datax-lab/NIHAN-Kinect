@@ -17,6 +17,8 @@ class CVEditor:
         # Converted Flag
         self._IsCnvt = False
 
+       
+
     def __ConvtToLayeredImg(self):
         self._IsCnvt = False
         self._LayeredFrame = self._LayeredFrame.astype(np.uint8)
@@ -82,12 +84,18 @@ class CVEditor:
         imgTemp = cv2.putText(img, textOut, xyStartText, cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.9, color, 2)
         return imgTemp
 
+
+
+
 # Handles any manipulations, and grabbing depth information
 class CVEDITOR_DEPTH(CVEditor):
     # This requires a frame to output contour drawing to, the displayFrame should be the frame that we want to show
     # as the front end to the user, so it should allow for colors, (basically 3d imge, not 2d)
     def __init__(self, height, width, windowName):
         CVEditor.__init__(self, height, width, windowName)
+        
+        # Boolean for Gausian Blur 
+        self.BLUR_VAL = 23; 
         
 
     # Grab the Depth Value from the FrameDataReader
@@ -97,6 +105,14 @@ class CVEDITOR_DEPTH(CVEditor):
             return 0
         return frameData[(y * self._Width) + x]
 
+    
+    def setBlurValue(self, val : int):
+        if(not isinstance(val, int)): return 
+        self.BLUR_VAL = val 
+         
+    def getBlurvalue(self): return self.BLUR_VAL   
+    
+    
     def closeAWindow(self, aDisplayFrame=None):
         print(f"Destroying Window {aDisplayFrame}", flush=True)
         cv2.waitKey(1)
@@ -104,17 +120,17 @@ class CVEDITOR_DEPTH(CVEditor):
             cv2.destroyWindow(aDisplayFrame)
         except Exception: 
             pass 
-        
-        
-        
+    
+    
+
     # Function that gets the background of an image
     def identifyBackground(self, initFrame, src2):
         # Blur Both Images, to remove any noise that may make the program think its a foreground object
         if initFrame is None or src2 is None:
             assert("Error, one of the sources are empty!")
 
-        frame1 = cv2.GaussianBlur(initFrame, (23,23), 0)
-        frame2 = cv2.GaussianBlur(src2, (23,23), 0)
+        frame1 = cv2.GaussianBlur(initFrame, (self.BLUR_VAL,self.BLUR_VAL), 0)
+        frame2 = cv2.GaussianBlur(src2, (self.BLUR_VAL,self.BLUR_VAL), 0)
         #frame1 = cv2.medianBlur(initFrame, 7)
         #frame2 = cv2.medianBlur(src2, 7)
         #cv2.imshow("Internal 1", src2)
