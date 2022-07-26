@@ -1,12 +1,8 @@
-from http import cookiejar
-import requests, time, sys, os
+import requests, time, sys
 from PyQt5.QtCore import pyqtSignal, QThread
-import pandas as pd 
-from Resources import Logging as lg
 
 
-
-class WebReq(QThread): 
+class dataUploader(QThread): 
     webReqMessage = pyqtSignal(tuple)
     loginAllowed = pyqtSignal(bool)
     
@@ -44,7 +40,6 @@ class WebReq(QThread):
     
     def setUserPass(self, user : str, passwd : str): 
         self._email, self._Password = user, passwd
-    
     
     
     
@@ -114,10 +109,9 @@ class WebReq(QThread):
             print(message, flush=True)
     
     
-    def __sendGaitSpd(self, dataTest=None):
-        if dataTest is not None:  
-            self.newPrint("\nDebug Sending Gait Data Test")
-            
+    def __sendGaitSpd(self):
+        if (len(sys.argv) > 1 and sys.argv[1] == "--DEBUG"):  
+            self.newPrint("\nDebug Sending Gait Data Test") 
             import os, json
             with open(os.path.join(os.getcwd(), "gaitAnylsis.json"), 'w') as gaitJson: 
                 json.dump(self._GaitData, gaitJson, indent=6)
@@ -133,7 +127,7 @@ class WebReq(QThread):
             # Attempt to upload the data
             self._PostData = requests.post(self._GAIT_URL, json=self._GaitData)    
             # Check if the data was uploaded
-            if not self._PostData.ok and (not sys.argv[1]  == "--DEBUG"): 
+            if not self._PostData.ok and (len(sys.argv) > 1 and not sys.argv[1] == "--DEBUG"): 
                currAttempt += 1 
                print(f"There was an error uploading patient gait data, Error : {self._PostData}")
                self.webReqMessage.emit((-1, f"Gait Data Upload Failed, will attempt to send again in {self._timeBetweenSends} sec"))
@@ -143,7 +137,6 @@ class WebReq(QThread):
             # If the data was not uploaded after this amount of max attempts then exit
             if currAttempt == self._uploadMaxAttempts: 
                 self.webReqMessage.emit((-1, f"Error Unable to upload data to {self._GAIT_URL}!"))
-                self.newPrint(f"Gait Data: \n{pd.DataFrame(dataTest)}\n\n")
                 break;  
 
             
@@ -164,19 +157,14 @@ class WebReq(QThread):
             
         }
         
-             
-        # Disabled for now 
         # Send the Data Now That We Have Prepared it
-        #self.__sendGaitSpd(dataDict)
         self.__sendGaitSpd()
 
      
         
-    def __sendKyphosisIndex(self, kyphosisAvg=None):
-        if kyphosisAvg is not None: 
-            #self.newPrint("\nDebug Sending Kyphosis Test")
-            #self.newPrint(f"{pd.DataFrame(kyphosisAvg)}\n\n")
-            print(f"Kyphosis Average: {kyphosisAvg}", flush=True)
+    def __sendKyphosisIndex(self):
+        if (len(sys.argv) > 1 and sys.argv[1] == "--DEBUG"): 
+            self.newPrint("\nDebug Sending Kyphosis Test")
             import os, json 
             with open(os.path.join(os.getcwd(), "KyphosisData.json"), 'w') as kypJson: 
                 json.dump(self._KyphosisData, kypJson, indent=6)
@@ -191,7 +179,7 @@ class WebReq(QThread):
         
         while True: 
             self._PostData = requests.post(self._Kyphosis_URL, json=self._KyphosisData)
-            if not self._PostData.ok and (not sys.argv[1]  == "--DEBUG"): 
+            if not self._PostData.ok and (len(sys.argv) > 1 and not sys.argv[1] == "--DEBUG"): 
                 currAttempt += 1
                 print(f"Failed to send kyphosis index!! Error Code: {self._PostData}")
                 self.webReqMessage.emit((-1, f"Kyphosis Data Upload Failed, will attempt to send again in {self._timeBetweenSends} sec"))
@@ -201,7 +189,6 @@ class WebReq(QThread):
             # Check if the attempts were exceeded
             if currAttempt == self._uploadMaxAttempts:
                 self.webReqMessage.emit((-1, f"Error Unable to upload data to {self._Kyphosis_URL}!"))
-                print(f"Kyphosis Average: {kyphosisAvg}", flush=True)
                 break 
             
     
@@ -218,11 +205,7 @@ class WebReq(QThread):
        }
        
        
-       
-       # Disable For Now
        # Now Actually Upload the Data to the Server
-       #print(f"Patient ID: {ptID}", flush=True)
-       #self.__sendKyphosisIndex(avgKypIndex) # Remove Param Later to enable actual server uploading
        self.__sendKyphosisIndex()
        
     

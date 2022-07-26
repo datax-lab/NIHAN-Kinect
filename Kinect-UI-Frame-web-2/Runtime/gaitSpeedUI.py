@@ -1,11 +1,11 @@
    
-import sys, os, cv2, time 
+import os, cv2, time, sys
 
 # PyQt5 
 from PyQt5 import QtGui
 from PyQt5.QtCore import QThread, pyqtSignal
 from PyQt5.QtWidgets import QDialog
-from matplotlib.pyplot import text
+
 
 # UI Imports
 from Resources.UIResources.UI import controlCenterGait, gaitSpdGeneral, gaitSpdAverageUI, trackbar, errorLog 
@@ -116,11 +116,11 @@ class controlPanelGait(QDialog):
     ##################################################
     #            Program Status Updates              #      
     ##################################################  
-    # When the user presses continue on the gait spd general ui
+    # When the user presses continue on the gait spd general ui -> meant to be used for multiple runs on the same patient
     def continuingProg(self, boolVal): 
         if boolVal: 
             self._Window.pushButton.setDisabled(False)
-            self.gaitProgram.reset()
+            self.gaitProgram.reset(False)
             
  
     def continueGait(self, boolVal): 
@@ -212,8 +212,10 @@ class controlPanelGait(QDialog):
         if booleanVAl:
             self._ValidActionCommand = True
             self.close()
-            print("Logout button presed", flush=True)
-            self.gaitProgram.fullReset()
+            if(len(sys.argv) > 1 and sys.argv[1] == "--DEBUG"):
+                print("Logout button presed", flush=True)
+            # Set the param to True, because we want to erase all the data of the previous patient and reset the whole tool
+            self.gaitProgram.reset(True)
             self._DatabaseRef.logout()
             self.trigger_Program_restart.emit(True)
     
@@ -221,8 +223,10 @@ class controlPanelGait(QDialog):
         if booleanVal: 
             self._ValidActionCommand = True
             self.close()
-            self.gaitProgram.fullReset()
-            print("Patient Switching Pressed", flush=True)
+            # Set the param to True, because we want to erase all the data of the previous patient and reset the whole tool
+            self.gaitProgram.reset(True)
+            if(len(sys.argv) > 1 and sys.argv[1] == "--DEBUG"):
+                print("Patient Switching Pressed", flush=True)
             self.trigger_patient_switch.emit(True)
 
     def signalExit(self, booleanVal=True): 
@@ -349,7 +353,8 @@ class avgSpdUI(QDialog):
     
     def sendPatientSwitch(self): 
         self.hide()
-        print("Switch Patient Button Pressed", flush=True)
+        if(len(sys.argv) > 1 and sys.argv[1] == "--DEBUG"): 
+            print("Switch Patient Button Pressed", flush=True)
         self.switch_patient.emit(True)
     
     def closeAvgBox(self): 

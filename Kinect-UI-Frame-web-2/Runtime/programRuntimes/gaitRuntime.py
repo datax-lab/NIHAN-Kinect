@@ -1,6 +1,5 @@
 # Regular Librarires 
-from math import ceil, floor
-import os, time, cv2
+import os, cv2
 import pandas as pd 
 # Import the class to inherit
 from Resources.GaitResources import gait
@@ -66,12 +65,18 @@ class GaitAnalyzer(gait.GAIT):
         else:
             return 0
 
-    def reset(self):
+    # The boolean param tells whether we want to reset the whole gait program, or just certain aspects of it so that we can run the test multiple times on the 
+    # same patient
+    def reset(self, resetAllBool=False):
         self.currMeasureCnt = 0 
         self.currFrameCnt, self.prevFrameCnt = 0, 0 
         self.prevDistanceFrameBFrame = 0
         self.frameSpdsDict = dict()
-        self.resetProgram()
+        
+        if not resetAllBool: 
+            self._reinit()
+        else: 
+            self._fullReset()
     
     # Use this in order to change the blur value of the comparison image, to help 
     # manually improve foreground detection
@@ -137,7 +142,7 @@ class GaitAnalyzer(gait.GAIT):
 
 
 
-
+    # Use this function to decrease the outlier measurments, since some "noise" or "outliers" are unavoidable
     def removeNoise(self): 
         tempList = list()
         listOfPops = list()
@@ -175,6 +180,7 @@ class GaitAnalyzer(gait.GAIT):
         self._savetoDict2(self.frameSpdsDict)
         
                  
+    # Handle saving frame by frame data to the overall Data_Dict that will be filtered later based on the 'id' or type of measurement
     def _savetoDict2(self, aDict : dict() ): 
         # Current Program Run
         keyVal = self._currKey 
@@ -208,7 +214,6 @@ class GaitAnalyzer(gait.GAIT):
         if len(self.tempIV_Distance_Arr) == 0:
             return None, None
 
-        #distance, time = list(sorted(self.tempIV_Distance_Arr))[0], list(sorted(self.tempIV_Distance_Arr.values()))[0]
         
         distance = list(sorted(self.tempIV_Distance_Arr.keys()))[0]
         time, frameCnt = self.tempIV_Distance_Arr[distance]['Time'], self.tempIV_Distance_Arr[distance]['FrameCnt']
@@ -364,29 +369,13 @@ class GaitAnalyzer(gait.GAIT):
                     if (self.currFrameCnt % self._FramesToRead) == 0:
                        self.frameByFrame()
                             
-                # Lets find the instant velocity as soon as the pt reaches the measurement zone and continue from there
-                #self.calculateInstantVelocity()
-
-               
-                
-
                 # Check if the program was paused amd the end was reached
                 # If so, end the timer and then do the gait speed calculations 
                 if self._PAUSE and self._EndReached and not self.calculationsDone: 
                     if self._Timer.isTimerStarted():  
                         # Since we Want to Be Able to run the program again
-                        measurementZoneReached = self.finishUp()  
-                        
-                        
-                # Display a Message When the Pt Reaches the Measurement Zone
-                '''
-                if self._BegZoneReached is True and measurementZoneReached is False and not self.calculationsDone:
-                    self._DataSave.output(3,"\n---------------------------------------------------------------------------------")
-                    self._DataSave.output(3, "Patient Entered Measrument Zone at Frame: " + str(self._FrameTracker) + " and time: " + str(self._Timer.getCurrentTimeDiff())) 
-                    self._DataSave.output(3,"---------------------------------------------------------------------------------\n")
-                    measurementZoneReached = True
-                '''
-                        
+                        self.finishUp()
+                                    
             # Display The Frame
             if self.displayFrame is not None:
                 
@@ -397,9 +386,6 @@ class GaitAnalyzer(gait.GAIT):
                 self.signalShowControlWindow.emit("DONE")
                 self.wasEmitted = True 
                  
-            # Since we should be done with the current frame we toss it away
-            #self.currFrame = None 
-
 
 
 

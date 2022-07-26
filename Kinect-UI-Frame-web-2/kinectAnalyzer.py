@@ -1,11 +1,9 @@
-
-import sys, os, time, cv2
-from tkinter import BooleanVar
+import sys
 
 # PyQt5 
-from PyQt5 import Qt, QtGui, QtWidgets, QtCore
-from PyQt5.QtCore import QThread, pyqtSignal
-from PyQt5.QtWidgets import QDialog, QApplication, QMainWindow
+from PyQt5 import QtWidgets, QtCore
+from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtWidgets import QDialog, QApplication
 
 # UI
 from Resources.UIResources.UI import ptInfoUI, programSelection
@@ -13,7 +11,7 @@ from Runtime.kyphosisUI import kyphosisControl
 from Runtime.gaitSpeedUI import controlPanelGait
 
 # Data Base Connection
-from Resources.webRequests import WebReq
+from Resources.uploadData import dataUploader
 
 # AKA the patient information window 
 class mainWindow(QDialog):
@@ -33,7 +31,7 @@ class mainWindow(QDialog):
         self._ProgramSelector.programSelectionChoice.connect(self.programChoice)
 
         # Database Links 
-        self._Database = WebReq()
+        self._Database = dataUploader()
         self._PatientName, self._PatientID = None, None  
         
         # Connect the Buttons 
@@ -55,7 +53,7 @@ class mainWindow(QDialog):
         #self._Window.pushButton.clicked.connect(self.registAccount)
         self._Window.pushButton_2.clicked.connect(self.verifyPt)
 
-    def setWebDBConnection(self, dataSiteRef : WebReq): 
+    def setWebDBConnection(self, dataSiteRef : dataUploader): 
         self._Database = dataSiteRef
     
     
@@ -109,7 +107,8 @@ class mainWindow(QDialog):
     
     def reshow_patient_id_req(self, booleanVal=True):
         #self._GaitControlPanel, self._KyphosisPanel = None, None 
-        print("Reshowing patiend id prompt", flush=True)
+        if(len(sys.argv) > 1 and sys.argv[1] == "--DEBUG"):
+            print("Reshowing patiend id prompt", flush=True)
         self.show()
             #self.switch_a_patient.emit(True)
     
@@ -122,7 +121,9 @@ class mainWindow(QDialog):
             self._KyphosisPanel.close()
         else: 
             self._GaitControlPanel.close()
-        print("Attempting Exit!!", flush=True)
+        if(len(sys.argv) > 1 and sys.argv[1] == "--DEBUG"):
+            print("Attempting Exit!!", flush=True)
+        
         exit(0)
         
 

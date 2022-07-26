@@ -5,7 +5,7 @@ from PyQt5.QtCore import pyqtSignal
 
 import sys
 
-from Resources.webRequests import WebReq
+from Resources.uploadData import dataUploader
 from kinectAnalyzer import mainWindow
 
 
@@ -29,7 +29,7 @@ class userLogin(QDialog):
         # Temporarily Hold the User Name and Password
         self._Email, self._Passwd = None, None
         # Web Requests 
-        self._WebInteraction = WebReq()
+        self._WebInteraction = dataUploader()
 
         # Two Factor Window
         self._twoFactorWindow = twoFactorIn()

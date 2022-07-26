@@ -1,15 +1,12 @@
 # Pykinect Library imports
-
-from math import ceil
-from multiprocessing.dummy import Array
-from socket import IPV6_CHECKSUM
 from Resources.pykinect2 import PyKinectV2
 from Resources.pykinect2 import PyKinectRuntime
 
 # General Libraries
-import os, traceback, time
+import os, traceback, time, sys 
 import cv2
 import numpy as np
+import pandas as pd   
 
 # UI Imports 
 from Resources.UIResources import windowManager as ui2
@@ -21,11 +18,12 @@ from Resources.CVResources import imageEditor as IMPROC
 from Resources.GaitResources import timer as Timer
 from Resources import Logging as lg
 from Resources.GaitResources import graph
-from Resources.webRequests import WebReq
-#from Resources.data import DataHandler
+from Resources.uploadData import dataUploader
 
-import pandas as pd   
-import matplotlib.pyplot as plt
+
+
+
+
 # Actual Class
 class GAIT(QThread):
     # Pyqt Signals 
@@ -151,7 +149,7 @@ class GAIT(QThread):
 
         # Patient Info 
         self._PatientID, self._PatientName = None, None 
-        self._Database = WebReq() # This will actually be set in the setDataDatabase Function
+        self._Database = dataUploader() # This will actually be set in the setDataDatabase Function
 
         # Arrays to Help With Averaging 
         self._IV_Overall, self._IV_time_Overall = [], []
@@ -175,23 +173,25 @@ class GAIT(QThread):
         
         self._BgStart, self._BgEnd, self._TextStart = (0, 0), (self._Width, 50), (40, 25)
 
+
     def avgData(self) -> tuple[pd.DataFrame, pd.DataFrame]: 
         
+        if(len(sys.argv) > 1 and sys.argv[1] == "--DEBUG"): 
+            # Debugging 
+            self._programLog.output(0,"\nInstant Velocities")
+            for x,y in self._IV_Dict.items(): 
+                print(f"Key: {x}")
+                for data in y: 
+                    self._programLog.output(0, f"Velocity: {round(data['currVelocity'],4)}\tDistance ID: {data['distanceID']}")
+                
+            self._programLog.output(1, "\nFrame By Frame Data")
+            for x,y in self._FrameBFrame_Dict.items(): 
+                print(f"Key: {x}")
+                for data in y: 
+                    self._programLog.output(1,f"Velocity: {round(data['currVelocity'],4)}\tFrame: {data['frame']}")
        
-        '''
-        # Debugging 
-        self._programLog.output(0,"\nInstant Velocities")
-        for x,y in self._IV_Dict.items(): 
-             print(f"Key: {x}")
-             for data in y: 
-                self._programLog.output(0, f"Velocity: {round(data['currVelocity'],4)}\tDistance ID: {data['distanceID']}")
-            
-        self._programLog.output(1, "\nFrame By Frame Data")
-        for x,y in self._FrameBFrame_Dict.items(): 
-            print(f"Key: {x}")
-            for data in y: 
-                self._programLog.output(1,f"Velocity: {round(data['currVelocity'],4)}\tFrame: {data['frame']}")
-        '''
+       
+        #### End DEBUG ###
         tempFrameBFrame, tempIV_dict = pd.DataFrame(), pd.DataFrame() 
         
         # Iterate through all keys 
@@ -201,7 +201,9 @@ class GAIT(QThread):
             if tempFrameBFrame.empty and tempIV_dict.empty: 
                 tempFrameBFrame, tempIV_dict = tempHolderFrame, tempIVHolder
             else: 
-                tempFrameBFrame, tempIV_dict = tempFrameBFrame.append(tempHolderFrame), tempIV_dict.append(tempIVHolder)
+                # Using axis=0 because we are appending a row
+                tempFrame, tempIV_dict = pd.concat([tempFrameBFrame, tempHolderFrame], axis=0), pd.concat([tempIV_dict, tempIVHolder], axis=0)
+                #tempFrameBFrame, tempIV_dict = tempFrameBFrame.append(tempHolderFrame), tempIV_dict.append(tempIVHolder) # df.append() is deprecated
        
         self._programLog.output(0,f"Temporary IVS:\n{tempIV_dict}")
        
@@ -215,7 +217,8 @@ class GAIT(QThread):
             if newFrameBFrameDataSet.empty: 
                 newFrameBFrameDataSet = tempFrame
             else: 
-                newFrameBFrameDataSet = newFrameBFrameDataSet.append(tempFrame)
+                newFrameBFrameDataSet = pd.concat([newFrameBFrameDataSet, tempFrame], axis=0)
+                #newFrameBFrameDataSet = newFrameBFrameDataSet.append(tempFrame)
         
         # Now do something similar to the above but for iv distances
         for i in range(int(tempIV_dict['distanceID'].max()) + 1): 
@@ -224,7 +227,8 @@ class GAIT(QThread):
             if newIVDataSet.empty: 
                 newIVDataSet = tempIV
             else: 
-                newIVDataSet = newIVDataSet.append(tempIV)
+                newIVDataSet =  pd.concat([newIVDataSet, tempIV], axis=0)
+                #newIVDataSet = newIVDataSet.append(tempIV)
             
         
         
@@ -256,7 +260,8 @@ class GAIT(QThread):
         #         'Velocity' : , 
         #   }
         # ]
-        self.Data_Dict = (frameData.append(ivData)).to_dict('records')
+        self.Data_Dict = (pd.concat([frameData, ivData], axis=0)).to_dict('records')
+        #self.Data_Dict = (frameData.append(ivData)).to_dict('records')
         
         self._programLog.output(0,f"\n Frame By Frame Average Data:\n{frameData}")
         self._programLog.output(0, f"\nInstant Velocity Average Data:\n{ivData}")
@@ -267,7 +272,6 @@ class GAIT(QThread):
 
 
     def processNParition(self, aDict : pd.DataFrame) -> tuple[dict, dict]: 
-        tempArrDistances = list()
         # Convert all the data into m/s
         aDict['distance_Measure'] = aDict['distance_Measure'].div(self._UnitConversionFactor)
         # Now Partition Data into a Frame By Frame and instant velocity for easy graphing 
@@ -340,11 +344,14 @@ class GAIT(QThread):
             self.exitSignal.emit(True)
         else: 
             self.setupKinect()
-            self.resetProgram()
+            self._reinit()
 
 
 
-    def resetProgram(self): 
+    # This function is meant to be a helper function for gait.py::fullReset(), gait.py::ProgramStartup(), and for gaitRuntime.py::reset(); 
+    # this performs the reinitilization that allows for multiple runs on the same patient, but when used with fullReset() will allow for 
+    # the "switch user" and "logout" functionality to work properly
+    def _reinit(self): 
         self.displayFrame = np.zeros((self._Height, self._Width), np.uint8)
         self.frame, self.frameDataReader = None, None
         self.plotFlag = False 
@@ -387,7 +394,9 @@ class GAIT(QThread):
         self.calculationsDone = False 
 
 
-    def fullReset(self): 
+    # This function allows the program to completely reset itself and allow for the "switch patient " functionality to work
+    # This should be called in the gaitRuntime.py::reset(resetAllBool : bool) when the resetAllBool is set to True 
+    def _fullReset(self): 
         self.Data_Dict = dict()
         self._IV_Dict_Averages = {}
         self._IV_Avg_Graph = graph.Graph()
@@ -395,7 +404,7 @@ class GAIT(QThread):
         self._currKey = self._StartKey
         # To Help With Final Graphing Later
         self._FrameBFrame_Dict, self._IV_Dict = dict(), dict()
-        self.resetProgram()
+        self._reinit()
 
 
     def handleNewDepthFrames(self) -> np.ndarray:
@@ -412,6 +421,9 @@ class GAIT(QThread):
 
 
     # Functions to be called in functions
+    
+    # Find min allows me to check all points within the rectangle area to confirm the patient has reacehd the end zone, since the kinect may at times 
+    # stop the program earlier than its supposed to. 
     def _find_min(self, x_Start, width, y_Start, height):
         distanceArr = []
         # Go Through Distances Around the Object Midpoint searching for ones larger than or equal to the endzone distance
@@ -444,6 +456,7 @@ class GAIT(QThread):
             print("There was a critical error, try adjusting the camera to point up more.")
             exit(-1)
 
+
     # Converts the image selected from the file explorer to a grayscale img
     # Then sets the self._InitFrame to it 
     def _convt_init_img(self, anInitFrame = None):
@@ -458,7 +471,6 @@ class GAIT(QThread):
             self._InitFrameConvted = True
     
     
-
 
     # Standard Events Handling Functions
     def createAnInitFrame(self):
@@ -492,10 +504,9 @@ class GAIT(QThread):
             imgName = os.path.join(self._ProgramPath,"init_images")
             imgName= os.path.join(imgName, OrigimgName) 
             # Write and display the image 
-            cv2.imwrite(imgName, self._InitFrame)
+            cv2.imwrite(imgName, self._InitFrame) 
             cv2.destroyWindow(OrigimgName)
             self.messages.emit("Calibration Complete!\n")
-            imgRetrieved = False
 
         else:
             self._InitFrame = None
@@ -575,9 +586,6 @@ class GAIT(QThread):
 
                         # Debug Print 
                         if self._BegZoneReached is False: 
-                            #print("----------------------------------------")
-                            #print("Patient Entered Measruement Zone")
-                            #print("----------------------------------------\n")
                             self._BegZoneReached = True
                             self.curr_Distance_measure_zone = self.currentDistance
                 
@@ -592,7 +600,7 @@ class GAIT(QThread):
                                                                         self._BgStart, self._BgEnd, self._TextStart)
                         self._PAUSE, self._EndReached = True, True
                         self._AllowDataCollection = False 
-                # End broken code block
+    
                 if self._BegZoneReached: 
                     self.curr_Distance_measure_zone = self.currentDistance - self._BeginMeasurementZone_mm
                     #self._OpenCVDepthHandler.displayAMessageToCV(self.displayFrame, f"Distance: {self.curr_Distance_measure_zone}",
@@ -647,15 +655,18 @@ class GAIT(QThread):
             
         #self._programLog.output(1, self.Data_Dict)
         #self.debugDictPrint(self.Data_Dict)
-        
-        self._ptLog.output(2,"\n\n------------------------------------")
-        self._ptLog.output(2, "          Statistics:              ") 
-        self._ptLog.output(2,"----------------------------------------")
-        if self._EndReached is True: 
-            self._ptLog.output(2,"Starting Distance: " + str(self._StartDistance))
-            self._ptLog.output(2,"Program Time Elapsed: " + str(self._Timer.getTimeDiff()))
-            self._ptLog.output(2,"Elapsed Time: " + str(self._TimeTakenToWalk))
-            self._ptLog.output(2,"Calculated Gait Speed: " + str(self._Gait_Speed) + " m/s")
+        if(len(sys.argv) > 1 and sys.argv[1] == "--DEBUG"):
+            self._ptLog.output(2,"\n\n------------------------------------")
+            self._ptLog.output(2, "          Statistics:              ") 
+            self._ptLog.output(2,"----------------------------------------")
+            if self._EndReached is True: 
+                self._ptLog.output(2,"Starting Distance: " + str(self._StartDistance))
+                self._ptLog.output(2,"Program Time Elapsed: " + str(self._Timer.getTimeDiff()))
+                self._ptLog.output(2,"Elapsed Time: " + str(self._TimeTakenToWalk))
+                self._ptLog.output(2,"Calculated Gait Speed: " + str(self._Gait_Speed) + " m/s")
+
+
+
 
 
     def debugDictPrint(self, dictionary, label=None):
@@ -672,12 +683,6 @@ class GAIT(QThread):
             else: 
                 self._DataFrame = self._DataFrame.append(pd.DataFrame.from_dict(y))
         
-        #self._DataFrame = self._DataFrame.sort_values('distance_Measure')
-        #print(self._DataFrame)
-        #self._DataFrame.plot(x="distance_Measure",y="currVelocity", kind='line', style='.-') 
-        #self._DataFrame.to_excel(os.path.join(os.getcwd(), "dataToShow.xlsx"))
-        #plt.show()
-        #exit(0)
 
 
     def debugDictPrint2(self, dictionary, label=None):
@@ -704,10 +709,8 @@ class GAIT(QThread):
     # This function takes the dictionary that holds all the results and re-structures the results dictionary to make it appropriate for the 
     # database it will be uploaded to
     def saveToDatabase(self):
-       
         self._Database.uploadGaitResults((self._PatientID, self._PatientName), self.Data_Dict, self._Gait_Speed_Avg)   
-        # This function will do the final cleanup and append necessary information to the dictionary, before finally uploading it
-        #self._Database.uploadResults((self._PatientID, self._PatientName),distancesArr, timeArr, ivArr, round(self._Gait_Speed_Avg, 4), None)
+      
             
 
 
@@ -718,13 +721,14 @@ class GAIT(QThread):
         if len(self.gait_Speed_Arr) > 0: 
             self._Gait_Speed_Avg = sum(self.gait_Speed_Arr)
             self._Gait_Speed_Avg /= len(self.gait_Speed_Arr)
-            self._ptLog.output(2,"\n\n---------------------------------------------")
-            self._ptLog.output(2, f"Average Gait Speed: {self._Gait_Speed_Avg}") 
-            self._ptLog.output(2,"---------------------------------------------")
-            # Debug Calls 
-            self._programLog.output(0, "Dictionary Format of Data:\n")
-            self._programLog.output(0, self.Data_Dict)
-            # End Debug
+            if(len(sys.argv) > 1 and sys.argv[1] == "--DEBUG"):
+                self._ptLog.output(2,"\n\n---------------------------------------------")
+                self._ptLog.output(2, f"Average Gait Speed: {self._Gait_Speed_Avg}") 
+                self._ptLog.output(2,"---------------------------------------------")
+                # Debug Calls 
+                self._programLog.output(0, "Dictionary Format of Data:\n")
+                self._programLog.output(0, self.Data_Dict)
+                # End Debug
             
             # Now Calculate the Average Instant Vel and time at Each Distance
             self.setupAvgGraph("Average Graph")
