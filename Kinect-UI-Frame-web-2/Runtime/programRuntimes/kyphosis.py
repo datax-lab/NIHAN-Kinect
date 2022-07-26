@@ -114,6 +114,9 @@ class Kyphosis(QThread):
         # Patient Info 
         self._PatientID, self._PatientName = None, None
         self._Database = WebReq() #DataHandler()
+        
+        # Mouse Error Checking
+        self._prevMouseY = 0 
 
         self.setupLogs()
 
@@ -154,6 +157,9 @@ class Kyphosis(QThread):
         # Patient Info 
         self._PatientID, self._PatientName = None, None
         self._Database = WebReq() #DataHandler()
+        
+        # Mouse Input Error Handling
+        self._prevMouseY = 0 
         
         self.setupLogs()
         
@@ -229,6 +235,12 @@ class Kyphosis(QThread):
             # Since the spine should be relatively straight, it should be along the same X coord, so set the next 2 points to the x coord of the first point
             if len(self.spinalLandmarksArr) > 0: 
                 mouseX, _ = self.spinalLandmarksArr[0].getXY()
+            
+            if(self._prevMouseY > mouseY): 
+                self.signalMessageOutput.emit("Curent Point Cannot Be Higher than Previous Point!")
+                return 
+            
+            self._prevMouseY = mouseY 
             
             self.spinalLandmarksArr.append(MOUSE_PTS(self.id, (mouseX, mouseY)))
             self.id += 1 
@@ -341,6 +353,9 @@ class Kyphosis(QThread):
         self._RunCalculations, self._AllowCalculations, self._CalculationCompleted, self._AllowAnalysis = False, False, False, False
         self._Pause = False
         self.signalReqPtsSatisfied.emit(self._AllowAnalysis)
+        
+        # Mouse Error Checking
+        self._prevMouseY = 0 
 
 
 
