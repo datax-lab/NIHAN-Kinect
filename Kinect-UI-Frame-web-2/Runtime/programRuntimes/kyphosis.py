@@ -1,5 +1,4 @@
 # Pykinect Libraries
-from typing import Tuple
 from Resources.pykinect2 import PyKinectV2
 from Resources.pykinect2.PyKinectV2 import * 
 from Resources.pykinect2 import PyKinectRuntime
@@ -9,7 +8,7 @@ from PyQt5.QtCore import QThread, pyqtSignal
 
 
 # Libraries
-import os, traceback
+import os, traceback, sys
 import time
 import cv2 
 import numpy as np 
@@ -20,7 +19,7 @@ from Resources.Logging import LOGGING
 from Resources.CVResources.kyphosisEditor import KyphosisImg 
 from Resources.mousePts import MOUSE_PTS
 
-from Resources.webRequests import WebReq
+from Resources.uploadData import dataUploader
 #from Resources.data import DataHandler
 
 _ColorPallete = [(255,0,0), (0,255,0), (0,0,255)]
@@ -113,7 +112,7 @@ class Kyphosis(QThread):
       
         # Patient Info 
         self._PatientID, self._PatientName = None, None
-        self._Database = WebReq() #DataHandler()
+        self._Database = dataUploader() #DataHandler()
         
         # Mouse Error Checking
         self._prevMouseY = 0 
@@ -156,7 +155,7 @@ class Kyphosis(QThread):
       
         # Patient Info 
         self._PatientID, self._PatientName = None, None
-        self._Database = WebReq() #DataHandler()
+        self._Database = dataUploader() #DataHandler()
         
         # Mouse Input Error Handling
         self._prevMouseY = 0 
@@ -254,30 +253,7 @@ class Kyphosis(QThread):
             self.signalMessageOutput.emit("Press \"Analyze\" to Get Kyphosis Index")
         
 
-    # Now Lets Handle the CV window Keypress Events 
-    def __openCVKeyPressEvents(self): 
-        
-        keypress = cv2.waitKey(1) & 0xFF
-
-        if keypress == 27: # press 'esc' to reset the program at any time
-            self.reset(clearSpinalArr=True)
-        elif keypress == ord(' '): 
-            self.reset(clearSpinalArr=False)
-        elif keypress == ord('b') and self._AllowAnalysis: 
-            # Allow For Calculations 
-            self._ProgramLog.output(2, "Beginning Analysis...")
-            self._RunCalculations = True 
-        elif keypress == ord('s'): 
-            self._imgSave()
-        elif keypress == ord('q'):
-            #self.programClose()
-            self._Is_Done = True
-        elif keypress == ord('p'):
-            if not self._Pause:
-                self._Pause = True
-            else:
-                self._Pause = False 
-
+   
     # End of Program Cleanup 
     # This is also the section where I will upload the data to the Database 
     def programClose(self): 
@@ -291,15 +267,14 @@ class Kyphosis(QThread):
         
         self._ProgramLog.output(2, "\nProgram Run Complete, Exit Success")
 
-        #self._PatientLog.closeFile()
         self._ProgramLog.closeFile()
 
-        print("Attempting Signal Sending", flush=True)
+        if (len(sys.argv) > 1 and sys.argv[1] == "--DEBUG"): 
+            print("Attempting Signal Sending", flush=True)
         if len(self.kyphosisIndexArr) > 0: 
             # Upload to DB/Web Server
             self._Database.uploadKyphosisResult((self._PatientID, self._PatientName), average(self.kyphosisIndexArr))
-            # Upload Data to DB 
-            #self._Database.uploadResults((self._PatientID, self._PatientName), None, None, None, None, average(self.kyphosisIndexArr))
+            # Tell UI this program is done
             self.signalProgramEnding.emit(average(self.kyphosisIndexArr))
         else: 
             self.signalProgramEnding.emit(-1)
@@ -312,7 +287,7 @@ class Kyphosis(QThread):
         key = cv2.waitKey(1) & 0xFF 
         if key == ord('q') and False: 
             exit(0)
-        #self.__openCVKeyPressEvents()
+        
 
 
     def _imgSave(self): 
@@ -506,10 +481,7 @@ class Kyphosis(QThread):
             self.frameToDisplay = self._OpenCVDepthHandler.drawCoordinates(self.frameToDisplay,"Coordinates: ")
         
         elif self._AllowAnalysis and not self._CalculationCompleted and self._Pause: 
-            #self.frameToDisplay = self.messageDisplay(self.frameToDisplay, "Press \"b\" to analyze Thoracic Kyphosis")
             self.signalMessageOutput.emit("Press \"Analyze\" to get Thoracic Kyphosis")
-        #elif self._AllowAnalysis and self._CalculationCompleted and self._Pause:
-         #   self.frameToDisplay = self.messageDisplay(self.frameToDisplay, "Press \"spacebar\" to continue, or \"esc\" to CLEAR and continue")
         if self.frameToDisplay is None: 
             print("Empty")
             exit(-1)

@@ -1,4 +1,4 @@
-import sys, cv2
+import sys
 
 from PyQt5 import QtGui, QtWidgets, QtCore
 from PyQt5.QtCore import QThread, pyqtSignal
