@@ -38,8 +38,8 @@ class GAIT(QThread):
         ######################################################
         #               Kinect Setup                         #
         ######################################################
-        self._KinectDev = PyKinectRuntime.PyKinectRuntime(PyKinectV2.FrameSourceTypes_Depth)
-        self._Height, self._Width = self._KinectDev.depth_frame_desc.Height, self._KinectDev.depth_frame_desc.Width
+        self._KinectDev = None #PyKinectRuntime.PyKinectRuntime(PyKinectV2.FrameSourceTypes_Depth)
+        self._Height, self._Width = None, None #self._KinectDev.depth_frame_desc.Height, self._KinectDev.depth_frame_desc.Width
         ######################################################
         #               End Kinect Setup                     #
         ######################################################
@@ -64,7 +64,7 @@ class GAIT(QThread):
         self._programLog, self._ptLog = None, None 
 
         # Instantiate Image Processing Custom Library
-        self._OpenCVDepthHandler = IMPROC.CVEDITOR_DEPTH(self._Height, self._Width, "Kinect V2 Gait Analyzer")
+        self._OpenCVDepthHandler = None #IMPROC.CVEDITOR_DEPTH(self._Height, self._Width, "Kinect V2 Gait Analyzer")
 
         # UI Integrations
         self._FileExplorerSelection = None 
@@ -73,7 +73,7 @@ class GAIT(QThread):
         self._InitFrame = None # To Hold the Initial Frame, will be used to find what's a foreground object and what's not
 
         # Message Formats
-        self._BgStart, self._BgEnd, self._TextStart = (0, 0), (self._Width, 50), (40, 25)
+        self._BgStart, self._BgEnd, self._TextStart = None, None, None #(0, 0), (self._Width, 50), (40, 25)
         ######################################################
         #               End Program Constants                #
         ######################################################
@@ -85,7 +85,7 @@ class GAIT(QThread):
         #   displayframe -> the frame that will be displayed to the viewfinder
         #   frame -> the internal frame to do calculations with
         #   framedataReader -> The object that will hold the depth frame data (i.e. 3d array of depth data)
-        self.displayFrame = np.zeros((self._Height, self._Width), np.uint8)
+        self.displayFrame = None #np.zeros((self._Height, self._Width), np.uint8)
         self.frame, self.frameDataReader = None, None
          
         # Data Plotting
@@ -163,11 +163,17 @@ class GAIT(QThread):
         self._FrameBFrame_Dict, self._IV_Dict = dict(), dict()
         # Program Setup Functions
         self.setupDirectories()
-        self.resetProgram()
+      
         
         self._DataFrame = pd.DataFrame()
         
+    def setupKinect(self): 
+        self._KinectDev = PyKinectRuntime.PyKinectRuntime(PyKinectV2.FrameSourceTypes_Depth)
+        self._Height, self._Width = self._KinectDev.depth_frame_desc.Height, self._KinectDev.depth_frame_desc.Width
         
+        self._OpenCVDepthHandler = IMPROC.CVEDITOR_DEPTH(self._Height, self._Width, "Kinect V2 Gait Analyzer")
+        
+        self._BgStart, self._BgEnd, self._TextStart = (0, 0), (self._Width, 50), (40, 25)
 
     def avgData(self) -> tuple[pd.DataFrame, pd.DataFrame]: 
         
@@ -332,6 +338,9 @@ class GAIT(QThread):
         # If Exit Was Pressed Send the Exit Program Signal
         if self._InitImageFileName == "PROGEXIT": 
             self.exitSignal.emit(True)
+        else: 
+            self.setupKinect()
+            self.resetProgram()
 
 
 

@@ -69,14 +69,14 @@ class Kyphosis(QThread):
         QThread.__init__(self) 
         # Kinect Setup Steps: 
         # Create the kinectDevice Object, that holds all the depth frame function
-        self._KinectDevice = PyKinectRuntime.PyKinectRuntime(PyKinectV2.FrameSourceTypes_Depth)
+        self._KinectDevice = None #PyKinectRuntime.PyKinectRuntime(PyKinectV2.FrameSourceTypes_Depth)
         # Get the Kinect's Camera Parameters, will be needed to calculate the distance between C7 and T12/L1 
         self._CAM_SETS = CamParam()
         # Set the Height and Width of the Frame 
-        self._Height, self._Width = self._KinectDevice.depth_frame_desc.Height, self._KinectDevice.depth_frame_desc.Width
+        self._Height, self._Width = None, None #self._KinectDevice.depth_frame_desc.Height, self._KinectDevice.depth_frame_desc.Width
         # Class to help convert images to readable and editable formats 
         self.WINDOWNAME = "Kinect V2 Kyphosis Analyzer"
-        self._OpenCVDepthHandler = KyphosisImg(self._Height, self._Width, self.WINDOWNAME)
+        self._OpenCVDepthHandler = None # KyphosisImg(self._Height, self._Width, self.WINDOWNAME)
         
         
         # Actual Program Vars: 
@@ -114,9 +114,18 @@ class Kyphosis(QThread):
         # Patient Info 
         self._PatientID, self._PatientName = None, None
         self._Database = WebReq() #DataHandler()
+        
+        # Mouse Error Checking
+        self._prevMouseY = 0 
 
         self.setupLogs()
 
+
+    def kyphosisSetup(self): 
+         self._KinectDevice = PyKinectRuntime.PyKinectRuntime(PyKinectV2.FrameSourceTypes_Depth)
+         self._Height, self._Width = self._KinectDevice.depth_frame_desc.Height, self._KinectDevice.depth_frame_desc.Width
+         self._OpenCVDepthHandler = KyphosisImg(self._Height, self._Width, self.WINDOWNAME)
+         
    
     def resetProgram(self): 
         self.spinalLandmarksArr, self._KyphosisIndexArr = [], [] 
@@ -148,6 +157,9 @@ class Kyphosis(QThread):
         # Patient Info 
         self._PatientID, self._PatientName = None, None
         self._Database = WebReq() #DataHandler()
+        
+        # Mouse Input Error Handling
+        self._prevMouseY = 0 
         
         self.setupLogs()
         
@@ -223,6 +235,12 @@ class Kyphosis(QThread):
             # Since the spine should be relatively straight, it should be along the same X coord, so set the next 2 points to the x coord of the first point
             if len(self.spinalLandmarksArr) > 0: 
                 mouseX, _ = self.spinalLandmarksArr[0].getXY()
+            
+            if(self._prevMouseY > mouseY): 
+                self.signalMessageOutput.emit("Curent Point Cannot Be Higher than Previous Point!")
+                return 
+            
+            self._prevMouseY = mouseY 
             
             self.spinalLandmarksArr.append(MOUSE_PTS(self.id, (mouseX, mouseY)))
             self.id += 1 
@@ -335,6 +353,9 @@ class Kyphosis(QThread):
         self._RunCalculations, self._AllowCalculations, self._CalculationCompleted, self._AllowAnalysis = False, False, False, False
         self._Pause = False
         self.signalReqPtsSatisfied.emit(self._AllowAnalysis)
+        
+        # Mouse Error Checking
+        self._prevMouseY = 0 
 
 
 
@@ -500,6 +521,7 @@ class Kyphosis(QThread):
         
         self.awaitingActionFromUI = False 
         self.windowDestroyed = False
+        self.kyphosisSetup()
         
         while not self._Is_Done:
 

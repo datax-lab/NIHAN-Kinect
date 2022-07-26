@@ -73,6 +73,10 @@ class GaitAnalyzer(gait.GAIT):
         self.frameSpdsDict = dict()
         self.resetProgram()
     
+    # Use this in order to change the blur value of the comparison image, to help 
+    # manually improve foreground detection
+    def updateCVFiltering(self, val): 
+        self._OpenCVDepthHandler.setBlurValue(val)
     
     def frameByFrame(self):
         # Should Only Be Running In The Measurement Zone
