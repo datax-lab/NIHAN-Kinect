@@ -146,10 +146,9 @@ class controlPanelGait(QDialog):
         self.trackbarWindow.show()
         
     def signalallowStartdistanceBut(self, boolVal):
-        if boolVal: 
-            self._Window.pushButton.setDisabled(False)
-            # Activate the trackbar here also
-            #self.trackbarWindow.show()
+        if boolVal: self._Window.pushButton.setDisabled(False)
+        else: self._Window.pushButton.setDisabled(True)
+            
 
     def signalGetStartDistance(self): 
         if self.gaitProgram._InitFrame is not None: 
@@ -241,10 +240,10 @@ class controlPanelGait(QDialog):
     def programFinished(self, avgGait): 
         self.gaitProgram._OpenCVDepthHandler.closeAllWindows()
         self.avgGaitSpdUI.setAvgSpd(avgGait)
-        if avgGait > 0: 
-            self.avgGaitSpdUI.show()
-        else: 
-            self.signalExit(True)
+        self.avgGaitSpdUI.show()
+        
+       
+        
             
        
        
@@ -361,8 +360,24 @@ class avgSpdUI(QDialog):
         self.close()
         self.endProgram.emit(True)
 
-    def setAvgSpd(self, avgSpd): 
-        self._Window.label_2.setText(f"{avgSpd} m/s")
+    # We also need this function to disable the graph buttons if there was no data
+    def setAvgSpd(self, avgSpd):    
+        # Need to set whether the buttons are active based on whether the avg speed is greater than 0 or not
+        if(avgSpd <= 0):
+            self._Window.label_2.setText(f"No Data")
+            self._Window.pushButton_3.setDisabled(True)
+            self._Window.pushButton_4.setDisabled(True)
+        else: 
+            # We have to re-enable buttons here, due to the ability of the program to run 
+            # multiple times on different patients
+            self._Window.label_2.setText(f"{avgSpd} m/s")
+            self._Window.pushButton_3.setDisabled(False)
+            self._Window.pushButton_4.setDisabled(False)
+        
+        #if(avgSpd > 0):
+        #    self._Window.label_2.setText(f"{avgSpd} m/s")
+        #else: 
+        #    self._Window.label_2.setText("No Data")
 
 
 

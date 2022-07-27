@@ -171,10 +171,10 @@ class twoFactorIn(QDialog):
 if __name__ == "__main__":
 
     # Set all pyqt5 windows to retain their scaling
-    if hasattr(QtCore.Qt, 'AA_EnableHighDpiScaling'):
-        QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
-    if hasattr(QtCore.Qt, 'AA_UseHighDpiPixmaps'):
-        QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
+    #if hasattr(QtCore.Qt, 'AA_EnableHighDpiScaling'):
+     #   QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
+    #if hasattr(QtCore.Qt, 'AA_UseHighDpiPixmaps'):
+     #   QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
 
     App=QApplication(sys.argv)
     main=userLogin()

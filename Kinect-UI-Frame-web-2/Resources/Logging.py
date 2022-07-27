@@ -14,7 +14,11 @@ class LOGGING:
                 writeType = "a"
             self.PROGRAM_FILE = logFileName 
 
-        self.PROGRAM_LOG = open(self.PROGRAM_FILE, writeType)
+        try: 
+            self.PROGRAM_LOG = open(self.PROGRAM_FILE, writeType)
+        except Exception as e: 
+            print(f"There was an error: {e}")
+        
         self.updateLogFile()
 
             

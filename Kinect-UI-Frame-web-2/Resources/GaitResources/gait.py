@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd   
 
 # UI Imports 
-from Resources.UIResources import windowManager as ui2
+from Resources.UIResources import initImageWindow as ui2
 # pyQt Imports
 from PyQt5.QtCore import QThread, pyqtSignal
 
@@ -75,7 +75,8 @@ class GAIT(QThread):
         ######################################################
         #               End Program Constants                #
         ######################################################
-
+        # Must init in constructor
+        self._InitFrameConvted = False # This is to ensure that we conver the image first
         
         
         # Image Processing Vars
@@ -93,7 +94,7 @@ class GAIT(QThread):
         # Program Flags
         self.aRunTimeComplete = bool 
         self._PAUSE, self._IsDone, self._BegZoneReached, self._EndReached = bool, bool, bool, bool
-        self._InitFrameConvted = bool # This is to ensure that we conver the image first
+        
         self._AllowDataCollection, self._CalculationsAllowed = bool, bool
         self._PictureTaken, self._PictureWindowName = bool, "Saved Image"
         self._startDistanceCaptured = bool 
@@ -267,7 +268,9 @@ class GAIT(QThread):
         self._programLog.output(0, f"\nInstant Velocity Average Data:\n{ivData}")
         
     def displayAvgGraph(self, id=1): 
-        self._IV_Avg_Graph.showGraph(id, showLegendBool=True, average=self._Gait_Speed_Avg, customText="Averages For")
+        # Only Allow Graph to Be Shown if There is Data, otherwise it will crash if there isnt a check for data
+        if(len(self.gait_Speed_Arr) > 0):
+            self._IV_Avg_Graph.showGraph(id, showLegendBool=True, average=self._Gait_Speed_Avg, customText="Averages For")
 
 
 
@@ -300,10 +303,13 @@ class GAIT(QThread):
 
 
     def displayGraph(self, id=None, showLegend=True): 
-        if id == None: 
-            self.plot.showGraph(id=self._currKey-1, showLegendBool=showLegend)
-        elif id == -1: 
-            self.plot.showGraph(showLegendBool=showLegend)
+        
+        if(len(self.gait_Speed_Arr) > 0 ): 
+            if id == None: 
+                self.plot.showGraph(id=self._currKey-1, showLegendBool=showLegend)
+            elif id == -1: 
+                self.plot.showGraph(showLegendBool=showLegend)
+            
 
     
     def setDatabaseInstance(self, database): 
@@ -313,23 +319,28 @@ class GAIT(QThread):
         self._PatientID, self._PatientName = ptInfo
 
 
-    def setupDirectories(self): 
-        #Now Adding for EXE 
-        if __name__ != "__main__": 
-            self._ProgramPath = os.path.dirname(self._ProgramPath)
-            #NOw Adding for EXE -> 1/6/2022
-            self._ProgramPath = os.getcwd()
+    def setupDirectories(self):
+        # Just wrap in a try and except to catch all errors
+        try:  
+            #Now Adding for EXE 
+            if __name__ != "__main__": 
+                self._ProgramPath = os.path.dirname(self._ProgramPath)
+                #NOw Adding for EXE -> 1/6/2022
+                self._ProgramPath = os.getcwd()
 
-        if not os.path.isdir(os.path.join(self._ProgramPath, "ProgramLogs")):
-                os.mkdir(os.path.join(self._ProgramPath, "ProgramLogs"))
-        sysLogsDir = os.path.join(self._ProgramPath, "ProgramLogs")
-        self._programLog = lg.LOGGING(os.path.join(sysLogsDir, str("runtimeLogGAIT-" + time.strftime("%Y%m%d-%H%M%S") + ".txt")))
+            if not os.path.isdir(os.path.join(self._ProgramPath, "ProgramLogs")):
+                    os.mkdir(os.path.join(self._ProgramPath, "ProgramLogs"))
+            sysLogsDir = os.path.join(self._ProgramPath, "ProgramLogs")
+            self._programLog = lg.LOGGING(os.path.join(sysLogsDir, str("runtimeLogGAIT-" + time.strftime("%Y%m%d-%H%M%S") + ".txt")))
+            
+            if not os.path.isdir(os.path.join(self._ProgramPath, "PatientLogs")):
+                    os.mkdir(os.path.join(self._ProgramPath, "PatientLogs"))
+            # Save the Stats 
+            ptLogDirectory = os.path.join(self._ProgramPath, "PatientLogs")
+            self._ptLog = lg.LOGGING(os.path.join(ptLogDirectory, str("PtlogGAIT-" + time.strftime("%Y%m%d-%H%M%S") + ".txt")))
         
-        if not os.path.isdir(os.path.join(self._ProgramPath, "PatientLogs")):
-                os.mkdir(os.path.join(self._ProgramPath, "PatientLogs"))
-        # Save the Stats 
-        ptLogDirectory = os.path.join(self._ProgramPath, "PatientLogs")
-        self._ptLog = lg.LOGGING(os.path.join(ptLogDirectory, str("PtlogGAIT-" + time.strftime("%Y%m%d-%H%M%S") + ".txt")))
+        except Exception as e: 
+            print(f"There was an error: {e}")
         
 
 
@@ -358,7 +369,7 @@ class GAIT(QThread):
 
         # Program Flags
         self._PAUSE, self._IsDone, self._BegZoneReached, self._EndReached = False, False, False, False
-        self._InitFrameConvted = False # This is to ensure that we conver the image first
+        
         self._AllowDataCollection, self._CalculationsAllowed = False, False
         self._PictureTaken, self._PictureWindowName = False, "Saved Image"
         self._startDistanceCaptured = False 
@@ -397,6 +408,8 @@ class GAIT(QThread):
     # This function allows the program to completely reset itself and allow for the "switch patient " functionality to work
     # This should be called in the gaitRuntime.py::reset(resetAllBool : bool) when the resetAllBool is set to True 
     def _fullReset(self): 
+        # Clear the init frame
+        self._InitFrame, self._InitImageFileName, self._InitFrameConvted = None, None, False 
         self.Data_Dict = dict()
         self._IV_Dict_Averages = {}
         self._IV_Avg_Graph = graph.Graph()
@@ -461,10 +474,13 @@ class GAIT(QThread):
     # Then sets the self._InitFrame to it 
     def _convt_init_img(self, anInitFrame = None):
 
+        # If an init image file was selected, convert and use it, since the file image should alreday be in the proper format
+        # We just need to grayscale and read it
         if self._InitImageFileName is not None:
             self._InitFrame = cv2.imread(self._InitImageFileName)
             self._InitFrame = cv2.cvtColor(self._InitFrame, cv2.COLOR_RGB2GRAY)
-        # Now convert the actual initial image
+            self._InitFrameConvted = True
+        # if we just took an init image, then we must do all the conversion to make it a standard picture
         else:
             _, self._InitFrame = self._OpenCVDepthHandler.convtImg(self._InitFrame)
             self._InitFrame = cv2.imread(self._InitImageFileName)
@@ -511,21 +527,20 @@ class GAIT(QThread):
         else:
             self._InitFrame = None
             cv2.destroyWindow(OrigimgName)
+            
 
 
     def handleNoInitFrame(self):
         if self.displayFrame is None: 
             return 
-        #message, beginRect, endRect, startText = None, None, None, None
+        
         # If we have no init image display a message asking to capture one
         if self._InitFrame is None and self._InitFrameConvted is False:
             # Print The Error, and display message to capture an init frame 
             message = "No Initilization Frame, press \"Capture\" to capture one"
             self.messages.emit(message)
-            #self._OpenCVDepthHandler.displayAMessageToCV(self.displayFrame, message, self._BgStart, self._BgEnd,
-             #                                            self._TextStart)
-        
-
+            
+            
 
     def handleStartDistance(self, currFrameCnt) -> int:
         
@@ -634,12 +649,12 @@ class GAIT(QThread):
                 self._Gait_Speed = float((self._EndMeasurementZone_mm/self._UnitConversionFactor) / self._TimeTakenToWalk)
             except ZeroDivisionError: 
                 assert("No Data to Calculate Gait Speed Provided!!")
-            # Append gait speed to the arr to be averaged, and then emit a signal to the ui to allow another program run
+            # Append gait speed to the arr to be averaged, and then emit a signal to the ui to allow another program run 
             self.gait_Speed_Arr.append(self._Gait_Speed)
             self.programRuntimes += 1 
             self._currKey += 1 # Update current Proram Iteration
             self.aRunTimeComplete, self.calculationsDone = True, True 
-            
+                
 
         
 
@@ -653,8 +668,8 @@ class GAIT(QThread):
                 self.insertGraphData("Kinect Gait Analysis")
             self.doGaitSpeedCalc()
             
-        #self._programLog.output(1, self.Data_Dict)
-        #self.debugDictPrint(self.Data_Dict)
+        
+        # Log only if we r in debug mode
         if(len(sys.argv) > 1 and sys.argv[1] == "--DEBUG"):
             self._ptLog.output(2,"\n\n------------------------------------")
             self._ptLog.output(2, "          Statistics:              ") 
@@ -664,6 +679,7 @@ class GAIT(QThread):
                 self._ptLog.output(2,"Program Time Elapsed: " + str(self._Timer.getTimeDiff()))
                 self._ptLog.output(2,"Elapsed Time: " + str(self._TimeTakenToWalk))
                 self._ptLog.output(2,"Calculated Gait Speed: " + str(self._Gait_Speed) + " m/s")
+        
 
 
 
@@ -721,6 +737,11 @@ class GAIT(QThread):
         if len(self.gait_Speed_Arr) > 0: 
             self._Gait_Speed_Avg = sum(self.gait_Speed_Arr)
             self._Gait_Speed_Avg /= len(self.gait_Speed_Arr)
+            # Now Calculate the Average Instant Vel and time at Each Distance
+            self.setupAvgGraph("Average Graph")
+            # Now upload the data to the database
+            self.saveToDatabase()
+
             if(len(sys.argv) > 1 and sys.argv[1] == "--DEBUG"):
                 self._ptLog.output(2,"\n\n---------------------------------------------")
                 self._ptLog.output(2, f"Average Gait Speed: {self._Gait_Speed_Avg}") 
@@ -730,10 +751,8 @@ class GAIT(QThread):
                 self._programLog.output(0, self.Data_Dict)
                 # End Debug
             
-            # Now Calculate the Average Instant Vel and time at Each Distance
-            self.setupAvgGraph("Average Graph")
-            # Now upload the data to the database
-            self.saveToDatabase()
+            
+          
             #self.debugDictPrint2(self._IV_Dict_Averages, label="Averages")
             
 
@@ -741,7 +760,8 @@ class GAIT(QThread):
         if len(self.gait_Speed_Arr) > 0: 
             self.reportProgDone.emit(round(self._Gait_Speed_Avg, 4))
         else: 
-            self.reportProgDone.emit(-1)
+            self.reportProgDone.emit(0)
+        self._KinectDev.close()
 
 
     def closeVid(self): 

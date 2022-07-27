@@ -260,9 +260,9 @@ class GaitAnalyzer(gait.GAIT):
             return 
         elif self.vf_AccelZone is None: 
             distance, time = self._BeginMeasurementZone_mm, self._Timer.getCurrentTimeDiff()
-            self._programLog.output(0, f"Reached Measurement Zone at: {time} sec")
             self.vf_AccelZone = self._instantVelocityHelper(distance, time, 0)
             self.vi_MeasureZone = self.vf_AccelZone
+            self._programLog.output(0, f"Reached Measurement Zone at: {time} sec")
             self._programLog.output(0, f"Initial Velocity: {self.vi_MeasureZone}")
             self._saveToDict(0, 0, 0)
             return 
@@ -345,8 +345,12 @@ class GaitAnalyzer(gait.GAIT):
             if keypress == ord('q') and False: 
                 exit(0)
 
-            if self._InitFrame is None and self._InitFrameConvted is False:
-               self.handleNoInitFrame()
+            if self._InitImageFileName is None and self._InitFrameConvted is False:
+                self.handleNoInitFrame()
+                self.signalAllowStartDistanceCapture.emit(False)
+            elif self._InitFrameConvted is False and self._InitImageFileName is not None: 
+                self._convt_init_img()
+                self.signalAllowStartDistanceCapture.emit(True)
             else: 
                 if signalStartDistanceSent is False: 
                     self.signalAllowStartDistanceCapture.emit(True)

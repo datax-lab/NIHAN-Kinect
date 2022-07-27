@@ -177,17 +177,21 @@ class Kyphosis(QThread):
         if __name__ != "__main__": # Then we are a resource file for another program 
             self._ProgramPath = os.path.dirname(self._ProgramPath)
         '''
-        self._CurrentTime = time.strftime("%Y%m%d-%H%M%S")
-        self._ProgramLogPath = os.path.join(self._ProgramPath, "ProgramLogs")
-        #self._PatientLogPath = os.path.join(self._ProgramPath, "PatientLogs")
-        
-        if not os.path.exists(self._ProgramLogPath): 
-            os.mkdir(self._ProgramLogPath)
-        #if not os.path.exists(#self._PatientLogPath): 
-         #   os.mkdir(#self._PatientLogPath)
-        
-        self._ProgramLog = LOGGING(os.path.join(self._ProgramLogPath, f"ProgramLog-{self._CurrentTime}.txt"))
-        #self._PatientLog = LOGGING(os.path.join(self._PatientLogPath, f"PtLog-{self._CurrentTime}.txt"))
+        # Let's just wrap this in a try and catch
+        try:
+            self._CurrentTime = time.strftime("%Y%m%d-%H%M%S")
+            self._ProgramLogPath = os.path.join(self._ProgramPath, "ProgramLogs")
+            #self._PatientLogPath = os.path.join(self._ProgramPath, "PatientLogs")
+            
+            if not os.path.exists(self._ProgramLogPath): 
+                os.mkdir(self._ProgramLogPath)
+            #if not os.path.exists(#self._PatientLogPath): 
+            #   os.mkdir(#self._PatientLogPath)
+            
+            self._ProgramLog = LOGGING(os.path.join(self._ProgramLogPath, f"ProgramLog-{self._CurrentTime}.txt"))
+            #self._PatientLog = LOGGING(os.path.join(self._PatientLogPath, f"PtLog-{self._CurrentTime}.txt"))
+        except Exception as e: 
+            print(f"There was an error {e}")
 
     def gatherIntrinsics(self): 
         intrinsics = self._KinectDevice._mapper.GetDepthCameraIntrinsics()
