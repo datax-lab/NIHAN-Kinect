@@ -391,43 +391,48 @@ class trackBarUI(QDialog):
         self._Window = trackbar.Ui_Dialog()
         self._Window.setupUi(self)
         self._ErrorOut = errorWindow()
-        
+        self.prevSliderVal = 23; 
         self.connectItems()
         
     
     def connectItems(self): 
-        self._Window.horizontalSlider.valueChanged.connect(self.updateLineText)
-        self._Window.lineEdit.returnPressed.connect(self.updateSlider)
+        self._Window.horizontalSlider.valueChanged.connect(self.updateSensitivity)
 
-        
-    def updateLineText(self):
-        sliderValue = self._Window.horizontalSlider.value()
-        self._Window.lineEdit.setText(str(sliderValue))
-        # Since gausian blur only accepts kernels > 0 and height, width % 2  == 1
-        if(sliderValue % 2 == 1): self.sliderValueUpdate.emit(sliderValue) 
-        
-    
-    # When the text in the textbox is changed for a custom value, update the slider also
-    # Then send the data
-    # If the text input was bad then we should launch an error window explaining the issue
-    def updateSlider(self):
-        # Requires some error checks because user may input bad values 
-        textValue = self._Window.lineEdit.text()
-        try:
-            textValue = int(textValue)
-        except Exception as e: 
-            self._Window.lineEdit.setText(str(23))
-            self._ErrorOut.setMessage("Error, invalid entry, value must be an integer (i.e 21,23)!")
-            self._ErrorOut.show()
-        else:   
-            if(textValue > self._Window.horizontalSlider.maximum()): 
-                    self._ErrorOut.setMessage(f"Error, invalid entry, value must be an integer between {self._Window.horizontalSlider.minimum()}-{self._Window.horizontalSlider.maximum()}") 
-                    self._ErrorOut.show()
-            else:
-                self._Window.horizontalSlider.setValue(int(self._Window.lineEdit.text()))
-                if(textValue % 2 == 1): self.sliderValueUpdate.emit(textValue)
      
-         
+    def checkValidValueandFind(self, sliderValue : int) -> int:
+        """ Verifies the Slider Values and Ensures they are a valid kernel size and returns the new position of the trackbar"""
+        if(sliderValue == self.prevSliderVal and sliderValue % 2 == 1) : return sliderValue 
+        elif(sliderValue % 2  == 1): 
+            offset, kernelValue = abs(self.prevSliderVal - sliderValue), sliderValue, 
+            # We need to calculate the offset since increased sensitivity indicates decrease kernel size
+            if(sliderValue < self.prevSliderVal):  kernelValue = sliderValue + offset 
+            else: kernelValue = sliderValue - offset 
+            self.prevSliderVal = kernelValue
+            # Since the trackbar has values from 15-45 increasing the number (moving the trackbar toward the right) would actually mean decreasing sensitivity
+            # So We want to make this backend react so that it makes sense to the UI trackbar
+            # So calculate the kernel value based on how close this given slider position is to the max, but put it in terms of distance from the 
+            # min i.e ui trackbar is at value 43 so we would do max-43 then do that plus the min value and that will be the correct kernel sizing
+            kernelValue = (self._Window.horizontalSlider.maximum() - kernelValue) + self._Window.horizontalSlider.minimum()
+            return kernelValue
+        
+        kernelValue = sliderValue
+        while(kernelValue % 2 != 1 and kernelValue <= self._Window.horizontalSlider.maximum() and kernelValue >= self._Window.horizontalSlider.minimum()): 
+            if(sliderValue > self.prevSliderVal): kernelValue -= 1 
+            else: kernelValue += 1 
+            
+        self.prevSliderVal = kernelValue
+        kernelValue = (self._Window.horizontalSlider.maximum() - kernelValue) + self._Window.horizontalSlider.minimum()
+        return kernelValue
+            
+        
+                
+    def updateSensitivity(self):
+        sliderValue = self._Window.horizontalSlider.value()
+        # self._Window.lineEdit.setText(str(sliderValue))
+        # Since gausian blur only accepts kernels > 0 and height, width % 2  == 1
+        # This is sending the kernel size to the gait code 
+        kernelValue = self.checkValidValueandFind(sliderValue)
+        self.sliderValueUpdate.emit(kernelValue)
             
             
     
