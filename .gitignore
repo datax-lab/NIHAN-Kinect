@@ -5,4 +5,5 @@ Kinect-UI-Frame-web-2/old.py
 Kinect-UI-Frame-web-2/__pycache__
 __pycache__/
 *.pyc
+*.csv
 .DS_Store

@@ -48,7 +48,7 @@ class GAIT(QThread):
         ######################################################
         self._MaxFrameCalibrationCnt = 5
         self.programRuntimes = -1 # So that the current index of the gait speed is the same as the program run times
-        self._StartKey = 1
+        self._StartKey = 0
         self._currKey = self._StartKey
         # Gait Constants
         self._BeginMeasurementZone_mm, self._EndMeasurementZone_mm = 1000, 4000 #0,500 #1000,<- Debug 4000 # Begin Measurement Zone at 1m and end at 4m
@@ -123,6 +123,9 @@ class GAIT(QThread):
         self.plot, self.plotFlag = graph.Graph() , False 
 
 
+
+        # Instance Data Frame 
+        self.iv_data_frame, self.frame_data_frame = pd.DataFrame, pd.DataFrame
         ######################################################
         #               Instant Velocity                     #
         ######################################################
@@ -159,7 +162,7 @@ class GAIT(QThread):
         self._IV_Dict_Averages = {}
         self._IV_Avg_Graph = graph.Graph()
         # To Help With Final Graphing Later
-        self._FrameBFrame_Dict, self._IV_Dict = dict(), dict()
+        # self._FrameBFrame_Dict, self._IV_Dict = dict(), dict()
         # Program Setup Functions
         self.setupDirectories()
       
@@ -175,99 +178,103 @@ class GAIT(QThread):
         self._BgStart, self._BgEnd, self._TextStart = (0, 0), (self._Width, 50), (40, 25)
 
 
-    def avgData(self) -> tuple[pd.DataFrame, pd.DataFrame]: 
+    # def avgData(self) -> tuple[pd.DataFrame, pd.DataFrame]: 
         
-        if(len(sys.argv) > 1 and sys.argv[1] == "--DEBUG"): 
-            # Debugging 
-            self._programLog.output(0,"\nInstant Velocities")
-            for x,y in self._IV_Dict.items(): 
-                print(f"Key: {x}")
-                for data in y: 
-                    self._programLog.output(0, f"Velocity: {round(data['currVelocity'],4)}\tDistance ID: {data['distanceID']}")
+    #     if(len(sys.argv) > 1 and sys.argv[1] == "--DEBUG"): 
+    #         # Debugging 
+    #         self._programLog.output(0,"\nInstant Velocities")
+    #         for x,y in self._IV_Dict.items(): 
+    #             print(f"Key: {x}")
+    #             for data in y: 
+    #                 self._programLog.output(0, f"Velocity: {round(data['currVelocity'],4)}\tDistance ID: {data['distanceID']}")
                 
-            self._programLog.output(1, "\nFrame By Frame Data")
-            for x,y in self._FrameBFrame_Dict.items(): 
-                print(f"Key: {x}")
-                for data in y: 
-                    self._programLog.output(1,f"Velocity: {round(data['currVelocity'],4)}\tFrame: {data['frame']}")
+    #         self._programLog.output(1, "\nFrame By Frame Data")
+    #         for x,y in self._FrameBFrame_Dict.items(): 
+    #             print(f"Key: {x}")
+    #             for data in y: 
+    #                 self._programLog.output(1,f"Velocity: {round(data['currVelocity'],4)}\tFrame: {data['frame']}")
        
        
-        #### End DEBUG ###
-        tempFrameBFrame, tempIV_dict = pd.DataFrame(), pd.DataFrame() 
+    #     #### End DEBUG ###
+    #     tempFrameBFrame, tempIV_dict = pd.DataFrame(), pd.DataFrame() 
         
-        # Iterate through all keys 
-        for keyVals in self.Data_Dict.keys(): 
-            # Assign the data held under each key to their appropriate dataframe for averaging
-            tempHolderFrame, tempIVHolder =   pd.DataFrame.from_dict(self._FrameBFrame_Dict[keyVals]), pd.DataFrame.from_dict(self._IV_Dict[keyVals])
-            if tempFrameBFrame.empty and tempIV_dict.empty: 
-                tempFrameBFrame, tempIV_dict = tempHolderFrame, tempIVHolder
-            else: 
-                # Using axis=0 because we are appending a row
-                tempFrame, tempIV_dict = pd.concat([tempFrameBFrame, tempHolderFrame], axis=0), pd.concat([tempIV_dict, tempIVHolder], axis=0)
-                #tempFrameBFrame, tempIV_dict = tempFrameBFrame.append(tempHolderFrame), tempIV_dict.append(tempIVHolder) # df.append() is deprecated
+    #     # Iterate through all keys 
+    #     for keyVals in self.Data_Dict.keys(): 
+    #         # Assign the data held under each key to their appropriate dataframe for averaging
+    #         tempHolderFrame, tempIVHolder =   pd.DataFrame.from_dict(self._FrameBFrame_Dict[keyVals]), pd.DataFrame.from_dict(self._IV_Dict[keyVals])
+    #         if tempFrameBFrame.empty and tempIV_dict.empty: 
+    #             tempFrameBFrame, tempIV_dict = tempHolderFrame, tempIVHolder
+    #         else: 
+    #             # Using axis=0 because we are appending a row
+    #             tempFrame, tempIV_dict = pd.concat([tempFrameBFrame, tempHolderFrame], axis=0), pd.concat([tempIV_dict, tempIVHolder], axis=0)
+    #             #tempFrameBFrame, tempIV_dict = tempFrameBFrame.append(tempHolderFrame), tempIV_dict.append(tempIVHolder) # df.append() is deprecated
        
-        self._programLog.output(0,f"Temporary IVS:\n{tempIV_dict}")
+    #     self._programLog.output(0,f"Temporary IVS:\n{tempIV_dict}")
        
-        # Find Averages Based on A Column Value 
-        newFrameBFrameDataSet, newIVDataSet = pd.DataFrame(), pd.DataFrame()
+    #     # Find Averages Based on A Column Value 
+    #     newFrameBFrameDataSet, newIVDataSet = pd.DataFrame(), pd.DataFrame()
         
-        # Should Start from frame 5 through maxFrame + 5
-        for i in range(int(tempFrameBFrame['frame'].min()), int(tempFrameBFrame['frame'].max() + tempFrameBFrame['frame'].min()), int(tempFrameBFrame['frame'].min())): 
-            tempFrame = tempFrameBFrame.loc[tempFrameBFrame['frame'] == i] # Get all Rows that Match the Frame I am currently looking at
-            tempFrame = pd.DataFrame.from_dict({'type' : "Frame", 'time': [tempFrame['CurrTime'].mean()], 'distance' : [tempFrame['distance_Measure'].mean()], 'velocity' : [tempFrame['currVelocity'].mean()]})
-            if newFrameBFrameDataSet.empty: 
-                newFrameBFrameDataSet = tempFrame
-            else: 
-                newFrameBFrameDataSet = pd.concat([newFrameBFrameDataSet, tempFrame], axis=0)
-                #newFrameBFrameDataSet = newFrameBFrameDataSet.append(tempFrame)
+    #     # Should Start from frame 5 through maxFrame + 5
+    #     for i in range(int(tempFrameBFrame['frame'].min()), int(tempFrameBFrame['frame'].max() + tempFrameBFrame['frame'].min()), int(tempFrameBFrame['frame'].min())): 
+    #         tempFrame = tempFrameBFrame.loc[tempFrameBFrame['frame'] == i] # Get all Rows that Match the Frame I am currently looking at
+    #         tempFrame = pd.DataFrame.from_dict({'type' : "Frame", 'time': [tempFrame['CurrTime'].mean()], 'distance' : [tempFrame['distance_Measure'].mean()], 'velocity' : [tempFrame['currVelocity'].mean()]})
+    #         if newFrameBFrameDataSet.empty: 
+    #             newFrameBFrameDataSet = tempFrame
+    #         else: 
+    #             newFrameBFrameDataSet = pd.concat([newFrameBFrameDataSet, tempFrame], axis=0)
+    #             #newFrameBFrameDataSet = newFrameBFrameDataSet.append(tempFrame)
         
-        # Now do something similar to the above but for iv distances
-        for i in range(int(tempIV_dict['distanceID'].max()) + 1): 
-            tempIV = tempIV_dict.loc[tempIV_dict['distanceID'] == i] # Grab All The Rows that Have The Wanted Distance
-            tempIV = pd.DataFrame.from_dict({'type' : "Instant velocity", 'time' : [tempIV['CurrTime'].mean()], 'distance': [tempIV['distance_Measure'].mean()], 'velocity' : [tempIV['currVelocity'].mean()]})
-            if newIVDataSet.empty: 
-                newIVDataSet = tempIV
-            else: 
-                newIVDataSet =  pd.concat([newIVDataSet, tempIV], axis=0)
-                #newIVDataSet = newIVDataSet.append(tempIV)
+    #     # Now do something similar to the above but for iv distances
+    #     for i in range(int(tempIV_dict['distanceID'].max()) + 1): 
+    #         tempIV = tempIV_dict.loc[tempIV_dict['distanceID'] == i] # Grab All The Rows that Have The Wanted Distance
+    #         tempIV = pd.DataFrame.from_dict({'type' : "Instant velocity", 'time' : [tempIV['CurrTime'].mean()], 'distance': [tempIV['distance_Measure'].mean()], 'velocity' : [tempIV['currVelocity'].mean()]})
+    #         if newIVDataSet.empty: 
+    #             newIVDataSet = tempIV
+    #         else: 
+    #             newIVDataSet =  pd.concat([newIVDataSet, tempIV], axis=0)
+    #             #newIVDataSet = newIVDataSet.append(tempIV)
             
         
         
-        self._programLog.output(0, f"{newFrameBFrameDataSet}\n\n")
-        self._programLog.output(0, f"{newIVDataSet}\n\n")
-        return newFrameBFrameDataSet.dropna(), newIVDataSet.dropna()
+    #     self._programLog.output(0, f"{newFrameBFrameDataSet}\n\n")
+    #     self._programLog.output(0, f"{newIVDataSet}\n\n")
+    #     return newFrameBFrameDataSet.dropna(), newIVDataSet.dropna()
        
 
         
         
     # {'Results': [{'Distance': currDistance, 'Time': currentTimeHolder, 'Instant Velocity': currentIVHolder}]}
     # This Function Also Handles Formatting the Data to be uploaded, since this is where we average all the data
+    # Disable for now --> Want to isolate new data structure
     def setupAvgGraph(self, title): 
+        return 
       
-        frameData, ivData = self.avgData()
+        # frameData, ivData = self.avgData()
         
-        self._programLog.output(0, f"{frameData.shape, ivData.shape}")
-        self._IV_Avg_Graph.setupLabels(title, "Distance (m)", "Speed (m/s)")
-        self._IV_Avg_Graph.insertToGraph((frameData['distance'], frameData['velocity']), (ivData['distance'], ivData['velocity']), 1)
+        # self._programLog.output(0, f"{frameData.shape, ivData.shape}")
+        # self._IV_Avg_Graph.setupLabels(title, "Distance (m)", "Speed (m/s)")
+        # self._IV_Avg_Graph.insertToGraph((frameData['distance'], frameData['velocity']), (ivData['distance'], ivData['velocity']), 1)
         
-        # Since we should be done w the original dict, we need to clear it, and then re-create it for data uploading
-        self.Data_Dict.clear()
-        # Format of Gait Dictionary
-        #[
-        #   {
-        #         'Type' : , # This is indicates whether the current results are from Frame By Frame or Instant Velocity 
-        #         'Time' : , 
-        #         'Distance' : , 
-        #         'Velocity' : , 
-        #   }
-        # ]
-        self.Data_Dict = (pd.concat([frameData, ivData], axis=0)).to_dict('records')
-        #self.Data_Dict = (frameData.append(ivData)).to_dict('records')
+        # # Since we should be done w the original dict, we need to clear it, and then re-create it for data uploading
+        # self.Data_Dict.clear()
+        # # Format of Gait Dictionary
+        # #[
+        # #   {
+        # #         'Type' : , # This is indicates whether the current results are from Frame By Frame or Instant Velocity 
+        # #         'Time' : , 
+        # #         'Distance' : , 
+        # #         'Velocity' : , 
+        # #   }
+        # # ]
+        # self.Data_Dict = (pd.concat([frameData, ivData], axis=0)).to_dict('records')
+        # #self.Data_Dict = (frameData.append(ivData)).to_dict('records')
         
-        self._programLog.output(0,f"\n Frame By Frame Average Data:\n{frameData}")
-        self._programLog.output(0, f"\nInstant Velocity Average Data:\n{ivData}")
-        
+        # self._programLog.output(0,f"\n Frame By Frame Average Data:\n{frameData}")
+        # self._programLog.output(0, f"\nInstant Velocity Average Data:\n{ivData}")
+    
+    # Disable for now --> Want to isolate new data structure
     def displayAvgGraph(self, id=1): 
+        return 
         # Only Allow Graph to Be Shown if There is Data, otherwise it will crash if there isnt a check for data
         if(len(self.gait_Speed_Arr) > 0):
             self._IV_Avg_Graph.showGraph(id, showLegendBool=True, average=self._Gait_Speed_Avg, customText="Averages For")
@@ -281,34 +288,54 @@ class GAIT(QThread):
         return (aDict[aDict['id'] == 'Frame']).to_dict('records'), (aDict[aDict['id'] == 'IV']).to_dict('records') 
     
     
-    def insertGraphData(self, title):
+    # When inserting the data to the graph, we should first have the frame-by-frame and the iv data from the child class appended to the 
+    # currrent instance pd.Dataframe
+    # We can also do some data filtering here, to help remove outliers in the graph --> Implement later
+    def copyToDataFrame(self, iv_store : dict, frame_store : dict): 
         
-        keyVal = self._currKey
-        currKey = self.Data_Dict[keyVal]
+        if(self.iv_data_frame.empty) : self.iv_data_frame = pd.DataFrame.from_dict(iv_store)
+        else: self.iv_data_frame = pd.concat([self.iv_data_frame, pd.DataFrame.from_dict(iv_store)], axis=0)
+        
+        if(self.frame_data_frame.empty) : self.frame_data_frame = pd.DataFrame.from_dict(frame_store) 
+        else: self.frame_data_frame = pd.concat([self.frame_data_frame, pd.DataFrame.from_dict(frame_store)], axis=0)
+        
+        
+       
+        
+    # Now that we have copied all data to a dataframe lets append it to the graph, altho this should prolly only be done if requested 
+    # to save resources --> Implement later
+    def insertGraphData(self, title): 
+        return
+    
+    # def insertGraphData(self, title):
+        
+    #     keyVal = self._currKey
+    #     currKey = self.Data_Dict[keyVal]
 
-        currKey = ((pd.DataFrame.from_dict(currKey)).sort_values('distance_Measure'))         
-        # [{}] 
-        frameBFrameHolder, ivHolder = self.processNParition(currKey)
-        # Save the Data to The Appropriate Dictionaries for Averagins Later
-        self._FrameBFrame_Dict.update({self._currKey : frameBFrameHolder})
-        self._IV_Dict.update({self._currKey : ivHolder})
-        # Setup the Graph
-        # Need to convert to datframe first
-        frameBFrameHolder = pd.DataFrame.from_dict(frameBFrameHolder)
-        ivHolder = pd.DataFrame.from_dict(ivHolder)
-        self.plot.setupLabels(title, "Distance (m)", "Speed (m/s)")
-        self.plot.insertToGraph((frameBFrameHolder['distance_Measure'], frameBFrameHolder['currVelocity']), 
-                                (ivHolder['distance_Measure'], ivHolder['currVelocity']), int(keyVal))
+    #     currKey = ((pd.DataFrame.from_dict(currKey)).sort_values('distance_Measure'))         
+    #     # [{}] 
+    #     frameBFrameHolder, ivHolder = self.processNParition(currKey)
+    #     # Save the Data to The Appropriate Dictionaries for Averagins Later
+    #     self._FrameBFrame_Dict.update({self._currKey : frameBFrameHolder})
+    #     self._IV_Dict.update({self._currKey : ivHolder})
+    #     # Setup the Graph
+    #     # Need to convert to datframe first
+    #     frameBFrameHolder = pd.DataFrame.from_dict(frameBFrameHolder)
+    #     ivHolder = pd.DataFrame.from_dict(ivHolder)
+    #     self.plot.setupLabels(title, "Distance (m)", "Speed (m/s)")
+    #     self.plot.insertToGraph((frameBFrameHolder['distance_Measure'], frameBFrameHolder['currVelocity']), 
+    #                             (ivHolder['distance_Measure'], ivHolder['currVelocity']), int(keyVal))
 
 
-
+    # Disable graphing --> Temporary to test only new structure of the data gathered
     def displayGraph(self, id=None, showLegend=True): 
-        
-        if(len(self.gait_Speed_Arr) > 0 ): 
-            if id == None: 
-                self.plot.showGraph(id=self._currKey-1, showLegendBool=showLegend)
-            elif id == -1: 
-                self.plot.showGraph(showLegendBool=showLegend)
+        return 
+    
+        # if(len(self.gait_Speed_Arr) > 0 ): 
+        #     if id == None: 
+        #         self.plot.showGraph(id=self._currKey-1, showLegendBool=showLegend)
+        #     elif id == -1: 
+        #         self.plot.showGraph(showLegendBool=showLegend)
             
 
     
@@ -403,6 +430,10 @@ class GAIT(QThread):
         
         # GUI Signal to continue program 
         self.calculationsDone = False 
+        
+        # We want to increment this, since this would indicate we are running the program again on the same patient, it is used 
+        # to help identify which graph to display 
+        self._currKey += 1
 
 
     # This function allows the program to completely reset itself and allow for the "switch patient " functionality to work
@@ -415,8 +446,10 @@ class GAIT(QThread):
         self._IV_Avg_Graph = graph.Graph()
         self.wasEmitted = False
         self._currKey = self._StartKey
+        self.frame_data_frame = self.frame_data_frame.iloc[0:0]
+        self.iv_data_frame = self.iv_data_frame.iloc[0:0]
         # To Help With Final Graphing Later
-        self._FrameBFrame_Dict, self._IV_Dict = dict(), dict()
+        # self._FrameBFrame_Dict, self._IV_Dict = dict(), dict()
         self._reinit()
 
 
@@ -652,7 +685,7 @@ class GAIT(QThread):
             # Append gait speed to the arr to be averaged, and then emit a signal to the ui to allow another program run 
             self.gait_Speed_Arr.append(self._Gait_Speed)
             self.programRuntimes += 1 
-            self._currKey += 1 # Update current Proram Iteration
+            # self._currKey += 1 # Update current Proram Iteration
             self.aRunTimeComplete, self.calculationsDone = True, True 
                 
 
@@ -685,35 +718,35 @@ class GAIT(QThread):
 
 
 
-    def debugDictPrint(self, dictionary, label=None):
-        self._programLog.output(1, "\n\n")
-        if label is not None: 
-            self._programLog.output(1,label)
-        for x, y in dictionary.items(): 
-            print(f"\nCurrent Key Val: {x}")
-            for i, data in enumerate(y):
-                self._programLog.output(1, f"{i + 1} : {data}")
-            # Save this data as a dataframe
-            if self._DataFrame is None: 
-                self._DataFrame = pd.DataFrame.from_dict(y)
-            else: 
-                self._DataFrame = self._DataFrame.append(pd.DataFrame.from_dict(y))
+    # def debugDictPrint(self, dictionary, label=None):
+    #     self._programLog.output(1, "\n\n")
+    #     if label is not None: 
+    #         self._programLog.output(1,label)
+    #     for x, y in dictionary.items(): 
+    #         print(f"\nCurrent Key Val: {x}")
+    #         for i, data in enumerate(y):
+    #             self._programLog.output(1, f"{i + 1} : {data}")
+    #         # Save this data as a dataframe
+    #         if self._DataFrame is None: 
+    #             self._DataFrame = pd.DataFrame.from_dict(y)
+    #         else: 
+    #             self._DataFrame = self._DataFrame.append(pd.DataFrame.from_dict(y))
         
 
 
-    def debugDictPrint2(self, dictionary, label=None):
-        sum = 0
-        cntr = 0
-        self._programLog.output(1, "\n\n")
-        if label is not None:
-            self._programLog.output(1,label)
-        for x, y in dictionary.items():
-            for i, data in enumerate(y):
-                self._programLog.output(1, f"{i + 1} : {data}")
-                sum += data['Instant Velocity']
-                cntr +=1
+    # def debugDictPrint2(self, dictionary, label=None):
+    #     sum = 0
+    #     cntr = 0
+    #     self._programLog.output(1, "\n\n")
+    #     if label is not None:
+    #         self._programLog.output(1,label)
+    #     for x, y in dictionary.items():
+    #         for i, data in enumerate(y):
+    #             self._programLog.output(1, f"{i + 1} : {data}")
+    #             sum += data['Instant Velocity']
+    #             cntr +=1
 
-        self._programLog.output(1, f"\nAverage of Instant Velocities: {sum/cntr}")
+    #     self._programLog.output(1, f"\nAverage of Instant Velocities: {sum/cntr}")
 
 
    
@@ -740,16 +773,20 @@ class GAIT(QThread):
             # Now Calculate the Average Instant Vel and time at Each Distance
             self.setupAvgGraph("Average Graph")
             # Now upload the data to the database
-            self.saveToDatabase()
-
             if(len(sys.argv) > 1 and sys.argv[1] == "--DEBUG"):
-                self._ptLog.output(2,"\n\n---------------------------------------------")
-                self._ptLog.output(2, f"Average Gait Speed: {self._Gait_Speed_Avg}") 
-                self._ptLog.output(2,"---------------------------------------------")
-                # Debug Calls 
-                self._programLog.output(0, "Dictionary Format of Data:\n")
-                self._programLog.output(0, self.Data_Dict)
-                # End Debug
+                self.iv_data_frame.to_csv('iv_data.csv')
+                self.frame_data_frame.to_csv('frame_data.csv') 
+            else: 
+                self.saveToDatabase()
+
+            # if(len(sys.argv) > 1 and sys.argv[1] == "--DEBUG"):
+            #     self._ptLog.output(2,"\n\n---------------------------------------------")
+            #     self._ptLog.output(2, f"Average Gait Speed: {self._Gait_Speed_Avg}") 
+            #     self._ptLog.output(2,"---------------------------------------------")
+            #     # Debug Calls 
+            #     self._programLog.output(0, "Dictionary Format of Data:\n")
+            #     self._programLog.output(0, self.Data_Dict)
+            #     # End Debug
             
             
           
