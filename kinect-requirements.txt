@@ -1,0 +1,7 @@
+Dependencies: 
+
+- PyQt5
+- requests
+- CV2
+- matplotlib
+- pandas
