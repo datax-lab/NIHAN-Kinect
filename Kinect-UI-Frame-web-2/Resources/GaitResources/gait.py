@@ -302,8 +302,8 @@ class GAIT(QThread):
         
         
     def getCurrIterationData(self): 
-        return (self.frame_data_frame.loc[self.frame_data_frame['iteration_ID'] == self.programRuntimes], 
-                self.iv_data_frame.loc[self.iv_data_frame['iteration_ID'] == self.programRuntimes])
+        return (self.frame_data_frame.loc[self.frame_data_frame['iteration_ID'] == self._runTimeCntr], 
+                self.iv_data_frame.loc[self.iv_data_frame['iteration_ID'] == self._runTimeCntr])
     
        
         
@@ -317,30 +317,11 @@ class GAIT(QThread):
                                 (currIVData['curr_distance'], currIVData['velocity']), int(self._runTimeCntr))
        
     
-    # def insertGraphData(self, title):
-        
-    #     keyVal = self._currKey
-    #     currKey = self.Data_Dict[keyVal]
-
-    #     currKey = ((DataFrame.from_dict(currKey)).sort_values('distance_Measure'))         
-    #     # [{}] 
-    #     frameBFrameHolder, ivHolder = self.processNParition(currKey)
-    #     # Save the Data to The Appropriate Dictionaries for Averagins Later
-    #     self._FrameBFrame_Dict.update({self._currKey : frameBFrameHolder})
-    #     self._IV_Dict.update({self._currKey : ivHolder})
-    #     # Setup the Graph
-    #     # Need to convert to datframe first
-    #     frameBFrameHolder = DataFrame.from_dict(frameBFrameHolder)
-    #     ivHolder = DataFrame.from_dict(ivHolder)
-    #     self.plot.setupLabels(title, "Distance (m)", "Speed (m/s)")
-    #     self.plot.insertToGraph((frameBFrameHolder['distance_Measure'], frameBFrameHolder['currVelocity']), 
-    #                             (ivHolder['distance_Measure'], ivHolder['currVelocity']), int(keyVal))
-
-
+ 
     # Disable graphing --> Temporary to test only new structure of the data gathered
     def displayGraph(self, id=None, showLegend=True): 
         if(len(self.gait_Speed_Arr) > 0): 
-            self.plot.showGraph(id=self._runTimeCntr, showLegendBool=showLegend)
+            self.plot.showGraph(id=self._runTimeCntr - 1, showLegendBool=showLegend)
         # elif id == -1: # Tells program to show average graph
         #     self.plot.showGraph(showLegendBool=showLegend)
     
@@ -447,7 +428,7 @@ class GAIT(QThread):
         # We want to increment this, since this would indicate we are running the program again on the same patient, it is used 
         # to help identify which graph to display 
         # self._runTimeCntr = self.programRuntimes
-        self._runTimeCntr = self._runTimeCntr + 1
+
 
 
 
@@ -701,6 +682,7 @@ class GAIT(QThread):
             # Append gait speed to the arr to be averaged, and then emit a signal to the ui to allow another program run 
             self.gait_Speed_Arr.append(self._Gait_Speed)
             self.programRuntimes += 1 
+            self._runTimeCntr += 1
             self.aRunTimeComplete, self.calculationsDone = True, True 
                 
 
@@ -715,6 +697,7 @@ class GAIT(QThread):
             if not self.frame_data_frame.empty and not self.iv_data_frame.empty: 
                 self.insertGraphData("Kinect Gait Analysis")
             self.doGaitSpeedCalc()
+            
             
         
         # Log only if we r in debug mode
