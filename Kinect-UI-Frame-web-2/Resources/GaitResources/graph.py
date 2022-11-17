@@ -18,6 +18,7 @@ class Graph:
 
 
     def insertToGraph(self, xyDataF: tuple[list, list], xyDataIV : tuple[list, list], id: int): 
+        print(f"Setting id to {id}")
         self._GraphStorage.update({id: {self._Titles[0] : xyDataF[0], self._Titles[1] : xyDataF[1], self._Titles[2]: xyDataIV[0], self._Titles[3] : xyDataIV[1]}})
    
 
@@ -36,7 +37,7 @@ class Graph:
         labelFrame, lableIV = str(), str()
        
         
-            
+        print(f"Given ID : {id}")
             
         if id is not None: 
             if customText is None:

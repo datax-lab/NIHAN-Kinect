@@ -127,7 +127,7 @@ class GaitAnalyzer(gait.GAIT):
         # Here we will append our obtained data to the frame_store dict, which will later be converted to a data frame
         # We will use iteration id as our primary key for each measurement obtained, so that we can associate it with a run in 
         # the instance of the current patient
-        self.frame_store['iteration_ID'].append(self._currKey)
+        self.frame_store['iteration_ID'].append(self._runTimeCntr)
         self.frame_store['curr_distance'].append(currDistance)
         self.frame_store['velocity'].append(currSpd)
         self.frame_store['time'].append(currTime)
@@ -274,7 +274,7 @@ class GaitAnalyzer(gait.GAIT):
         # Here we will append our obtained data to the iv_store dict, which will later be converted to a data frame
         # We will use iteration id as our primary key for each measurement obtained, so that we can associate it with a run in 
         # the instance of the current patient
-        self.iv_store['iteration_ID'].append(self._currKey)
+        self.iv_store['iteration_ID'].append(self._runTimeCntr)
         self.iv_store['curr_distance'].append(distance)
         self.iv_store['velocity'].append(iVelocity), 
         self.iv_store['time'].append(time)

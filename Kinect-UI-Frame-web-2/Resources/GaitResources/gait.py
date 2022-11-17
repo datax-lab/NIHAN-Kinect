@@ -6,7 +6,8 @@ from Resources.pykinect2 import PyKinectRuntime
 import os, traceback, time, sys 
 import cv2
 import numpy as np
-import pandas as pd   
+# import pandas as pd  
+from pandas import DataFrame, concat 
 
 # UI Imports 
 from Resources.UIResources import initImageWindow as ui2
@@ -47,9 +48,9 @@ class GAIT(QThread):
         #               Program Constants                    #
         ######################################################
         self._MaxFrameCalibrationCnt = 5
-        self.programRuntimes = -1 # So that the current index of the gait speed is the same as the program run times
-        self._StartKey = 0
-        self._currKey = self._StartKey
+        self.programRuntimes = 0 # So that the current index of the gait speed is the same as the program run times
+        self._runTimeCntr = 0 
+        # self._runTimeCntr = self.programRuntimes; 
         # Gait Constants
         self._BeginMeasurementZone_mm, self._EndMeasurementZone_mm = 1000, 4000 #0,500 #1000,<- Debug 4000 # Begin Measurement Zone at 1m and end at 4m
         self._UnitConversionFactor = 1000
@@ -125,7 +126,7 @@ class GAIT(QThread):
 
 
         # Instance Data Frame 
-        self.iv_data_frame, self.frame_data_frame = pd.DataFrame, pd.DataFrame
+        self.iv_data_frame, self.frame_data_frame = DataFrame, DataFrame
         ######################################################
         #               Instant Velocity                     #
         ######################################################
@@ -167,7 +168,7 @@ class GAIT(QThread):
         self.setupDirectories()
       
         
-        self._DataFrame = pd.DataFrame()
+        self._DataFrame = DataFrame()
         
     def setupKinect(self): 
         self._KinectDev = PyKinectRuntime.PyKinectRuntime(PyKinectV2.FrameSourceTypes_Depth)
@@ -178,7 +179,7 @@ class GAIT(QThread):
         self._BgStart, self._BgEnd, self._TextStart = (0, 0), (self._Width, 50), (40, 25)
 
 
-    # def avgData(self) -> tuple[pd.DataFrame, pd.DataFrame]: 
+    # def avgData(self) -> tuple[DataFrame, DataFrame]: 
         
     #     if(len(sys.argv) > 1 and sys.argv[1] == "--DEBUG"): 
     #         # Debugging 
@@ -196,12 +197,12 @@ class GAIT(QThread):
        
        
     #     #### End DEBUG ###
-    #     tempFrameBFrame, tempIV_dict = pd.DataFrame(), pd.DataFrame() 
+    #     tempFrameBFrame, tempIV_dict = DataFrame(), DataFrame() 
         
     #     # Iterate through all keys 
     #     for keyVals in self.Data_Dict.keys(): 
     #         # Assign the data held under each key to their appropriate dataframe for averaging
-    #         tempHolderFrame, tempIVHolder =   pd.DataFrame.from_dict(self._FrameBFrame_Dict[keyVals]), pd.DataFrame.from_dict(self._IV_Dict[keyVals])
+    #         tempHolderFrame, tempIVHolder =   DataFrame.from_dict(self._FrameBFrame_Dict[keyVals]), DataFrame.from_dict(self._IV_Dict[keyVals])
     #         if tempFrameBFrame.empty and tempIV_dict.empty: 
     #             tempFrameBFrame, tempIV_dict = tempHolderFrame, tempIVHolder
     #         else: 
@@ -212,12 +213,12 @@ class GAIT(QThread):
     #     self._programLog.output(0,f"Temporary IVS:\n{tempIV_dict}")
        
     #     # Find Averages Based on A Column Value 
-    #     newFrameBFrameDataSet, newIVDataSet = pd.DataFrame(), pd.DataFrame()
+    #     newFrameBFrameDataSet, newIVDataSet = DataFrame(), DataFrame()
         
     #     # Should Start from frame 5 through maxFrame + 5
     #     for i in range(int(tempFrameBFrame['frame'].min()), int(tempFrameBFrame['frame'].max() + tempFrameBFrame['frame'].min()), int(tempFrameBFrame['frame'].min())): 
     #         tempFrame = tempFrameBFrame.loc[tempFrameBFrame['frame'] == i] # Get all Rows that Match the Frame I am currently looking at
-    #         tempFrame = pd.DataFrame.from_dict({'type' : "Frame", 'time': [tempFrame['CurrTime'].mean()], 'distance' : [tempFrame['distance_Measure'].mean()], 'velocity' : [tempFrame['currVelocity'].mean()]})
+    #         tempFrame = DataFrame.from_dict({'type' : "Frame", 'time': [tempFrame['CurrTime'].mean()], 'distance' : [tempFrame['distance_Measure'].mean()], 'velocity' : [tempFrame['currVelocity'].mean()]})
     #         if newFrameBFrameDataSet.empty: 
     #             newFrameBFrameDataSet = tempFrame
     #         else: 
@@ -281,7 +282,7 @@ class GAIT(QThread):
 
 
 
-    def processNParition(self, aDict : pd.DataFrame) -> tuple[dict, dict]: 
+    def processNParition(self, aDict : DataFrame) -> tuple[dict, dict]: 
         # Convert all the data into m/s
         aDict['distance_Measure'] = aDict['distance_Measure'].div(self._UnitConversionFactor)
         # Now Partition Data into a Frame By Frame and instant velocity for easy graphing 
@@ -293,26 +294,35 @@ class GAIT(QThread):
     # We can also do some data filtering here, to help remove outliers in the graph --> Implement later
     def copyToDataFrame(self, iv_store : dict, frame_store : dict): 
         
-        if(self.iv_data_frame.empty) : self.iv_data_frame = pd.DataFrame.from_dict(iv_store)
-        else: self.iv_data_frame = pd.concat([self.iv_data_frame, pd.DataFrame.from_dict(iv_store)], axis=0)
+        if(self.iv_data_frame.empty) : self.iv_data_frame = DataFrame.from_dict(iv_store)
+        else: self.iv_data_frame = concat([self.iv_data_frame, DataFrame.from_dict(iv_store)], axis=0)
         
-        if(self.frame_data_frame.empty) : self.frame_data_frame = pd.DataFrame.from_dict(frame_store) 
-        else: self.frame_data_frame = pd.concat([self.frame_data_frame, pd.DataFrame.from_dict(frame_store)], axis=0)
+        if(self.frame_data_frame.empty) : self.frame_data_frame = DataFrame.from_dict(frame_store) 
+        else: self.frame_data_frame = concat([self.frame_data_frame, DataFrame.from_dict(frame_store)], axis=0)
         
         
+    def getCurrIterationData(self): 
+        return (self.frame_data_frame.loc[self.frame_data_frame['iteration_ID'] == self.programRuntimes], 
+                self.iv_data_frame.loc[self.iv_data_frame['iteration_ID'] == self.programRuntimes])
+    
        
         
     # Now that we have copied all data to a dataframe lets append it to the graph, altho this should prolly only be done if requested 
     # to save resources --> Implement later
     def insertGraphData(self, title): 
-        return
+        self.plot.setupLabels(title, 'Distance (m)', 'Speed (m/s)')
+        #  tempIV_dict.loc[tempIV_dict['distanceID'] == i
+        currFrameData, currIVData = self.getCurrIterationData()
+        self.plot.insertToGraph((currFrameData['curr_distance'], currFrameData['velocity']), 
+                                (currIVData['curr_distance'], currIVData['velocity']), int(self._runTimeCntr))
+       
     
     # def insertGraphData(self, title):
         
     #     keyVal = self._currKey
     #     currKey = self.Data_Dict[keyVal]
 
-    #     currKey = ((pd.DataFrame.from_dict(currKey)).sort_values('distance_Measure'))         
+    #     currKey = ((DataFrame.from_dict(currKey)).sort_values('distance_Measure'))         
     #     # [{}] 
     #     frameBFrameHolder, ivHolder = self.processNParition(currKey)
     #     # Save the Data to The Appropriate Dictionaries for Averagins Later
@@ -320,8 +330,8 @@ class GAIT(QThread):
     #     self._IV_Dict.update({self._currKey : ivHolder})
     #     # Setup the Graph
     #     # Need to convert to datframe first
-    #     frameBFrameHolder = pd.DataFrame.from_dict(frameBFrameHolder)
-    #     ivHolder = pd.DataFrame.from_dict(ivHolder)
+    #     frameBFrameHolder = DataFrame.from_dict(frameBFrameHolder)
+    #     ivHolder = DataFrame.from_dict(ivHolder)
     #     self.plot.setupLabels(title, "Distance (m)", "Speed (m/s)")
     #     self.plot.insertToGraph((frameBFrameHolder['distance_Measure'], frameBFrameHolder['currVelocity']), 
     #                             (ivHolder['distance_Measure'], ivHolder['currVelocity']), int(keyVal))
@@ -329,7 +339,10 @@ class GAIT(QThread):
 
     # Disable graphing --> Temporary to test only new structure of the data gathered
     def displayGraph(self, id=None, showLegend=True): 
-        return 
+        if(len(self.gait_Speed_Arr) > 0): 
+            self.plot.showGraph(id=self._runTimeCntr, showLegendBool=showLegend)
+        # elif id == -1: # Tells program to show average graph
+        #     self.plot.showGraph(showLegendBool=showLegend)
     
         # if(len(self.gait_Speed_Arr) > 0 ): 
         #     if id == None: 
@@ -433,7 +446,9 @@ class GAIT(QThread):
         
         # We want to increment this, since this would indicate we are running the program again on the same patient, it is used 
         # to help identify which graph to display 
-        self._currKey += 1
+        # self._runTimeCntr = self.programRuntimes
+        self._runTimeCntr = self._runTimeCntr + 1
+
 
 
     # This function allows the program to completely reset itself and allow for the "switch patient " functionality to work
@@ -445,9 +460,9 @@ class GAIT(QThread):
         self._IV_Dict_Averages = {}
         self._IV_Avg_Graph = graph.Graph()
         self.wasEmitted = False
-        self._currKey = self._StartKey
-        self.frame_data_frame = self.frame_data_frame.iloc[0:0]
-        self.iv_data_frame = self.iv_data_frame.iloc[0:0]
+        self.frame_data_frame = DataFrame
+        self.iv_data_frame = DataFrame
+        self._runTimeCntr = 0
         # To Help With Final Graphing Later
         # self._FrameBFrame_Dict, self._IV_Dict = dict(), dict()
         self._reinit()
@@ -601,7 +616,8 @@ class GAIT(QThread):
             self._CalibrateStartDist = False
             self._StartDistance = self._StartDistance / self._MaxFrameCalibrationCnt
             self._startDistanceCaptured = True 
-
+       
+   
         return currFrameCnt
 
 
@@ -685,7 +701,6 @@ class GAIT(QThread):
             # Append gait speed to the arr to be averaged, and then emit a signal to the ui to allow another program run 
             self.gait_Speed_Arr.append(self._Gait_Speed)
             self.programRuntimes += 1 
-            # self._currKey += 1 # Update current Proram Iteration
             self.aRunTimeComplete, self.calculationsDone = True, True 
                 
 
@@ -697,7 +712,7 @@ class GAIT(QThread):
         # Display Stats 
         if self._EndReached is True and self._CalculationsAllowed == False: 
             self._CalculationsAllowed = True 
-            if self.Data_Dict: 
+            if not self.frame_data_frame.empty and not self.iv_data_frame.empty: 
                 self.insertGraphData("Kinect Gait Analysis")
             self.doGaitSpeedCalc()
             
@@ -728,9 +743,9 @@ class GAIT(QThread):
     #             self._programLog.output(1, f"{i + 1} : {data}")
     #         # Save this data as a dataframe
     #         if self._DataFrame is None: 
-    #             self._DataFrame = pd.DataFrame.from_dict(y)
+    #             self._DataFrame = DataFrame.from_dict(y)
     #         else: 
-    #             self._DataFrame = self._DataFrame.append(pd.DataFrame.from_dict(y))
+    #             self._DataFrame = self._DataFrame.append(DataFrame.from_dict(y))
         
 
 
@@ -751,7 +766,8 @@ class GAIT(QThread):
 
    
 
-
+    def getCurrGaitSpd(self): 
+        return self.gait_Speed_Arr[self.programRuntimes - 1]
         
     
         
@@ -761,8 +777,6 @@ class GAIT(QThread):
         self._Database.uploadGaitResults((self._PatientID, self._PatientName), self.Data_Dict, self._Gait_Speed_Avg)   
       
             
-
-
 
     reportProgDone = pyqtSignal(float)
     def programFinished(self): 
