@@ -34,6 +34,7 @@ class GaitAnalyzer(gait.GAIT):
         ##### Frame By Frame #####
         # Program Counter
         self.currMeasureCnt = 0
+        self.currDistanceIteration = 0
         
         # Frame by Frame Analysis Constants 
         self._FramesToRead = 5
@@ -75,6 +76,7 @@ class GaitAnalyzer(gait.GAIT):
         self.currMeasureCnt = 0 
         self.currFrameCnt, self.prevFrameCnt = 0, 0 
         self.prevDistanceFrameBFrame = 0
+        self.currDistanceIteration = 0 
         # self.frameSpdsDict = dict()
         
         # Reset out temporary stores 
@@ -119,7 +121,8 @@ class GaitAnalyzer(gait.GAIT):
         if len(self.frame_store) == 0: 
             self.frame_store = {
                 'iteration_ID' : [], 
-                'curr_distance' :  [], 
+                'frame_ID' : [],
+                'curr_distance' : [], 
                 'velocity' : [], 
                 'time' : [] 
             }
@@ -128,6 +131,7 @@ class GaitAnalyzer(gait.GAIT):
         # We will use iteration id as our primary key for each measurement obtained, so that we can associate it with a run in 
         # the instance of the current patient
         self.frame_store['iteration_ID'].append(self._runTimeCntr)
+        self.frame_store['frame_ID'].append(self.currFrameCnt)
         self.frame_store['curr_distance'].append(currDistance)
         self.frame_store['velocity'].append(currSpd)
         self.frame_store['time'].append(currTime)
@@ -148,81 +152,7 @@ class GaitAnalyzer(gait.GAIT):
         self.currMeasureCnt += 1
 
 
-    # def debugPrintDict(self, comment=None):
-    #     if len(list(self.frameSpdsDict)) < 1: 
-    #         self._programLog.output(3, "There is no data in the frame by frame Dictionary!")
-    #         return  
-    #     dicSum = []
-    #     if not comment is None: 
-    #         self._programLog.output(3, f"Debug Frame By Frame Print -> {comment}")
-    #     else: 
-    #         self._programLog.output(3, f"Debug Frame By Frame Print")
-    #     for x,y in self.frameSpdsDict.items():
-    #         self._programLog.output(3, f"{x} : {y}")
-    #         dicSum.append(y['CurrSpd'])
-        
-    #     self._programLog.output(3, f"Average of Frame: {sum(dicSum)/len(dicSum)}\n")
-        
-    #     if self._Gait_Speed is not None: 
-    #         self._programLog.output(3, f"Calculated Average Velocity: {self._Gait_Speed}")
-
-
-
-    # # Use this function to decrease the outlier measurments, since some "noise" or "outliers" are unavoidable
-    # 
-    # This function should be moved to the gait.py before appending data of the current run to the global dataframe
-    #
-    # def removeNoise(self): 
-    #     tempList = list()
-    #     listOfPops = list()
-        
-    #     for keyVal, data in self.frameSpdsDict.items(): 
-    #         tempList.append(data['CurrSpd'])
-    #         if data['CurrDistance'] > self._EndMeasurementZone_mm:      
-    #             listOfPops.append(keyVal)
-          
-           
-    #     tempList = pd.DataFrame(tempList)
-    #     tempList = tempList.quantile([0.25,0.5,0.75])
-        
-        
-    #     iqr = (tempList.loc[0.75,0] - tempList.loc[0.25,0]) * 1.5 
-    #     innerFenceL, innerFenceU = tempList.loc[0.25, 0] - iqr, tempList.loc[0.75, 0] + iqr 
-        
-    #     # Debug Prints
-    #     self._programLog.output(0, f"Quantile 1: {tempList.loc[0.25,0]} Median: {tempList.loc[0.5,0]} Quantile 3: {tempList.loc[0.75,0]}")
-    #     self._programLog.output(0, f'Lower Inner Fence: {innerFenceL} Median: {tempList.loc[0.5,0]} Upper Inner Fence: {innerFenceU}')
-        
-        
-       
-    #     for keyVal, data in self.frameSpdsDict.items(): 
-    #         currVel = data['CurrSpd']
-    #         if currVel < innerFenceL or currVel > innerFenceU: 
-    #             listOfPops.append(keyVal)
-
-        
-    #     self._programLog.output(0, f"\nDeletions: {listOfPops} ") 
-    #     for item in listOfPops: 
-    #         if item in self.frameSpdsDict:
-    #             del self.frameSpdsDict[item]
-        
-    #     self._savetoDict2(self.frameSpdsDict)
-        
-                 
-    # # Handle saving frame by frame data to the overall Data_Dict that will be filtered later based on the 'id' or type of measurement
-    # def _savetoDict2(self, aDict : dict() ): 
-    #     # Current Program Run
-    #     keyVal = self._currKey 
-        
-    #     for y in aDict.values(): 
-    #         iVelocity, distance = y['CurrSpd'], y['CurrDistance']
-    #         time, frameCntr =  y['CurrTime'], y['CurrFrameCnt']
-    #         if keyVal in self.Data_Dict: 
-    #             self.Data_Dict[keyVal].append({'currVelocity': iVelocity, 'distance_Measure': distance, 'CurrTime': time, 'id' : 'Frame', 'frame' : frameCntr, 'distanceID' : None})
-    #         else: 
-    #             self.Data_Dict.update({keyVal: [{'currVelocity': iVelocity, 'distance_Measure': distance, 'CurrTime': time, 'id' : 'Frame', 'frame' : frameCntr, 'distanceID' : None}]})
-           
-         
+    
                 
 
 #####################################################   
@@ -266,6 +196,7 @@ class GaitAnalyzer(gait.GAIT):
         if len(self.iv_store) == 0: 
             self.iv_store = {
                 'iteration_ID' : [], 
+                'distance_ID' : [],
                 'curr_distance' : [], 
                 'velocity' : [], 
                 'time' : []
@@ -275,6 +206,7 @@ class GaitAnalyzer(gait.GAIT):
         # We will use iteration id as our primary key for each measurement obtained, so that we can associate it with a run in 
         # the instance of the current patient
         self.iv_store['iteration_ID'].append(self._runTimeCntr)
+        self.iv_store['distance_ID'].append(self.currDistanceIteration)
         self.iv_store['curr_distance'].append(distance)
         self.iv_store['velocity'].append(iVelocity), 
         self.iv_store['time'].append(time)
@@ -288,7 +220,7 @@ class GaitAnalyzer(gait.GAIT):
         # else: 
         #     self.Data_Dict.update({keyVal: [{'currVelocity': iVelocity, 'distance_Measure': distance, 'CurrTime': time, 'id' : 'IV', 'frame' : None, 'distanceID' : self.currDistanceIteration}]})
         
-        # self.currDistanceIteration += 1
+        self.currDistanceIteration += 1
 
 
 

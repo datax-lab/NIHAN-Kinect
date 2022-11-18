@@ -21,6 +21,11 @@ from Resources import Logging as lg
 from Resources.GaitResources import graph
 from Resources.uploadData import dataUploader
 
+# Debug for now 
+_DebugMode = False 
+if len(sys.argv) > 1 and sys.argv[1] == "--DEBUG": 
+        _DebugMode = True 
+       
 
 
 
@@ -179,76 +184,64 @@ class GAIT(QThread):
         self._BgStart, self._BgEnd, self._TextStart = (0, 0), (self._Width, 50), (40, 25)
 
 
-    # def avgData(self) -> tuple[DataFrame, DataFrame]: 
-        
-    #     if(len(sys.argv) > 1 and sys.argv[1] == "--DEBUG"): 
-    #         # Debugging 
-    #         self._programLog.output(0,"\nInstant Velocities")
-    #         for x,y in self._IV_Dict.items(): 
-    #             print(f"Key: {x}")
-    #             for data in y: 
-    #                 self._programLog.output(0, f"Velocity: {round(data['currVelocity'],4)}\tDistance ID: {data['distanceID']}")
-                
-    #         self._programLog.output(1, "\nFrame By Frame Data")
-    #         for x,y in self._FrameBFrame_Dict.items(): 
-    #             print(f"Key: {x}")
-    #             for data in y: 
-    #                 self._programLog.output(1,f"Velocity: {round(data['currVelocity'],4)}\tFrame: {data['frame']}")
-       
-       
-    #     #### End DEBUG ###
-    #     tempFrameBFrame, tempIV_dict = DataFrame(), DataFrame() 
-        
-    #     # Iterate through all keys 
-    #     for keyVals in self.Data_Dict.keys(): 
-    #         # Assign the data held under each key to their appropriate dataframe for averaging
-    #         tempHolderFrame, tempIVHolder =   DataFrame.from_dict(self._FrameBFrame_Dict[keyVals]), DataFrame.from_dict(self._IV_Dict[keyVals])
-    #         if tempFrameBFrame.empty and tempIV_dict.empty: 
-    #             tempFrameBFrame, tempIV_dict = tempHolderFrame, tempIVHolder
-    #         else: 
-    #             # Using axis=0 because we are appending a row
-    #             tempFrame, tempIV_dict = pd.concat([tempFrameBFrame, tempHolderFrame], axis=0), pd.concat([tempIV_dict, tempIVHolder], axis=0)
-    #             #tempFrameBFrame, tempIV_dict = tempFrameBFrame.append(tempHolderFrame), tempIV_dict.append(tempIVHolder) # df.append() is deprecated
-       
-    #     self._programLog.output(0,f"Temporary IVS:\n{tempIV_dict}")
-       
-    #     # Find Averages Based on A Column Value 
-    #     newFrameBFrameDataSet, newIVDataSet = DataFrame(), DataFrame()
-        
-    #     # Should Start from frame 5 through maxFrame + 5
-    #     for i in range(int(tempFrameBFrame['frame'].min()), int(tempFrameBFrame['frame'].max() + tempFrameBFrame['frame'].min()), int(tempFrameBFrame['frame'].min())): 
-    #         tempFrame = tempFrameBFrame.loc[tempFrameBFrame['frame'] == i] # Get all Rows that Match the Frame I am currently looking at
-    #         tempFrame = DataFrame.from_dict({'type' : "Frame", 'time': [tempFrame['CurrTime'].mean()], 'distance' : [tempFrame['distance_Measure'].mean()], 'velocity' : [tempFrame['currVelocity'].mean()]})
-    #         if newFrameBFrameDataSet.empty: 
-    #             newFrameBFrameDataSet = tempFrame
-    #         else: 
-    #             newFrameBFrameDataSet = pd.concat([newFrameBFrameDataSet, tempFrame], axis=0)
-    #             #newFrameBFrameDataSet = newFrameBFrameDataSet.append(tempFrame)
-        
-    #     # Now do something similar to the above but for iv distances
-    #     for i in range(int(tempIV_dict['distanceID'].max()) + 1): 
-    #         tempIV = tempIV_dict.loc[tempIV_dict['distanceID'] == i] # Grab All The Rows that Have The Wanted Distance
-    #         tempIV = pd.DataFrame.from_dict({'type' : "Instant velocity", 'time' : [tempIV['CurrTime'].mean()], 'distance': [tempIV['distance_Measure'].mean()], 'velocity' : [tempIV['currVelocity'].mean()]})
-    #         if newIVDataSet.empty: 
-    #             newIVDataSet = tempIV
-    #         else: 
-    #             newIVDataSet =  pd.concat([newIVDataSet, tempIV], axis=0)
-    #             #newIVDataSet = newIVDataSet.append(tempIV)
-            
-        
-        
-    #     self._programLog.output(0, f"{newFrameBFrameDataSet}\n\n")
-    #     self._programLog.output(0, f"{newIVDataSet}\n\n")
-    #     return newFrameBFrameDataSet.dropna(), newIVDataSet.dropna()
-       
+   
 
         
+    def setupAvgGraph(self, title): 
+        avgFrameDataFrame, avgIVDataFrame = self.__setupAvgGraphHelper()
+        self._IV_Avg_Graph.setupLabels(title, 'Distance (m)', 'Speed (m/s)')
+        self._IV_Avg_Graph.insertToGraph((avgFrameDataFrame['distance'], avgFrameDataFrame['velocity']), (avgIVDataFrame['distance'], avgIVDataFrame['velocity']), id=1) 
+        self.Data_Dict = (concat([avgFrameDataFrame, avgIVDataFrame], axis=0)).to_dict('records')
         
+        if _DebugMode: 
+            avgIVDataFrame.to_csv('iv_averages.csv')
+            avgFrameDataFrame.to_csv('frame_averages.csv')
+    
+    
     # {'Results': [{'Distance': currDistance, 'Time': currentTimeHolder, 'Instant Velocity': currentIVHolder}]}
     # This Function Also Handles Formatting the Data to be uploaded, since this is where we average all the data
     # Disable for now --> Want to isolate new data structure
-    def setupAvgGraph(self, title): 
-        return 
+    def __setupAvgGraphHelper(self) -> DataFrame: 
+        
+        # new dataframe to store all the avg values 
+        frame_dataframe_avg, iv_dataframe_avg = {}, {}
+    
+        # Lets calculate averages of iv data
+        for i in range(self.iv_data_frame['distance_ID'].max() + 1): 
+            templist = self.iv_data_frame.loc[self.iv_data_frame['distance_ID'] == i]
+            if len(iv_dataframe_avg) == 0: 
+                iv_dataframe_avg = {
+                    'type' : [], 
+                    'time' : [],
+                    'distance' : [], 
+                    'velocity' : []
+                }
+            iv_dataframe_avg['type'].append('Instant Velocity')
+            iv_dataframe_avg['time'].append(templist['time'].mean())
+            iv_dataframe_avg['distance'].append(templist['curr_distance'].mean())
+            iv_dataframe_avg['velocity'].append(templist['velocity'].mean())
+            
+            
+        
+       # Lets calculate averages of frame data
+        minFrameCnt = self.frame_data_frame['frame_ID'].min()
+        print(self.frame_data_frame['frame_ID'].max())
+        maxFrameCnt = self.frame_data_frame['frame_ID'].max()
+        for i in range(minFrameCnt, maxFrameCnt + minFrameCnt, minFrameCnt): 
+            templist = self.frame_data_frame.loc[self.frame_data_frame['frame_ID'] == i]
+            if len(frame_dataframe_avg) == 0:
+                frame_dataframe_avg = {
+                    'type' : [], 
+                    'time' : [], 
+                    'distance' : [], 
+                    'velocity' : [], 
+                }
+            frame_dataframe_avg['type'].append('Frame')
+            frame_dataframe_avg['time'].append(templist['time'].mean())
+            frame_dataframe_avg['distance'].append(templist['curr_distance'].mean())
+            frame_dataframe_avg['velocity'].append(templist['velocity'].mean())
+            
+        return (DataFrame.from_dict(frame_dataframe_avg)).dropna(), (DataFrame.from_dict(iv_dataframe_avg)).dropna()
       
         # frameData, ivData = self.avgData()
         
@@ -275,7 +268,6 @@ class GAIT(QThread):
     
     # Disable for now --> Want to isolate new data structure
     def displayAvgGraph(self, id=1): 
-        return 
         # Only Allow Graph to Be Shown if There is Data, otherwise it will crash if there isnt a check for data
         if(len(self.gait_Speed_Arr) > 0):
             self._IV_Avg_Graph.showGraph(id, showLegendBool=True, average=self._Gait_Speed_Avg, customText="Averages For")
@@ -291,17 +283,17 @@ class GAIT(QThread):
     
     # When inserting the data to the graph, we should first have the frame-by-frame and the iv data from the child class appended to the 
     # currrent instance pd.Dataframe
-    # We can also do some data filtering here, to help remove outliers in the graph --> Implement later
     def copyToDataFrame(self, iv_store : dict, frame_store : dict): 
         
-        if(self.iv_data_frame.empty) : self.iv_data_frame = DataFrame.from_dict(iv_store)
-        else: self.iv_data_frame = concat([self.iv_data_frame, DataFrame.from_dict(iv_store)], axis=0)
+        if(self.iv_data_frame.empty) : self.iv_data_frame = self.removeNoise(DataFrame.from_dict(iv_store))
+        else: self.iv_data_frame = concat([self.iv_data_frame, self.removeNoise(DataFrame.from_dict(iv_store))], axis=0)
         
-        if(self.frame_data_frame.empty) : self.frame_data_frame = DataFrame.from_dict(frame_store) 
-        else: self.frame_data_frame = concat([self.frame_data_frame, DataFrame.from_dict(frame_store)], axis=0)
+        if(self.frame_data_frame.empty) : self.frame_data_frame = self.removeNoise(DataFrame.from_dict(frame_store))
+        else: self.frame_data_frame = concat([self.frame_data_frame, self.removeNoise(DataFrame.from_dict(frame_store))], axis=0)
         
         
-    def getCurrIterationData(self): 
+    def getCurrIterationData(self) -> DataFrame: 
+        '''Gets all captured frame measurements and iv measurements of the current iteration of the program for a patient'''
         return (self.frame_data_frame.loc[self.frame_data_frame['iteration_ID'] == self._runTimeCntr], 
                 self.iv_data_frame.loc[self.iv_data_frame['iteration_ID'] == self._runTimeCntr])
     
@@ -320,10 +312,10 @@ class GAIT(QThread):
  
     # Disable graphing --> Temporary to test only new structure of the data gathered
     def displayGraph(self, id=None, showLegend=True): 
-        if(len(self.gait_Speed_Arr) > 0): 
+        if(len(self.gait_Speed_Arr) > 0) and id != -1: 
             self.plot.showGraph(id=self._runTimeCntr - 1, showLegendBool=showLegend)
-        # elif id == -1: # Tells program to show average graph
-        #     self.plot.showGraph(showLegendBool=showLegend)
+        elif id == -1: # Tells program to show average graph
+            self.plot.showGraph(id=None, showLegendBool=showLegend)
     
         # if(len(self.gait_Speed_Arr) > 0 ): 
         #     if id == None: 
@@ -442,6 +434,7 @@ class GAIT(QThread):
         self._IV_Avg_Graph = graph.Graph()
         self.wasEmitted = False
         self.frame_data_frame = DataFrame
+        self.plot = graph.Graph()
         self.iv_data_frame = DataFrame
         self._runTimeCntr = 0
         # To Help With Final Graphing Later
@@ -659,6 +652,21 @@ class GAIT(QThread):
                  #                                           self._BgStart, self._BgEnd, self._TextStart)
 
 
+
+    def removeNoise(self, aDataFrame : DataFrame):
+         '''Takes a given dataframe (must have the standard keys that have been set in this program) and removes all outliers'''
+         q3, q1 = np.quantile(aDataFrame['velocity'], 0.75), np.quantile(aDataFrame['velocity'], 0.25) 
+         iqr = (q3 - q1) * 1.5 
+         innerFenceL,innerFenceU = q1 - iqr, q3 + iqr
+         return aDataFrame.loc[(aDataFrame['velocity'] > innerFenceL) & (aDataFrame['velocity'] < innerFenceU)]
+         
+         
+    # def removeNoise(self): 
+    #     currFrameData, currIVData = self.getCurrIterationData()
+        
+
+        
+
     # Now we want to do gait speed calculations 
     def doGaitSpeedCalc(self): 
         if self._CalculationsAllowed is False: 
@@ -686,7 +694,7 @@ class GAIT(QThread):
             self.aRunTimeComplete, self.calculationsDone = True, True 
                 
 
-        
+    
 
     # Closing Program Function 
     def reportGait(self): 
