@@ -129,7 +129,7 @@ class controlPanelGait(QDialog):
             self.showGaitSpd()
     
     def showGaitSpd(self): 
-        self.uiShowGaitSpd.setSpd(self.gaitProgram.gait_Speed_Arr[self.gaitProgram.programRuntimes])
+        self.uiShowGaitSpd.setSpd(self.gaitProgram.getCurrGaitSpd())
         self.uiShowGaitSpd.gaitProRef = self.gaitProgram
         self.uiShowGaitSpd.show()
         
