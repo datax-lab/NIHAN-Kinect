@@ -219,7 +219,7 @@ class GAIT(QThread):
             iv_dataframe_avg['type'].append('Instant velocity')
             iv_dataframe_avg['time'].append(templist['time'].mean())
             iv_dataframe_avg['distance'].append(templist['curr_distance'].mean())
-            iv_dataframe_avg['velocity'].append(templist['velocity'].mean())
+            iv_dataframe_avg['velocity'].append((templist['velocity'].mean()))
             
             
         
@@ -239,7 +239,7 @@ class GAIT(QThread):
             frame_dataframe_avg['type'].append('Frame')
             frame_dataframe_avg['time'].append(templist['time'].mean())
             frame_dataframe_avg['distance'].append(templist['curr_distance'].mean())
-            frame_dataframe_avg['velocity'].append(templist['velocity'].mean())
+            frame_dataframe_avg['velocity'].append((templist['velocity'].mean()))
             
         return (DataFrame.from_dict(frame_dataframe_avg)).dropna(), (DataFrame.from_dict(iv_dataframe_avg)).dropna()
       
@@ -256,14 +256,30 @@ class GAIT(QThread):
     # When inserting the data to the graph, we should first have the frame-by-frame and the iv data from the child class appended to the 
     # currrent instance pd.Dataframe
     def copyToDataFrame(self, iv_store : dict, frame_store : dict): 
+        '''This function should be called after each gait data collection. 
+        This takes two dictionaries, that are used for temporary storage of collected data during gait measurement, and appends all the data to a pandas dataframe. 
+        We will use these dataframes for result calculations'''
+        # First remove bad values from collected data, since its very likely we'll have outliers
+        # Then convert all distance from mm to m 
+        # Apply this method for both the frame_by_frame data and the iv_data 
+        if(self.iv_data_frame.empty) : self.iv_data_frame = self.convertDistanceUnits(self.removeNoise(DataFrame.from_dict(iv_store)))
+        else: self.iv_data_frame = concat([self.iv_data_frame, self.convertDistanceUnits(self.removeNoise(DataFrame.from_dict(iv_store)))], axis=0)
         
-        if(self.iv_data_frame.empty) : self.iv_data_frame = self.removeNoise(DataFrame.from_dict(iv_store))
-        else: self.iv_data_frame = concat([self.iv_data_frame, self.removeNoise(DataFrame.from_dict(iv_store))], axis=0)
+        if(self.frame_data_frame.empty) : self.frame_data_frame = self.convertDistanceUnits(self.removeNoise(DataFrame.from_dict(frame_store)))
+        else: self.frame_data_frame = concat([self.frame_data_frame, self.convertDistanceUnits(self.removeNoise(DataFrame.from_dict(frame_store)))], axis=0)
         
-        if(self.frame_data_frame.empty) : self.frame_data_frame = self.removeNoise(DataFrame.from_dict(frame_store))
-        else: self.frame_data_frame = concat([self.frame_data_frame, self.removeNoise(DataFrame.from_dict(frame_store))], axis=0)
-        
-        
+    
+    def removeNoise(self, aDataFrame : DataFrame) -> DataFrame:
+        '''Takes a given dataframe (must have the standard keys that have been set in this program) and removes all outliers'''
+        q3, q1 = np.quantile(aDataFrame['velocity'], 0.75), np.quantile(aDataFrame['velocity'], 0.25) 
+        iqr = (q3 - q1) * 1.5 
+        innerFenceL,innerFenceU = q1 - iqr, q3 + iqr
+        return aDataFrame.loc[(aDataFrame['velocity'] > innerFenceL) & (aDataFrame['velocity'] < innerFenceU)]
+    
+    def convertDistanceUnits(self, aDataFrame : DataFrame) -> DataFrame: 
+        aDataFrame['curr_distance'] = aDataFrame['curr_distance'].div(self._UnitConversionFactor)
+        return aDataFrame
+    
     def getCurrIterationData(self) -> DataFrame: 
         '''Gets all captured frame measurements and iv measurements of the current iteration of the program for a patient'''
         return (self.frame_data_frame.loc[self.frame_data_frame['iteration_ID'] == self._runTimeCntr], 
@@ -625,12 +641,7 @@ class GAIT(QThread):
 
 
 
-    def removeNoise(self, aDataFrame : DataFrame):
-         '''Takes a given dataframe (must have the standard keys that have been set in this program) and removes all outliers'''
-         q3, q1 = np.quantile(aDataFrame['velocity'], 0.75), np.quantile(aDataFrame['velocity'], 0.25) 
-         iqr = (q3 - q1) * 1.5 
-         innerFenceL,innerFenceU = q1 - iqr, q3 + iqr
-         return aDataFrame.loc[(aDataFrame['velocity'] > innerFenceL) & (aDataFrame['velocity'] < innerFenceU)]
+
          
          
     # def removeNoise(self): 
