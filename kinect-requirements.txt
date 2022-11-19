@@ -5,3 +5,4 @@ Dependencies:
 - CV2
 - matplotlib
 - pandas
+- pyinstaller 
