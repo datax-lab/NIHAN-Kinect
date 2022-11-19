@@ -136,7 +136,7 @@ class GAIT(QThread):
         #               Instant Velocity                     #
         ######################################################
         # Dictionary to save data
-        self.Data_Dict = dict() #  Dictionary = {
+        self._Upload_Dict = dict() #  Dictionary = {
                                   # '1': [{'distance_Measure': 15, 'currVelocity': 12, 'CurrTime': 15}, {'distance_Measure': 31, 'currVelocity': 12, 'CurrTime': 70}]
                                   #  } 
         
@@ -191,7 +191,7 @@ class GAIT(QThread):
         avgFrameDataFrame, avgIVDataFrame = self.__setupAvgGraphHelper()
         self._IV_Avg_Graph.setupLabels(title, 'Distance (m)', 'Speed (m/s)')
         self._IV_Avg_Graph.insertToGraph((avgFrameDataFrame['distance'], avgFrameDataFrame['velocity']), (avgIVDataFrame['distance'], avgIVDataFrame['velocity']), id=1) 
-        self.Data_Dict = (concat([avgFrameDataFrame, avgIVDataFrame], axis=0)).to_dict('records')
+        self._Upload_Dict = (concat([avgFrameDataFrame, avgIVDataFrame], axis=0)).to_dict('records')
         
         if _DebugMode: 
             avgIVDataFrame.to_csv('iv_averages.csv')
@@ -216,7 +216,7 @@ class GAIT(QThread):
                     'distance' : [], 
                     'velocity' : []
                 }
-            iv_dataframe_avg['type'].append('Instant Velocity')
+            iv_dataframe_avg['type'].append('Instant velocity')
             iv_dataframe_avg['time'].append(templist['time'].mean())
             iv_dataframe_avg['distance'].append(templist['curr_distance'].mean())
             iv_dataframe_avg['velocity'].append(templist['velocity'].mean())
@@ -243,30 +243,7 @@ class GAIT(QThread):
             
         return (DataFrame.from_dict(frame_dataframe_avg)).dropna(), (DataFrame.from_dict(iv_dataframe_avg)).dropna()
       
-        # frameData, ivData = self.avgData()
-        
-        # self._programLog.output(0, f"{frameData.shape, ivData.shape}")
-        # self._IV_Avg_Graph.setupLabels(title, "Distance (m)", "Speed (m/s)")
-        # self._IV_Avg_Graph.insertToGraph((frameData['distance'], frameData['velocity']), (ivData['distance'], ivData['velocity']), 1)
-        
-        # # Since we should be done w the original dict, we need to clear it, and then re-create it for data uploading
-        # self.Data_Dict.clear()
-        # # Format of Gait Dictionary
-        # #[
-        # #   {
-        # #         'Type' : , # This is indicates whether the current results are from Frame By Frame or Instant Velocity 
-        # #         'Time' : , 
-        # #         'Distance' : , 
-        # #         'Velocity' : , 
-        # #   }
-        # # ]
-        # self.Data_Dict = (pd.concat([frameData, ivData], axis=0)).to_dict('records')
-        # #self.Data_Dict = (frameData.append(ivData)).to_dict('records')
-        
-        # self._programLog.output(0,f"\n Frame By Frame Average Data:\n{frameData}")
-        # self._programLog.output(0, f"\nInstant Velocity Average Data:\n{ivData}")
-    
-    # Disable for now --> Want to isolate new data structure
+       
     def displayAvgGraph(self, id=1): 
         # Only Allow Graph to Be Shown if There is Data, otherwise it will crash if there isnt a check for data
         if(len(self.gait_Speed_Arr) > 0):
@@ -274,11 +251,6 @@ class GAIT(QThread):
 
 
 
-    def processNParition(self, aDict : DataFrame) -> tuple[dict, dict]: 
-        # Convert all the data into m/s
-        aDict['distance_Measure'] = aDict['distance_Measure'].div(self._UnitConversionFactor)
-        # Now Partition Data into a Frame By Frame and instant velocity for easy graphing 
-        return (aDict[aDict['id'] == 'Frame']).to_dict('records'), (aDict[aDict['id'] == 'IV']).to_dict('records') 
     
     
     # When inserting the data to the graph, we should first have the frame-by-frame and the iv data from the child class appended to the 
@@ -429,7 +401,7 @@ class GAIT(QThread):
     def _fullReset(self): 
         # Clear the init frame
         self._InitFrame, self._InitImageFileName, self._InitFrameConvted = None, None, False 
-        self.Data_Dict = dict()
+        self._Upload_Dict = dict()
         self._IV_Dict_Averages = {}
         self._IV_Avg_Graph = graph.Graph()
         self.wasEmitted = False
@@ -765,7 +737,7 @@ class GAIT(QThread):
     # This function takes the dictionary that holds all the results and re-structures the results dictionary to make it appropriate for the 
     # database it will be uploaded to
     def saveToDatabase(self):
-        self._Database.uploadGaitResults((self._PatientID, self._PatientName), self.Data_Dict, self._Gait_Speed_Avg)   
+        self._Database.uploadGaitResults((self._PatientID, self._PatientName), self._Upload_Dict, self._Gait_Speed_Avg)   
       
             
 
@@ -790,7 +762,7 @@ class GAIT(QThread):
             #     self._ptLog.output(2,"---------------------------------------------")
             #     # Debug Calls 
             #     self._programLog.output(0, "Dictionary Format of Data:\n")
-            #     self._programLog.output(0, self.Data_Dict)
+            #     self._programLog.output(0, self._Upload_Dict)
             #     # End Debug
             
             
