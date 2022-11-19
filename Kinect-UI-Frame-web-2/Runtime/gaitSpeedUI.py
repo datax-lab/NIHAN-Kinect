@@ -239,6 +239,8 @@ class controlPanelGait(QDialog):
 
     def programFinished(self, avgGait): 
         self.gaitProgram._OpenCVDepthHandler.closeAllWindows()
+        # Do this to reset the trackbar slider once we are done with an iteration
+        self.trackbarWindow.resetSlider()
         self.avgGaitSpdUI.setAvgSpd(avgGait)
         self.avgGaitSpdUI.show()
         
@@ -391,14 +393,21 @@ class trackBarUI(QDialog):
         self._Window = trackbar.Ui_Dialog()
         self._Window.setupUi(self)
         self._ErrorOut = errorWindow()
-        self.prevSliderVal = 23; 
+        self.originalVal = 23
+        self.prevSliderVal = 23 
         self.connectItems()
         
     
     def connectItems(self): 
         self._Window.horizontalSlider.valueChanged.connect(self.updateSensitivity)
+        self._Window.pushButton.clicked.connect(self.resetSlider)
 
-     
+    
+    def resetSlider(self): 
+        self._Window.horizontalSlider.setSliderPosition(self.originalVal)
+        self.sliderValueUpdate.emit(self.originalVal)
+        
+    
     def checkValidValueandFind(self, sliderValue : int) -> int:
         """ Verifies the Slider Values and Ensures they are a valid kernel size and returns the new position of the trackbar"""
         if(sliderValue == self.prevSliderVal and sliderValue % 2 == 1) : return sliderValue 
