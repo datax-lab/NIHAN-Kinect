@@ -710,7 +710,8 @@ class GAIT(QThread):
         # We have to do minus two because we start our runtime counter at 2 first
         # We have to do this, since the runTimecntr is incremented by 1 before this function is called from the 
         # ui, therefore we must do the START_CNT - 1, because for each run time the array is of len(self._runTimeCntr - START_CNT - 1 )
-        return self.gait_Speed_Arr[self._runTimeCntr - self.START_CNT - 1]
+        # return self.gait_Speed_Arr[self._runTimeCntr - self.START_CNT - 1]
+        return self.gait_Speed_Arr[(len(self.gait_Speed_Arr) - 1)] # the correct gait speed will be the last item in the list
         
     
         
