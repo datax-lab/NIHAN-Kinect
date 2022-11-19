@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>544</width>
-    <height>169</height>
+    <width>546</width>
+    <height>205</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -107,6 +107,26 @@
    </property>
    <property name="tickInterval">
     <number>5</number>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton">
+   <property name="geometry">
+    <rect>
+     <x>230</x>
+     <y>150</y>
+     <width>91</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+     <weight>50</weight>
+     <bold>false</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>RESET</string>
    </property>
   </widget>
  </widget>

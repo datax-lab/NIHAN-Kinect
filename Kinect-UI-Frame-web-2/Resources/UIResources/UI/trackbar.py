@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
-        Dialog.resize(544, 169)
+        Dialog.resize(546, 205)
         self.label = QtWidgets.QLabel(Dialog)
         self.label.setGeometry(QtCore.QRect(40, 20, 461, 31))
         font = QtGui.QFont()
@@ -48,6 +48,14 @@ class Ui_Dialog(object):
         self.horizontalSlider.setTickPosition(QtWidgets.QSlider.TicksBothSides)
         self.horizontalSlider.setTickInterval(5)
         self.horizontalSlider.setObjectName("horizontalSlider")
+        self.pushButton = QtWidgets.QPushButton(Dialog)
+        self.pushButton.setGeometry(QtCore.QRect(230, 150, 91, 31))
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        font.setBold(False)
+        font.setWeight(50)
+        self.pushButton.setFont(font)
+        self.pushButton.setObjectName("pushButton")
 
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
@@ -58,6 +66,7 @@ class Ui_Dialog(object):
         self.label.setText(_translate("Dialog", "Sensitivity"))
         self.label_2.setText(_translate("Dialog", "Low"))
         self.label_4.setText(_translate("Dialog", "High"))
+        self.pushButton.setText(_translate("Dialog", "RESET"))
 
 
 if __name__ == "__main__":

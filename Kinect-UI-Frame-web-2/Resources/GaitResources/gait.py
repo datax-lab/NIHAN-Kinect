@@ -53,8 +53,8 @@ class GAIT(QThread):
         #               Program Constants                    #
         ######################################################
         self._MaxFrameCalibrationCnt = 5
-        self.programRuntimes = 0 # So that the current index of the gait speed is the same as the program run times
-        self._runTimeCntr = 0 
+        self.START_CNT = 1; 
+        self._runTimeCntr = self.START_CNT
         # self._runTimeCntr = self.programRuntimes; 
         # Gait Constants
         self._BeginMeasurementZone_mm, self._EndMeasurementZone_mm = 1000, 4000 #0,500 #1000,<- Debug 4000 # Begin Measurement Zone at 1m and end at 4m
@@ -424,7 +424,8 @@ class GAIT(QThread):
         self.frame_data_frame = DataFrame
         self.plot = graph.Graph()
         self.iv_data_frame = DataFrame
-        self._runTimeCntr = 0
+        self._runTimeCntr = self.START_CNT
+        self.gait_Speed_Arr = [] 
         # To Help With Final Graphing Later
         # self._FrameBFrame_Dict, self._IV_Dict = dict(), dict()
         self._reinit()
@@ -672,7 +673,6 @@ class GAIT(QThread):
                 assert("No Data to Calculate Gait Speed Provided!!")
             # Append gait speed to the arr to be averaged, and then emit a signal to the ui to allow another program run 
             self.gait_Speed_Arr.append(self._Gait_Speed)
-            self.programRuntimes += 1 
             self._runTimeCntr += 1
             self.aRunTimeComplete, self.calculationsDone = True, True 
                 
@@ -705,43 +705,12 @@ class GAIT(QThread):
 
 
 
-
-
-    # def debugDictPrint(self, dictionary, label=None):
-    #     self._programLog.output(1, "\n\n")
-    #     if label is not None: 
-    #         self._programLog.output(1,label)
-    #     for x, y in dictionary.items(): 
-    #         print(f"\nCurrent Key Val: {x}")
-    #         for i, data in enumerate(y):
-    #             self._programLog.output(1, f"{i + 1} : {data}")
-    #         # Save this data as a dataframe
-    #         if self._DataFrame is None: 
-    #             self._DataFrame = DataFrame.from_dict(y)
-    #         else: 
-    #             self._DataFrame = self._DataFrame.append(DataFrame.from_dict(y))
-        
-
-
-    # def debugDictPrint2(self, dictionary, label=None):
-    #     sum = 0
-    #     cntr = 0
-    #     self._programLog.output(1, "\n\n")
-    #     if label is not None:
-    #         self._programLog.output(1,label)
-    #     for x, y in dictionary.items():
-    #         for i, data in enumerate(y):
-    #             self._programLog.output(1, f"{i + 1} : {data}")
-    #             sum += data['Instant Velocity']
-    #             cntr +=1
-
-    #     self._programLog.output(1, f"\nAverage of Instant Velocities: {sum/cntr}")
-
-
-   
-
     def getCurrGaitSpd(self): 
-        return self.gait_Speed_Arr[self.programRuntimes - 1]
+        print(f"Run {self._runTimeCntr}")
+        # We have to do minus two because we start our runtime counter at 2 first
+        # We have to do this, since the runTimecntr is incremented by 1 before this function is called from the 
+        # ui, therefore we must do the START_CNT - 1, because for each run time the array is of len(self._runTimeCntr - START_CNT - 1 )
+        return self.gait_Speed_Arr[self._runTimeCntr - self.START_CNT - 1]
         
     
         
@@ -759,7 +728,10 @@ class GAIT(QThread):
             self._Gait_Speed_Avg = sum(self.gait_Speed_Arr)
             self._Gait_Speed_Avg /= len(self.gait_Speed_Arr)
             # Now Calculate the Average Instant Vel and time at Each Distance
-            self.setupAvgGraph("Average Graph")
+            try: 
+                self.setupAvgGraph("Average Graph")
+            except Exception as e: 
+                print(f"There was an error in setupAvGaph {e}")
             # Now upload the data to the database
             if(len(sys.argv) > 1 and sys.argv[1] == "--DEBUG"):
                 self.iv_data_frame.to_csv('iv_data.csv')
